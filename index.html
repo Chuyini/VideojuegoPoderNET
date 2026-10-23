@@ -1,0 +1,664 @@
+<title>Los Jefes de Chapultepec</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one arcade cabinet column — marquee title, game screen, control cards underneath. Single dark look on purpose. */
+:root {
+  --bosque: #0d1a16;      /* Chapultepec forest night */
+  --bosque-2: #15281f;
+  --linea: #2a4637;
+  --texto: #eef3ee;
+  --tenue: #9fb5a8;
+  --rosa: #e4007c;        /* rosa mexicano */
+  --oro: #f2b632;
+  --p1: #ff5a4e;
+  --p2: #3ab0ff;
+  --display: "Bungee", "Impact", "Arial Black", sans-serif;
+  --body: "Rubik", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { background: var(--bosque); color: var(--texto); }
+body {
+  font-family: var(--body);
+  font-size: 15px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 20px; }
+h1 {
+  font-family: var(--display); font-weight: 400; margin: 0; line-height: .95;
+  font-size: clamp(26px, 5.4vw, 52px); text-wrap: balance;
+  color: var(--oro); text-shadow: 3px 3px 0 var(--rosa);
+}
+h1 small { display: block; font-size: .38em; color: var(--texto); text-shadow: none; letter-spacing: .08em; margin-bottom: 6px; }
+.sub { color: var(--tenue); margin: 0; max-width: 40ch; }
+.marca { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.logo { width: 190px; max-width: 100%; height: auto; }
+.nombres { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.nombres label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--tenue); text-align: left; }
+.nombres input { font: 600 15px var(--body); width: 170px; padding: 8px 10px; border-radius: 4px; border: 2px solid var(--linea); background: var(--bosque-2); color: var(--texto); }
+.nombres input:focus-visible { outline: none; border-color: var(--oro); }
+#n1 { border-color: var(--p1); } #n2 { border-color: var(--p2); }
+.pantalla { position: relative; border: 3px solid var(--linea); border-radius: 6px; overflow: hidden; background: #000; box-shadow: 0 0 0 6px var(--bosque-2); }
+canvas { display: block; width: 100%; max-width: 100%; aspect-ratio: 16 / 10; touch-action: none; }
+.overlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; text-align: center; padding: 16px; background: color-mix(in srgb, var(--bosque) 82%, transparent);
+}
+.overlay h2 { font-family: var(--display); font-weight: 400; margin: 0; font-size: clamp(20px, 4vw, 40px); color: var(--oro); text-wrap: balance; }
+.overlay p { margin: 0; max-width: 46ch; color: var(--texto); }
+.botones { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+button {
+  font-family: var(--display); font-size: 15px; letter-spacing: .04em; cursor: pointer;
+  border: 0; border-radius: 4px; padding: 12px 18px; color: var(--bosque); background: var(--oro);
+  box-shadow: 0 4px 0 #9a6f12;
+}
+button.alt { background: var(--rosa); color: var(--texto); box-shadow: 0 4px 0 #8a004b; }
+button:active { transform: translateY(3px); box-shadow: 0 1px 0 #9a6f12; }
+button:focus-visible { outline: 3px solid var(--texto); outline-offset: 3px; }
+#gritoTouch { position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); bottom: 12px; font-size: 13px; padding: 10px 14px; }
+.controles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.card { background: var(--bosque-2); border: 1px solid var(--linea); border-radius: 6px; padding: 14px 16px; min-width: 0; }
+.card h3 { margin: 0 0 8px; font-family: var(--display); font-weight: 400; font-size: 16px; letter-spacing: .03em; }
+.card.p1 h3 { color: var(--p1); } .card.p2 h3 { color: var(--p2); } .card.reglas h3 { color: var(--oro); }
+.card ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--tenue); }
+kbd { font-family: var(--body); font-weight: 800; color: var(--texto); background: var(--linea); border-radius: 3px; padding: 1px 6px; font-size: 13px; }
+@media (prefers-reduced-motion: reduce) { button:active { transform: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="marca">
+      <svg class="logo" viewBox="0 0 230 56" role="img" aria-label="poderNET">
+        <g fill="none" stroke="var(--oro)" stroke-width="5" stroke-linecap="round">
+          <path d="M10 44 a20 20 0 0 1 20 -20"/><path d="M10 34 a10 10 0 0 1 10 -10" opacity=".7"/><path d="M10 54 a30 30 0 0 1 30 -30" opacity=".45"/>
+        </g>
+        <circle cx="12" cy="42" r="4" fill="var(--oro)"/>
+        <text x="48" y="42" font-family="Rubik, sans-serif" font-weight="600" font-size="34" fill="var(--texto)">poder<tspan font-weight="800" fill="var(--rosa)">NET</tspan></text>
+      </svg>
+      <h1><small>OFICINA · BOSQUE DE CHAPULTEPEC, CDMX</small>Los Jefes de Chapultepec</h1>
+    </div>
+    <p class="sub">Jesús es el jefe más cabrón de poderNET. Pon a jalar a la banda, levanta la red y que nadie te quite la oficina.</p>
+  </header>
+
+  <div class="pantalla">
+    <canvas id="juego" width="960" height="600" aria-label="Pantalla del juego"></canvas>
+    <div class="overlay" id="overlay">
+      <h2 id="ovTitulo">¿Quién manda aquí?</h2>
+      <p id="ovTexto">2 minutos en la oficina de poderNET. El que junte más puntos se queda con la oficina. Si la productividad llega a cero, llega el dueño y los corre a los dos.</p>
+      <div class="nombres">
+        <label for="n1">JUGADOR 1<input id="n1" maxlength="12" value="Jesús"></label>
+        <label for="n2">JUGADOR 2<input id="n2" maxlength="12" value="El Retador"></label>
+      </div>
+      <div class="botones">
+        <button id="btn2p">2 jugadores</button>
+        <button id="btnCpu" class="alt">Contra la CPU</button>
+      </div>
+    </div>
+    <button id="gritoTouch" class="alt" hidden>¡GRITO!</button>
+  </div>
+
+  <section class="controles">
+    <div class="card p1">
+      <h3>Jesús · Jugador 1</h3>
+      <ul>
+        <li>Moverse: <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></li>
+        <li>Grito de jefe: <kbd>F</kbd> o <kbd>Espacio</kbd></li>
+        <li>En celular: mantén el dedo en la pantalla para caminar</li>
+      </ul>
+    </div>
+    <div class="card p2">
+      <h3>Jugador 2</h3>
+      <ul>
+        <li>Moverse: <kbd>↑</kbd> <kbd>←</kbd> <kbd>↓</kbd> <kbd>→</kbd></li>
+        <li>Grito de jefe: <kbd>Enter</kbd> o <kbd>L</kbd></li>
+      </ul>
+    </div>
+    <div class="card reglas">
+      <h3>Cómo se gana</h3>
+      <ul>
+        <li>Toca a un empleado de flojo: <b>+10</b></li>
+        <li>Levanta la red en el NOC de poderNET: <b>+25</b></li>
+        <li>El grito despierta a todos cerca y aturde al otro jefe (+10 c/u)</li>
+        <li>El café te hace correr más rápido</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const W = 960, H = 600, DURACION = 120;
+  const cv = document.getElementById('juego');
+  const ctx = cv.getContext('2d');
+  const overlay = document.getElementById('overlay');
+  const ovTitulo = document.getElementById('ovTitulo');
+  const ovTexto = document.getElementById('ovTexto');
+  const gritoTouch = document.getElementById('gritoTouch');
+  const esTouch = matchMedia('(pointer: coarse)').matches;
+
+  function ajustar() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  ajustar();
+  addEventListener('resize', ajustar);
+
+  // ---------- Audio ----------
+  let ac = null;
+  function beep(f = 440, d = 0.08, tipo = 'square', vol = 0.05) {
+    if (!ac) return;
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = tipo; o.frequency.value = f;
+    g.gain.setValueAtTime(vol, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + d);
+    o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + d);
+  }
+
+  // ---------- Mapa ----------
+  const PARED = 122;
+  const obstaculos = [];
+  const escritorios = [];
+  const colsX = [200, 380, 560, 740], filasY = [215, 395];
+  const nombres = ['Debi', 'Toño', 'Diana', 'Luis', 'Felipe', 'Brenda', 'Suemmy', 'El Nuevo'];
+  const flojeras = [
+    { ico: '📱', txt: 'viendo TikTok' }, { ico: '💤', txt: 'dormido' },
+    { ico: '⚽', txt: 'viendo el fut' }, { ico: '🌮', txt: 'pidiendo tacos' },
+    { ico: '🎮', txt: 'jugando' }, { ico: '💬', txt: 'chismeando' },
+    { ico: '☎️', txt: 'ignorando tickets' }, { ico: '📡', txt: 'antena sin revisar' },
+    { ico: '😤', txt: 'cliente en espera' }
+  ];
+  const ropa = ['#7c5cff', '#e07a2f', '#2fa36b', '#c94f7c', '#4f7fc9', '#b8a12b', '#6d8f8a', '#d9534f'];
+  let k = 0;
+  for (const y of filasY) for (const x of colsX) {
+    const r = { x: x - 60, y: y - 24, w: 120, h: 48 };
+    obstaculos.push(r);
+    escritorios.push({ x, y, rect: r, emp: { nombre: nombres[k], color: ropa[k], x, y: y + 48, flojo: null, prox: 2 + Math.random() * 6 } });
+    k++;
+  }
+  const rack = { x: 896, y: 250, w: 44, h: 110 };
+  const cafetera = { x: 22, y: 136, w: 56, h: 44 };
+  obstaculos.push(rack, cafetera);
+  const zonaRack = { x: 872, y: 305 };
+
+  // ---------- Estado ----------
+  let estado = 'menu', modoCpu = false, tiempo = DURACION, productividad = 100;
+  let internet = true, proxCaida = 18, cafes = [], proxCafe = 8, textos = [], ondas = [], t = 0;
+  const teclas = new Set();
+  let puntero = null;
+
+  function nuevoJefe(nombre, color, x, y, corbata) {
+    return { nombre, color, corbata, x, y, r: 16, pts: 0, cool: 0, aturdido: 0, boost: 0, dir: 0, paso: 0,
+             cpu: { atorado: 0, desvio: 0, dx: 0, dy: 0, ux: x, uy: y } };
+  }
+  let p1, p2;
+
+  const leerNombre = (id, def) => (document.getElementById(id).value.trim() || def).toUpperCase();
+  function reiniciar() {
+    p1 = nuevoJefe(leerNombre('n1', 'Jesús'), '#ff5a4e', 110, 300, '#f2b632');
+    p2 = nuevoJefe(leerNombre('n2', modoCpu ? 'CPU' : 'El Retador'), '#3ab0ff', 840, 470, '#e4007c');
+    tiempo = DURACION; productividad = 100; internet = true; proxCaida = 15 + Math.random() * 8;
+    cafes = []; proxCafe = 7; textos = []; ondas = [];
+    for (const e of escritorios) { e.emp.flojo = null; e.emp.prox = 2 + Math.random() * 6; }
+  }
+  reiniciar();
+
+  // ---------- Entrada ----------
+  addEventListener('keydown', e => {
+    const c = e.code;
+    if (estado === 'jugando' && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Enter'].includes(c)) e.preventDefault();
+    if (e.repeat) { teclas.add(c); return; }
+    teclas.add(c);
+    if (estado !== 'jugando') return;
+    if (e.target instanceof HTMLInputElement) return;
+    if (c === 'KeyF' || c === 'Space') gritar(p1, p2);
+    if (!modoCpu && (c === 'Enter' || c === 'KeyL' || c === 'NumpadEnter' || c === 'Numpad0')) gritar(p2, p1);
+  });
+  addEventListener('keyup', e => teclas.delete(e.code));
+  addEventListener('blur', () => teclas.clear());
+
+  function aLogico(ev) {
+    const b = cv.getBoundingClientRect();
+    return { x: (ev.clientX - b.left) / b.width * W, y: (ev.clientY - b.top) / b.height * H };
+  }
+  cv.addEventListener('pointerdown', ev => { if (estado === 'jugando') { puntero = aLogico(ev); cv.setPointerCapture(ev.pointerId); } });
+  cv.addEventListener('pointermove', ev => { if (puntero) puntero = aLogico(ev); });
+  const soltar = () => { puntero = null; };
+  cv.addEventListener('pointerup', soltar); cv.addEventListener('pointercancel', soltar);
+  gritoTouch.addEventListener('click', () => { if (estado === 'jugando') gritar(p1, p2); });
+
+  function iniciar(cpu) {
+    if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
+    modoCpu = cpu; reiniciar(); estado = 'jugando'; overlay.hidden = true;
+    gritoTouch.hidden = !esTouch;
+    beep(523, .1); setTimeout(() => beep(659, .1), 110); setTimeout(() => beep(784, .18), 220);
+  }
+  document.getElementById('btn2p').addEventListener('click', () => iniciar(false));
+  document.getElementById('btnCpu').addEventListener('click', () => iniciar(true));
+
+  // ---------- Lógica ----------
+  function choca(x, y, r) {
+    if (x - r < 14 || x + r > W - 14 || y - r < PARED + 4 || y + r > H - 12) return true;
+    for (const o of obstaculos) {
+      const cx = Math.max(o.x, Math.min(x, o.x + o.w)), cy = Math.max(o.y, Math.min(y, o.y + o.h));
+      if ((x - cx) ** 2 + (y - cy) ** 2 < r * r) return true;
+    }
+    return false;
+  }
+
+  function mover(j, dx, dy, dt, factor = 1) {
+    const len = Math.hypot(dx, dy);
+    if (j.aturdido > 0 || len < 0.01) return false;
+    dx /= len; dy /= len;
+    const v = (j.boost > 0 ? 300 : 190) * factor * dt;
+    const nx = j.x + dx * v, ny = j.y + dy * v;
+    if (!choca(nx, j.y, j.r)) j.x = nx;
+    if (!choca(j.x, ny, j.r)) j.y = ny;
+    j.dir = Math.atan2(dy, dx); j.paso += dt * 12;
+    return true;
+  }
+
+  function sumar(j, n, x, y, txt) {
+    j.pts += n;
+    textos.push({ x, y, txt: txt || `+${n}`, color: j.color, vida: 1.1 });
+  }
+
+  function despertar(j, emp) {
+    emp.flojo = null;
+    emp.prox = (3 + Math.random() * 6) * (1 - 0.45 * (1 - tiempo / DURACION)) * (internet ? 1 : 0.55);
+    sumar(j, 10, emp.x, emp.y - 30);
+    productividad = Math.min(100, productividad + 3);
+    beep(880, .07);
+  }
+
+  function gritar(j, rival) {
+    if (j.cool > 0 || j.aturdido > 0) return;
+    j.cool = 6;
+    ondas.push({ x: j.x, y: j.y, r: 10, color: j.color, vida: 0.6 });
+    textos.push({ x: j.x, y: j.y - 34, txt: '¡A TRABAJAR!', color: '#f2b632', vida: 1.2, grande: true });
+    beep(180, .25, 'sawtooth', .06);
+    for (const e of escritorios) if (e.emp.flojo && Math.hypot(e.emp.x - j.x, e.emp.y - j.y) < 150) despertar(j, e.emp);
+    if (Math.hypot(rival.x - j.x, rival.y - j.y) < 130 && rival.aturdido <= 0) {
+      rival.aturdido = 1.4;
+      textos.push({ x: rival.x, y: rival.y - 30, txt: '¡ZAS!', color: rival.color, vida: 1 });
+    }
+  }
+
+  function cpu(j, rival, dt) {
+    const c = j.cpu;
+    const objetivos = [];
+    for (const e of escritorios) if (e.emp.flojo) objetivos.push({ x: e.emp.x, y: e.emp.y + 6, peso: 1 });
+    if (!internet) objetivos.push({ x: zonaRack.x - 10, y: zonaRack.y, peso: 0.6 });
+    for (const cf of cafes) objetivos.push({ x: cf.x, y: cf.y, peso: 1.3 });
+    let mejor = null, md = Infinity;
+    for (const o of objetivos) {
+      const d = Math.hypot(o.x - j.x, o.y - j.y) * o.peso;
+      if (d < md) { md = d; mejor = o; }
+    }
+    let cerca = 0;
+    for (const e of escritorios) if (e.emp.flojo && Math.hypot(e.emp.x - j.x, e.emp.y - j.y) < 150) cerca++;
+    if (j.cool <= 0 && (cerca >= 2 || (Math.hypot(rival.x - j.x, rival.y - j.y) < 110 && Math.random() < 0.02))) gritar(j, rival);
+
+    if (c.desvio > 0) { c.desvio -= dt; mover(j, c.dx, c.dy, dt, .9); return; }
+    if (!mejor) mejor = { x: 480, y: 305 };
+    mover(j, mejor.x - j.x, mejor.y - j.y, dt, .9);
+    c.atorado += dt;
+    if (c.atorado > 0.35) {
+      if (Math.hypot(j.x - c.ux, j.y - c.uy) < 8 && Math.hypot(mejor.x - j.x, mejor.y - j.y) > 30) {
+        const a = Math.random() * Math.PI * 2; c.dx = Math.cos(a); c.dy = Math.sin(a); c.desvio = .45;
+      }
+      c.atorado = 0; c.ux = j.x; c.uy = j.y;
+    }
+  }
+
+  function actualizar(dt) {
+    t += dt;
+    for (const tx of textos) { tx.vida -= dt; tx.y -= 30 * dt; }
+    textos = textos.filter(x => x.vida > 0);
+    for (const o of ondas) { o.vida -= dt; o.r += 260 * dt; }
+    ondas = ondas.filter(o => o.vida > 0);
+    if (estado !== 'jugando') return;
+
+    tiempo -= dt;
+    for (const j of [p1, p2]) { j.cool = Math.max(0, j.cool - dt); j.aturdido = Math.max(0, j.aturdido - dt); j.boost = Math.max(0, j.boost - dt); }
+
+    // Jugador 1
+    let dx = (teclas.has('KeyD') ? 1 : 0) - (teclas.has('KeyA') ? 1 : 0);
+    let dy = (teclas.has('KeyS') ? 1 : 0) - (teclas.has('KeyW') ? 1 : 0);
+    if (puntero && !dx && !dy) {
+      const ddx = puntero.x - p1.x, ddy = puntero.y - p1.y;
+      if (Math.hypot(ddx, ddy) > 6) { dx = ddx; dy = ddy; }
+    }
+    mover(p1, dx, dy, dt);
+
+    // Jugador 2
+    if (modoCpu) cpu(p2, p1, dt);
+    else mover(p2,
+      (teclas.has('ArrowRight') ? 1 : 0) - (teclas.has('ArrowLeft') ? 1 : 0),
+      (teclas.has('ArrowDown') ? 1 : 0) - (teclas.has('ArrowUp') ? 1 : 0), dt);
+
+    // Empleados
+    let flojos = 0;
+    for (const e of escritorios) {
+      const emp = e.emp;
+      if (!emp.flojo) {
+        emp.prox -= dt;
+        if (emp.prox <= 0) { emp.flojo = flojeras[Math.floor(Math.random() * flojeras.length)]; emp.desde = t; }
+      } else {
+        flojos++;
+        for (const j of [p1, p2]) if (j.aturdido <= 0 && Math.hypot(j.x - emp.x, j.y - emp.y) < 40) { despertar(j, emp); break; }
+      }
+    }
+
+    // Internet
+    if (internet) {
+      proxCaida -= dt;
+      if (proxCaida <= 0) {
+        internet = false; beep(220, .3, 'square', .06); setTimeout(() => beep(165, .4, 'square', .06), 200);
+        textos.push({ x: 740, y: 200, txt: '¡SE CAYÓ LA RED DE poderNET!', color: '#ff3b3b', vida: 1.8, grande: true });
+      }
+    } else {
+      for (const j of [p1, p2]) if (j.aturdido <= 0 && Math.hypot(j.x - zonaRack.x, j.y - zonaRack.y) < 46) {
+        internet = true; proxCaida = 14 + Math.random() * 10;
+        sumar(j, 25, zonaRack.x - 30, zonaRack.y - 70, '+25 RED ARRIBA');
+        productividad = Math.min(100, productividad + 8);
+        beep(660, .08); setTimeout(() => beep(990, .12), 90);
+        break;
+      }
+    }
+
+    // Café
+    proxCafe -= dt;
+    if (proxCafe <= 0 && cafes.length < 2) {
+      for (let i = 0; i < 30; i++) {
+        const x = 40 + Math.random() * 820, y = PARED + 30 + Math.random() * (H - PARED - 60);
+        if (!choca(x, y, 18)) { cafes.push({ x, y }); break; }
+      }
+      proxCafe = 9 + Math.random() * 6;
+    }
+    for (const j of [p1, p2]) cafes = cafes.filter(cf => {
+      if (Math.hypot(cf.x - j.x, cf.y - j.y) < 28) {
+        j.boost = 5; textos.push({ x: cf.x, y: cf.y - 20, txt: '¡CAFEÍNA!', color: '#c98b4a', vida: 1 }); beep(1200, .05, 'triangle'); return false;
+      }
+      return true;
+    });
+
+    // Productividad
+    const drenaje = flojos * 1.1 + (internet ? 0 : 2.4);
+    productividad += (drenaje > 0 ? -drenaje : 1.2) * dt;
+    productividad = Math.max(0, Math.min(100, productividad));
+
+    if (productividad <= 0) terminar(true);
+    else if (tiempo <= 0) terminar(false);
+  }
+
+  function terminar(despedidos) {
+    estado = 'fin'; tiempo = Math.max(0, tiempo); gritoTouch.hidden = true; puntero = null;
+    const g = p1.pts === p2.pts ? null : (p1.pts > p2.pts ? p1 : p2);
+    const cap = s => s.charAt(0) + s.slice(1).toLowerCase();
+    const n1 = cap(p1.nombre), n2 = cap(p2.nombre);
+    if (despedidos) {
+      ovTitulo.textContent = 'Llegó el dueño de poderNET y los corrió a los dos';
+      ovTexto.textContent = `La productividad llegó a cero. ${n1} ${p1.pts} · ${n2} ${p2.pts}. Nadie es el jefe más cabrón hoy.`;
+    } else if (!g) {
+      ovTitulo.textContent = 'Empate de jefes';
+      ovTexto.textContent = `${p1.pts} a ${p2.pts}. La oficina de poderNET sigue sin dueño. Échense la revancha.`;
+    } else {
+      ovTitulo.textContent = `${g === p1 ? n1 : n2}, el jefe más cabrón de poderNET`;
+      ovTexto.textContent = `${n1} ${p1.pts} · ${n2} ${p2.pts}. Productividad final: ${Math.round(productividad)}%.`;
+    }
+    document.getElementById('btn2p').textContent = 'Revancha 2 jugadores';
+    document.getElementById('btnCpu').textContent = 'Revancha contra CPU';
+    overlay.hidden = false;
+    beep(392, .15); setTimeout(() => beep(523, .15), 160); setTimeout(() => beep(659, .3), 320);
+  }
+
+  // ---------- Dibujo ----------
+  function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+
+  // Logo poderNET: ondas de señal + palabra
+  function logo(x, y, s = 1, alfa = 1) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.globalAlpha = alfa;
+    ctx.strokeStyle = '#f2b632'; ctx.lineCap = 'round'; ctx.lineWidth = 4;
+    [[10, 1], [18, .7], [26, .45]].forEach(([r, a]) => { ctx.globalAlpha = alfa * a; ctx.beginPath(); ctx.arc(0, 0, r, -Math.PI / 2, 0); ctx.stroke(); });
+    ctx.globalAlpha = alfa; ctx.fillStyle = '#f2b632'; ctx.beginPath(); ctx.arc(2, -2, 3.5, 0, 7); ctx.fill();
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    ctx.font = '600 28px Rubik, sans-serif'; ctx.fillStyle = '#ffffff'; ctx.fillText('poder', 32, 0);
+    const w = ctx.measureText('poder').width;
+    ctx.font = '800 28px Rubik, sans-serif'; ctx.fillStyle = '#e4007c'; ctx.fillText('NET', 32 + w, 0);
+    ctx.restore();
+  }
+
+  function dibujarVentana() {
+    // cielo
+    const g = ctx.createLinearGradient(0, 0, 0, PARED);
+    g.addColorStop(0, '#79b8e8'); g.addColorStop(1, '#cfe6f2');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, PARED);
+    // nubes
+    ctx.fillStyle = 'rgba(255,255,255,.85)';
+    for (let i = 0; i < 4; i++) {
+      const x = ((t * 8 + i * 280) % (W + 200)) - 100, y = 22 + (i % 2) * 18;
+      ctx.beginPath(); ctx.ellipse(x, y, 34, 10, 0, 0, 7); ctx.ellipse(x + 22, y - 6, 22, 10, 0, 0, 7); ctx.fill();
+    }
+    // edificios de Reforma al fondo
+    ctx.fillStyle = '#8fa7b8';
+    [[30,60,40],[90,40,30],[700,30,36],[760,50,28],[820,22,44],[880,45,30]].forEach(([x,h,w]) => ctx.fillRect(x, PARED - 30 - h, w, h + 30));
+    ctx.fillStyle = '#7d96a8'; ctx.fillRect(640, PARED - 92, 34, 92);
+    // cerro del Chapulín
+    ctx.fillStyle = '#3f7d3a';
+    ctx.beginPath(); ctx.moveTo(180, PARED); ctx.quadraticCurveTo(470, 30, 760, PARED); ctx.fill();
+    // castillo
+    const cx = 470, base = 66;
+    ctx.fillStyle = '#e9dcc0'; ctx.fillRect(cx - 120, base, 240, 22);
+    ctx.fillStyle = '#d8c7a3'; ctx.fillRect(cx - 120, base + 18, 240, 6);
+    ctx.fillStyle = '#e9dcc0'; ctx.fillRect(cx + 40, base - 26, 44, 30); // Caballero Alto
+    ctx.fillRect(cx - 100, base - 10, 50, 12);
+    ctx.fillStyle = '#b5a27c';
+    for (let i = 0; i < 12; i++) ctx.fillRect(cx - 112 + i * 20, base + 6, 8, 8);
+    for (let i = 0; i < 3; i++) ctx.fillRect(cx + 46 + i * 13, base - 18, 6, 9);
+    // asta y bandera
+    ctx.fillStyle = '#555'; ctx.fillRect(cx + 61, base - 52, 2, 28);
+    const ond = Math.sin(t * 4) * 1.5;
+    ctx.fillStyle = '#006847'; ctx.fillRect(cx + 63, base - 52 + ond * .2, 7, 12);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(cx + 70, base - 52, 7, 12);
+    ctx.fillStyle = '#ce1126'; ctx.fillRect(cx + 77, base - 52 - ond * .2, 7, 12);
+    // árboles del bosque
+    for (let i = 0; i < 22; i++) {
+      const x = i * 46 + (i % 3) * 7, y = PARED - 6 - (i % 4) * 4;
+      ctx.fillStyle = i % 2 ? '#2e6b33' : '#24592b';
+      ctx.beginPath(); ctx.arc(x, y, 18 + (i % 3) * 3, 0, 7); ctx.fill();
+    }
+    // marco de ventanal
+    // vinil del logo en el vidrio
+    logo(40, 46, .75, .55);
+    logo(W - 160, 46, .75, .55);
+    ctx.fillStyle = '#3a4a52';
+    for (let x = 0; x <= W; x += 160) ctx.fillRect(x - 3, 0, 6, PARED);
+    ctx.fillRect(0, 0, W, 6); ctx.fillRect(0, PARED - 8, W, 10);
+    ctx.fillStyle = 'rgba(255,255,255,.12)';
+    for (let x = 0; x < W; x += 160) { ctx.beginPath(); ctx.moveTo(x + 20, 6); ctx.lineTo(x + 60, 6); ctx.lineTo(x + 10, PARED - 8); ctx.lineTo(x - 30 + 20, PARED - 8); ctx.fill(); }
+  }
+
+  function dibujarPiso() {
+    for (let y = PARED; y < H; y += 40) for (let x = 0; x < W; x += 40) {
+      ctx.fillStyle = ((x + y) / 40) % 2 ? '#56606a' : '#4e5861';
+      ctx.fillRect(x, y, 40, 40);
+    }
+    ctx.fillStyle = '#2b3238'; ctx.fillRect(0, PARED, 12, H); ctx.fillRect(W - 12, PARED, 12, H); ctx.fillRect(0, H - 10, W, 10);
+    // tapete de jefe
+    ctx.fillStyle = 'rgba(13,26,22,.55)'; rr(380, 282, 200, 50, 8); ctx.fill();
+    ctx.strokeStyle = 'rgba(228,0,124,.6)'; ctx.lineWidth = 2; ctx.stroke();
+    logo(400, 314, .9, .8);
+    ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.font = '700 8px Rubik, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('OFICINA CHAPULTEPEC', 480, 327);
+  }
+
+  function dibujarDecor() {
+    // cafetera
+    ctx.fillStyle = '#222'; rr(cafetera.x, cafetera.y, cafetera.w, cafetera.h, 4); ctx.fill();
+    ctx.fillStyle = '#c0392b'; ctx.fillRect(cafetera.x + 8, cafetera.y + 8, 14, 8);
+    ctx.fillStyle = '#ddd'; ctx.font = '700 9px Rubik, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('CAFÉ', cafetera.x + 28, cafetera.y + 36);
+    // plantas
+    for (const [x, y] of [[40, 560], [920, 560], [920, 160]]) {
+      ctx.fillStyle = '#8b5a2b'; ctx.fillRect(x - 10, y, 20, 18);
+      ctx.fillStyle = '#2f8f46'; ctx.beginPath(); ctx.arc(x, y - 4, 16, 0, 7); ctx.fill();
+    }
+    // rack
+    const parp = !internet && Math.floor(t * 4) % 2;
+    ctx.fillStyle = '#1b1f23'; rr(rack.x, rack.y, rack.w, rack.h, 3); ctx.fill();
+    for (let i = 0; i < 6; i++) {
+      ctx.fillStyle = '#2d343b'; ctx.fillRect(rack.x + 5, rack.y + 8 + i * 16, rack.w - 10, 11);
+      for (let l = 0; l < 3; l++) {
+        ctx.fillStyle = internet ? (Math.random() < .3 ? '#2bff88' : '#118a48') : (parp ? '#ff2b2b' : '#5a1111');
+        ctx.fillRect(rack.x + 9 + l * 8, rack.y + 12 + i * 16, 4, 3);
+      }
+    }
+    ctx.fillStyle = internet ? '#2bff88' : '#ff3b3b';
+    ctx.font = '700 10px Rubik, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(internet ? 'NOC OK' : 'SIN RED', rack.x + rack.w / 2, rack.y - 6);
+    ctx.fillStyle = '#e4007c'; ctx.font = '800 9px Rubik, sans-serif';
+    ctx.fillText('poderNET', rack.x + rack.w / 2, rack.y + rack.h - 3);
+    if (!internet) {
+      ctx.strokeStyle = parp ? '#ff3b3b' : 'rgba(255,59,59,.3)'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(zonaRack.x, zonaRack.y, 46, 0, 7); ctx.stroke();
+    }
+  }
+
+  function dibujarEscritorio(e) {
+    const r = e.rect, emp = e.emp;
+    // silla y empleado
+    ctx.fillStyle = '#23292e'; ctx.beginPath(); ctx.arc(emp.x, emp.y + 6, 15, 0, 7); ctx.fill();
+    const bob = emp.flojo && emp.flojo.ico === '💤' ? Math.sin(t * 2) * 1.5 : 0;
+    ctx.fillStyle = emp.color; ctx.beginPath(); ctx.ellipse(emp.x, emp.y + 4 + bob, 13, 10, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#e0ac7e'; ctx.beginPath(); ctx.arc(emp.x, emp.y - 4 + bob, 8, 0, 7); ctx.fill();
+    ctx.fillStyle = '#2a1d14'; ctx.beginPath(); ctx.arc(emp.x, emp.y - 7 + bob, 7, Math.PI, 0); ctx.fill();
+    // escritorio
+    ctx.fillStyle = '#8a6a4a'; rr(r.x, r.y, r.w, r.h, 4); ctx.fill();
+    ctx.fillStyle = '#9d7b58'; ctx.fillRect(r.x + 4, r.y + 4, r.w - 8, 6);
+    // monitor
+    ctx.fillStyle = '#e4007c'; ctx.font = '800 7px Rubik, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText('poderNET', r.x + r.w - 4, r.y + r.h - 4);
+    ctx.fillStyle = '#1a1d20'; ctx.fillRect(e.x - 22, r.y + 6, 44, 26);
+    let pantalla = '#2f7fd6';
+    if (emp.flojo) pantalla = ['#ff2d6f', '#7a3cff', '#18c964'][Math.floor(t * 3) % 3];
+    else if (!internet) pantalla = '#555';
+    ctx.fillStyle = pantalla; ctx.fillRect(e.x - 19, r.y + 9, 38, 20);
+    if (!emp.flojo && internet) { ctx.fillStyle = 'rgba(255,255,255,.7)'; for (let i = 0; i < 3; i++) ctx.fillRect(e.x - 15, r.y + 12 + i * 5, 18 + ((i * 7 + Math.floor(t * 2)) % 12), 2); }
+    ctx.fillStyle = '#ddd'; ctx.fillRect(e.x - 14, r.y + 35, 28, 6);
+    // nombre
+    ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = '600 10px Rubik, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(emp.nombre, emp.x, emp.y + 30);
+    // burbuja de flojera
+    if (emp.flojo) {
+      const by = emp.y - 34 + Math.sin(t * 5 + emp.x) * 2;
+      ctx.font = '700 10px Rubik, sans-serif';
+      const bw = ctx.measureText(emp.flojo.txt).width + 34;
+      ctx.fillStyle = '#fff'; rr(emp.x - bw / 2, by - 14, bw, 24, 10); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(emp.x - 5, by + 10); ctx.lineTo(emp.x + 5, by + 10); ctx.lineTo(emp.x, by + 17); ctx.fill();
+      ctx.font = '14px sans-serif'; ctx.textAlign = 'left'; ctx.fillText(emp.flojo.ico, emp.x - bw / 2 + 4, by + 4);
+      ctx.fillStyle = '#c0004f'; ctx.font = '700 10px Rubik, sans-serif'; ctx.fillText(emp.flojo.txt, emp.x - bw / 2 + 26, by + 3);
+    }
+  }
+
+  function dibujarJefe(j) {
+    const sw = Math.sin(j.paso) * 3;
+    ctx.save(); ctx.translate(j.x, j.y);
+    // sombra
+    ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(0, 14, 16, 6, 0, 0, 7); ctx.fill();
+    if (j.boost > 0) { ctx.strokeStyle = 'rgba(201,139,74,.8)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 24 + Math.sin(t * 20) * 2, 0, 7); ctx.stroke(); }
+    // piernas
+    ctx.fillStyle = '#1d2226'; ctx.fillRect(-8, 6 + sw, 6, 10); ctx.fillRect(2, 6 - sw, 6, 10);
+    // saco
+    ctx.fillStyle = j.color; rr(-15, -8, 30, 20, 7); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(-5, -8); ctx.lineTo(5, -8); ctx.lineTo(0, 4); ctx.fill();
+    ctx.fillStyle = j.corbata; ctx.beginPath(); ctx.moveTo(-2, -7); ctx.lineTo(2, -7); ctx.lineTo(3, 6); ctx.lineTo(0, 9); ctx.lineTo(-3, 6); ctx.fill();
+    // cabeza
+    ctx.fillStyle = '#d89c6a'; ctx.beginPath(); ctx.arc(0, -17, 10, 0, 7); ctx.fill();
+    ctx.fillStyle = '#1a120c'; ctx.beginPath(); ctx.arc(0, -20, 10, Math.PI * 1.05, Math.PI * 1.95); ctx.fill();
+    // lentes de jefe
+    ctx.fillStyle = '#111'; ctx.fillRect(-8, -18, 7, 4); ctx.fillRect(1, -18, 7, 4); ctx.fillRect(-1, -17, 2, 1);
+    ctx.restore();
+    // aturdido
+    if (j.aturdido > 0) {
+      ctx.font = '14px sans-serif'; ctx.textAlign = 'center';
+      for (let i = 0; i < 3; i++) { const a = t * 6 + i * 2.1; ctx.fillText('⭐', j.x + Math.cos(a) * 16, j.y - 34 + Math.sin(a) * 5); }
+    }
+    // etiqueta
+    ctx.font = '400 11px Bungee, Impact, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(0,0,0,.55)'; const w = ctx.measureText(j.nombre).width + 10;
+    rr(j.x - w / 2, j.y - 50, w, 15, 3); ctx.fill();
+    ctx.fillStyle = j.color; ctx.fillText(j.nombre, j.x, j.y - 39);
+  }
+
+  function dibujarHUD() {
+    // marcadores
+    const caja = (x, j, alinear) => {
+      ctx.fillStyle = 'rgba(13,26,22,.85)'; rr(x, 8, 200, 52, 6); ctx.fill();
+      ctx.strokeStyle = j.color; ctx.lineWidth = 2; ctx.stroke();
+      ctx.textAlign = alinear; const tx = alinear === 'left' ? x + 12 : x + 188;
+      ctx.fillStyle = j.color; ctx.font = '400 13px Bungee, Impact, sans-serif'; ctx.fillText(j.nombre + (j === p2 && modoCpu ? ' (CPU)' : ''), tx, 28);
+      ctx.fillStyle = '#eef3ee'; ctx.font = '400 20px Bungee, Impact, sans-serif'; ctx.fillText(String(j.pts).padStart(4, '0'), tx, 52);
+      // grito
+      const gx = alinear === 'left' ? x + 120 : x + 12;
+      ctx.fillStyle = '#2a4637'; ctx.fillRect(gx, 44, 68, 7);
+      ctx.fillStyle = j.cool > 0 ? '#9fb5a8' : '#f2b632'; ctx.fillRect(gx, 44, 68 * (1 - j.cool / 6), 7);
+      ctx.font = '700 9px Rubik, sans-serif'; ctx.textAlign = 'left'; ctx.fillStyle = '#9fb5a8';
+      ctx.fillText(j.cool > 0 ? 'GRITO…' : 'GRITO LISTO', gx, 39);
+    };
+    caja(12, p1, 'left'); caja(W - 212, p2, 'right');
+    // tiempo y productividad
+    ctx.fillStyle = 'rgba(13,26,22,.85)'; rr(W / 2 - 130, 8, 260, 52, 6); ctx.fill();
+    const s = Math.max(0, Math.ceil(tiempo));
+    ctx.textAlign = 'center'; ctx.font = '400 20px Bungee, Impact, sans-serif';
+    ctx.fillStyle = s <= 10 && estado === 'jugando' && Math.floor(t * 4) % 2 ? '#ff3b3b' : '#eef3ee';
+    ctx.fillText(`${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`, W / 2, 32);
+    ctx.fillStyle = '#2a4637'; ctx.fillRect(W / 2 - 115, 41, 230, 10);
+    ctx.fillStyle = productividad > 50 ? '#2fbf71' : productividad > 25 ? '#f2b632' : '#ff3b3b';
+    ctx.fillRect(W / 2 - 115, 41, 230 * productividad / 100, 10);
+    ctx.fillStyle = '#eef3ee'; ctx.font = '700 8px Rubik, sans-serif'; ctx.fillText(`PRODUCTIVIDAD ${Math.round(productividad)}%`, W / 2, 49.5);
+  }
+
+  function dibujar() {
+    ctx.clearRect(0, 0, W, H);
+    dibujarVentana();
+    dibujarPiso();
+    dibujarDecor();
+    for (const cf of cafes) {
+      const b = Math.sin(t * 5) * 2;
+      ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.beginPath(); ctx.ellipse(cf.x, cf.y + 10, 10, 4, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff'; rr(cf.x - 8, cf.y - 10 + b, 16, 18, 3); ctx.fill();
+      ctx.fillStyle = '#6b3e1f'; ctx.fillRect(cf.x - 6, cf.y - 8 + b, 12, 4);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cf.x + 9, cf.y - 1 + b, 4, -1.4, 1.4); ctx.stroke();
+    }
+    // ordenar por profundidad
+    const cosas = escritorios.map(e => ({ y: e.emp.y, f: () => dibujarEscritorio(e) }));
+    cosas.push({ y: p1.y, f: () => dibujarJefe(p1) }, { y: p2.y, f: () => dibujarJefe(p2) });
+    cosas.sort((a, b) => a.y - b.y).forEach(c => c.f());
+    for (const o of ondas) {
+      ctx.strokeStyle = o.color; ctx.globalAlpha = Math.max(0, o.vida / .6); ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, 7); ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    for (const tx of textos) {
+      ctx.globalAlpha = Math.min(1, tx.vida * 2); ctx.textAlign = 'center';
+      ctx.font = tx.grande ? '400 18px Bungee, Impact, sans-serif' : '400 14px Bungee, Impact, sans-serif';
+      ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.strokeText(tx.txt, tx.x, tx.y);
+      ctx.fillStyle = tx.color; ctx.fillText(tx.txt, tx.x, tx.y); ctx.globalAlpha = 1;
+    }
+    dibujarHUD();
+  }
+
+  let ultimo = performance.now();
+  function loop(ahora) {
+    const dt = Math.min(0.05, (ahora - ultimo) / 1000); ultimo = ahora;
+    actualizar(dt); dibujar();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
