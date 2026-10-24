@@ -115,7 +115,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     </div>
     <div class="overlay" id="overlay">
       <h2 id="ovTitulo">¿Quién manda en poderNET?</h2>
-      <p id="ovTexto">2 minutos en la oficina de San Luis. El que junte más puntos se queda con la oficina. Córrele al jefe Cerón y saca a Deysimar con un grito. Si la productividad llega a cero, Cerón los corre a los dos.</p>
+      <p id="ovTexto">2 minutos en la oficina de San Luis. El que junte más puntos se queda con la oficina. Córrele a Cerón, el CEO, y sácate de encima a Deysimar, la gerente, con un grito. Si la productividad llega a cero, Cerón los corre a los dos.</p>
       <div class="nombres">
         <label for="n1">JUGADOR 1<input id="n1" maxlength="12" value="Jesús"></label>
         <label for="n2">JUGADOR 2<input id="n2" maxlength="12" value="El Retador"></label>
@@ -156,8 +156,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     <div class="card enemigos">
       <h3>Cuidado con</h3>
       <ul>
-        <li><b>Jefe Cerón:</b> te persigue. Si te alcanza te regaña: <b>−30</b> y te congela. No le grites (−10)</li>
-        <li><b>Deysimar:</b> pone a platicar a la banda. Si te alcanza: <b>−15</b>. Grítale y se va: <b>+15</b></li>
+        <li><b>Cerón, el CEO:</b> te persigue. Si te alcanza te regaña: <b>−30</b> y te congela. No le grites (−10)</li>
+        <li><b>Deysimar, la gerente</b> (esposa del CEO): mete a la banda a sus juntas. Si te alcanza te pide un reporte: <b>−15</b>. Grítale y se va a otra junta: <b>+15</b></li>
       </ul>
     </div>
   </section>
@@ -275,7 +275,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const piso = new THREE.Mesh(new THREE.PlaneGeometry(24, 12), new THREE.MeshPhongMaterial({ map: t, shininess: 110, specular: 0x666666 }));
     piso.rotation.x = -Math.PI / 2; piso.receiveShadow = true; scene.add(piso);
     const tapete = new THREE.Mesh(new THREE.PlaneGeometry(3, 2.4), logoMat);
-    tapete.rotation.x = -Math.PI / 2; tapete.position.set(-1, 0.015, 2.2); scene.add(tapete);
+    tapete.rotation.x = -Math.PI / 2; tapete.position.set(-1.6, 0.015, 4.4); scene.add(tapete);
     const tapeteNegro = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.2), mat('#2c3035'));
     tapeteNegro.rotation.x = -Math.PI / 2; tapeteNegro.position.set(-2.6, 0.012, -4.4); scene.add(tapeteNegro);
   }
@@ -354,25 +354,25 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   // planta de luz (generador)
   {
-    const gen = new THREE.Group(); gen.position.set(5.6, 0, 2.6); scene.add(gen);
+    const gen = new THREE.Group(); gen.position.set(7.6, 0, 3.9); scene.add(gen);
     gen.add(caja(1.3, 0.06, 0.85, '#2a2d30', 0, 0.32, 0));
     gen.add(caja(0.8, 0.45, 0.6, '#3a3d40', -0.1, 0.58, 0));
     gen.add(caja(1.0, 0.36, 0.6, '#c62828', 0, 1.0, 0));
     for (const [x, z] of [[-0.62, -0.4], [0.62, -0.4], [-0.62, 0.4], [0.62, 0.4]]) gen.add(caja(0.05, 1.1, 0.05, cromo, x, 0.75, z));
     for (const z of [-0.47, 0.47]) { const r = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.12, 16), mat('#151515')); r.rotation.x = Math.PI / 2; r.position.set(0.45, 0.2, z); gen.add(r); }
-    addObs(4.85, 6.35, 2.1, 3.1);
+    addObs(6.85, 8.35, 3.4, 4.4);
   }
 
   // escritorios y empleados
-  const nombres = ['Debi', 'Toño', 'Diana', 'Luis', 'Felipe', 'Brenda', 'Suemmy', 'El Nuevo'];
-  const ropa = ['#7c5cff', '#e07a2f', '#2fa36b', '#c94f7c', '#4f7fc9', '#b8a12b', '#9ee6c8', '#d9534f'];
+  const nombres = ['Debi', 'Toño', 'Diana', 'Luis', 'Felipe', 'Brenda', 'Suemmy', 'El Nuevo', 'Isai', 'Eli', 'Gallegos'];
+  const ropa = ['#7c5cff', '#e07a2f', '#2fa36b', '#c94f7c', '#4f7fc9', '#b8a12b', '#9ee6c8', '#d9534f', '#222831', '#3fa7a0', '#8d6e63'];
   const flojeras = [
     { ico: '📱', txt: 'viendo TikTok' }, { ico: '💤', txt: 'dormido' },
     { ico: '⚽', txt: 'viendo el fut' }, { ico: '🌮', txt: 'pidiendo enchiladas' },
     { ico: '🎮', txt: 'jugando' }, { ico: '💬', txt: 'chismeando' },
     { ico: '☎️', txt: 'ignorando tickets' }, { ico: '📡', txt: 'antena sin revisar' },
     { ico: '😤', txt: 'cliente en espera' },
-    { ico: '☕', txt: 'platicando con Deysimar' }
+    { ico: '📋', txt: 'en junta con Deysimar' }
   ];
   const DEYSI = flojeras.length - 1;
   // burbujas (una textura por flojera)
@@ -423,9 +423,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const puestos = [
     [-10.9, -1.6, Math.PI / 2], [-10.9, 1.6, Math.PI / 2], [-10.9, 4.6, Math.PI / 2],
     [-3.2, -2.8, 0], [1.8, -2.8, 0], [6.6, -2.8, 0],
-    [10.9, -0.6, -Math.PI / 2], [10.9, 2.6, -Math.PI / 2]
+    [10.9, -0.6, -Math.PI / 2], [10.9, 2.6, -Math.PI / 2],
+    // fila del centro
+    [-6.0, 1.4, 0], [-1.4, 1.4, 0], [3.0, 1.4, 0]
   ];
   const escritorios = [];
+  // con más gente, cada quien se pone de flojo un poco menos seguido
+  const RITMO = puestos.length / 8;
   puestos.forEach(([cx, cz, giro], k) => {
     const d = new THREE.Group(); d.position.set(cx, 0, cz); d.rotation.y = giro; scene.add(d);
     tramo(d, -1.1, 1.1, -0.6, 0.6, [-1, 1]);
@@ -543,11 +547,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
              nav: { atorado: 0, desvio: 0, dx: 0, dz: 0, ux: 0, uz: 0 } };
   }
   const enemigos = [
-    nuevoEnemigo('ceron', 'JEFE CERÓN',
-      crearJefe('#2b2f3a', '#c0392b', { escala: 1.15, calvo: true, etiqueta: 'JEFE CERÓN', colorEtiqueta: '#ffd23f', oculto: true }),
+    nuevoEnemigo('ceron', 'CERÓN · CEO',
+      crearJefe('#2b2f3a', '#c0392b', { escala: 1.15, calvo: true, etiqueta: 'CERÓN · CEO', colorEtiqueta: '#ffd23f', oculto: true }),
       3.7, 12, [28, 38], [24, 34]),
-    nuevoEnemigo('deysi', 'DEYSIMAR',
-      crearJefe('#b0306a', '#b0306a', { peloLargo: '#3a2016', falda: true, etiqueta: 'DEYSIMAR', colorEtiqueta: '#ff8cc6', oculto: true }),
+    nuevoEnemigo('deysi', 'DEYSIMAR · GERENTE',
+      crearJefe('#b0306a', '#b0306a', { peloLargo: '#3a2016', falda: true, etiqueta: 'DEYSIMAR · GERENTE', colorEtiqueta: '#ff8cc6', oculto: true }),
       2.9, 14, [14, 18], [17, 26])
   ];
   const [ceron, deysi] = enemigos;
@@ -562,7 +566,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const leerNombre = (id, def) => ($(id).value.trim() || def).toUpperCase();
   function reiniciar() {
     p1 = nuevoJefe(leerNombre('n1', 'Jesús'), '#ff5a4e', '#f2b632', -6, 3.6, modelo1);
-    p2 = nuevoJefe(leerNombre('n2', modoCpu ? 'CPU' : 'El Retador'), '#3ab0ff', '#d89a7c', 7.5, 4.6, modelo2);
+    p2 = nuevoJefe(leerNombre('n2', modoCpu ? 'CPU' : 'El Retador'), '#3ab0ff', '#d89a7c', 5.0, 4.6, modelo2);
     p2.dir = Math.PI;
     tiempo = DURACION; productividad = 100; internet = true; proxCaida = 15 + Math.random() * 8;
     for (const cf of cafes) scene.remove(cf.m);
@@ -571,7 +575,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     textos = [];
     for (const o of ondas) scene.remove(o.m);
     ondas = [];
-    for (const e of escritorios) ponerFlojo(e.emp, -1), e.emp.prox = 2 + Math.random() * 6;
+    for (const e of escritorios) ponerFlojo(e.emp, -1), e.emp.prox = (2 + Math.random() * 6) * RITMO;
     for (const e of enemigos) { e.activo = false; e.saliendo = false; e.m.g.visible = false; e.prox = azar(e.primera); }
     $('h1n').textContent = p1.nombre; $('h2n').textContent = p2.nombre + (modoCpu ? ' (CPU)' : '');
   }
@@ -666,7 +670,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   function despertar(j, emp) {
     ponerFlojo(emp, -1);
-    emp.prox = (3 + Math.random() * 6) * (1 - 0.45 * (1 - tiempo / DURACION)) * (internet ? 1 : 0.55);
+    emp.prox = (3 + Math.random() * 6) * RITMO * (1 - 0.45 * (1 - tiempo / DURACION)) * (internet ? 1 : 0.55);
     sumar(j, 10, emp.x, emp.z);
     productividad = Math.min(100, productividad + 3);
     beep(880, .07);
@@ -685,7 +689,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       rival.aturdido = 1.4; flotar(rival.x, 2.9, rival.z, '¡ZAS!', rival.color);
     }
     if (deysi.activo && !deysi.saliendo && Math.hypot(deysi.x - j.x, deysi.z - j.z) < 3.75) {
-      salir(deysi); sumar(j, 15, deysi.x, deysi.z, '+15 ¡BYE DEYSIMAR!');
+      salir(deysi); sumar(j, 15, deysi.x, deysi.z, '+15 ¡DEYSIMAR SE FUE A OTRA JUNTA!');
     }
     if (ceron.activo && !ceron.saliendo && Math.hypot(ceron.x - j.x, ceron.z - j.z) < 3.75) {
       j.pts = Math.max(0, j.pts - 10);
@@ -697,10 +701,10 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     e.activo = true; e.saliendo = false; e.resta = e.dura; e.objetivo = null;
     e.x = -7 + Math.random() * 14; e.z = 6.8; e.dir = Math.PI; e.m.g.visible = true;
     if (e === ceron) {
-      flotar(e.x, 3.6, 5.2, '¡AGUAS! LLEGÓ CERÓN', '#ffd23f', true);
+      flotar(e.x, 3.6, 5.2, '¡AGUAS! LLEGÓ EL CEO', '#ffd23f', true);
       beep(147, .3, 'sawtooth', .07); setTimeout(() => beep(110, .5, 'sawtooth', .07), 280);
     } else {
-      flotar(e.x, 3.4, 5.2, 'DEYSIMAR VINO DE VISITA', '#ff8cc6', true);
+      flotar(e.x, 3.4, 5.2, 'LLEGÓ LA GERENTE', '#ff8cc6', true);
       beep(988, .08, 'triangle'); setTimeout(() => beep(784, .12, 'triangle'), 100);
     }
   }
@@ -729,7 +733,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
         for (const j of [p1, p2]) { const d = Math.hypot(j.x - e.x, j.z - e.z); if (j.regano <= 0 && d < md) { md = d; obj = j; } }
         if (obj) navegar(e, obj.x, obj.z, dt, 1, e.vel, libre);
         for (const j of [p1, p2]) if (j.regano <= 0 && Math.hypot(j.x - e.x, j.z - e.z) < e.r + j.r + 0.05)
-          regaño(j, 30, 2, '¡REGAÑO DE CERÓN! -30', '#ffd23f');
+          regaño(j, 30, 2, '¡REGAÑO DEL CEO! -30', '#ffd23f');
       } else {
         if (!e.objetivo || e.objetivo.flojo) {
           const libres = escritorios.map(d => d.emp).filter(emp => !emp.flojo);
@@ -742,7 +746,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
           }
         } else navegar(e, 0, 0.6, dt, 1, e.vel, libre);
         for (const j of [p1, p2]) if (j.regano <= 0 && Math.hypot(j.x - e.x, j.z - e.z) < e.r + j.r + 0.05)
-          regaño(j, 15, 1, 'DEYSIMAR TE PIDIÓ UN FAVOR -15', '#ff8cc6');
+          regaño(j, 15, 1, 'LA GERENTE TE PIDIÓ UN REPORTE -15', '#ff8cc6');
       }
     }
   }
@@ -853,7 +857,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const cap = s => s.charAt(0) + s.slice(1).toLowerCase();
     const n1 = cap(p1.nombre), n2 = cap(p2.nombre);
     if (despedidos) {
-      $('ovTitulo').textContent = 'El jefe Cerón los corrió a los dos';
+      $('ovTitulo').textContent = 'Cerón, el CEO, los corrió a los dos';
       $('ovTexto').textContent = `La productividad llegó a cero. ${n1} ${p1.pts} · ${n2} ${p2.pts}. Hoy nadie se quedó con la oficina.`;
     } else if (!g) {
       $('ovTitulo').textContent = 'Empate de jefes';
@@ -926,8 +930,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
         $('prodTxt').textContent = `PRODUCTIVIDAD ${pr}%`;
         $('alerta').hidden = internet;
         const avisos = [];
-        if (ceron.activo && !ceron.saliendo) avisos.push('¡AGUAS! CERÓN EN LA OFICINA · CORRAN');
-        if (deysi.activo && !deysi.saliendo) avisos.push('DEYSIMAR DISTRAE A LA BANDA · GRÍTALE');
+        if (ceron.activo && !ceron.saliendo) avisos.push('¡AGUAS! EL CEO CERÓN ANDA AQUÍ · CORRAN');
+        if (deysi.activo && !deysi.saliendo) avisos.push('LA GERENTE DEYSIMAR METE A TODOS A JUNTA · GRÍTALE');
         $('alertaJefe').textContent = avisos.join(' · ');
         $('alertaJefe').hidden = !avisos.length;
       }
