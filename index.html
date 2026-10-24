@@ -165,6 +165,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
         <li>Levanta la red en el NOC: <b>+25</b></li>
         <li>El grito despierta a todos cerca y aturde al otro jugador (+10 c/u)</li>
         <li>El café te hace correr más rápido</li>
+        <li>El ganador recibe el trofeo de manos de Cerón y Deysimar</li>
       </ul>
     </div>
     <div class="card enemigos">
@@ -284,6 +285,18 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   const logoTex = new THREE.TextureLoader().load(LOGO);
   const logoMat = new THREE.MeshBasicMaterial({ map: logoTex });
+  // bordado blanco de la chamarra: cuadro con curva y la palabra PoderNET
+  const parcheMat = (() => {
+    const c = document.createElement('canvas'); c.width = 256; c.height = 160;
+    const g = c.getContext('2d');
+    g.fillStyle = '#e9ecef'; g.fillRect(88, 8, 80, 80);
+    g.strokeStyle = '#1b1c1f'; g.lineWidth = 9; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(98, 70); g.quadraticCurveTo(122, 18, 160, 44); g.stroke();
+    g.fillStyle = '#e9ecef'; g.font = '800 42px Rubik, Arial, sans-serif'; g.textAlign = 'center'; g.fillText('PoderNET', 128, 142);
+    const t = new THREE.CanvasTexture(c); t.minFilter = THREE.LinearFilter;
+    return new THREE.MeshBasicMaterial({ map: t, transparent: true });
+  })();
+  const NEGRO_CHAMARRA = '#1b1c1f';
 
   // ---------- Texturas de texto ----------
   function rrect(g, x, y, w, h, r) {
@@ -445,7 +458,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   // ---------- Escritorios y empleados ----------
   const nombres = ['Debi', 'Toño', 'Diana', 'Luis', 'Felipe', 'Brenda', 'Suemmy', 'El Nuevo', 'Isai', 'Eli', 'Gallegos'];
-  const ropa = ['#7c5cff', '#e07a2f', '#2fa36b', '#c94f7c', '#4f7fc9', '#b8a12b', '#9ee6c8', '#d9534f', '#222831', '#3fa7a0', '#8d6e63'];
   const flojeras = [
     { ico: '📱', txt: 'viendo TikTok' }, { ico: '💤', txt: 'dormido' },
     { ico: '⚽', txt: 'viendo el fut' }, { ico: '🌮', txt: 'pidiendo enchiladas' },
@@ -529,7 +541,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     e.add(new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.1, 18), mat('#23292e')).translateY(0.5));
     e.add(caja(0.08, 0.45, 0.08, '#23292e', 0, 0.25, 0));
     const cuerpo = new THREE.Group(); e.add(cuerpo);
-    cuerpo.add(caja(0.72, 0.72, 0.44, ropa[k], 0, 0.92, 0));
+    // chamarra negra de poderNET: gorro atrás, cierre y bordado en el pecho
+    cuerpo.add(caja(0.72, 0.72, 0.44, NEGRO_CHAMARRA, 0, 0.92, 0));
+    cuerpo.add(caja(0.5, 0.2, 0.14, '#151618', 0, 1.3, 0.25));
+    cuerpo.add(caja(0.02, 0.66, 0.01, '#9aa1a8', 0, 0.92, -0.225));
+    { const b = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.14), parcheMat); b.position.set(-0.17, 1.1, -0.226); b.rotation.y = Math.PI; cuerpo.add(b); }
     const cabeza = new THREE.Group(); cabeza.position.set(0, 1.3, 0); cuerpo.add(cabeza);
     cabeza.add(esfera(0.27, '#e0ac7e', 0, 0.27, 0));
     cabeza.add(esfera(0.28, '#2a1d14', 0, 0.33, 0.06));
@@ -572,10 +588,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const brazo = x => { const p = new THREE.Group(); p.position.set(x, 1.3, 0); p.add(caja(0.17, 0.6, 0.2, color, 0, -0.28, 0)); g.add(p); return p; };
     const pI = pierna(-0.15), pD = pierna(0.15), bI = brazo(-0.46), bD = brazo(0.46);
     g.add(caja(0.72, 0.78, 0.42, color, 0, 1.0, 0));
-    if (o.sudadera) {
-      g.add(caja(0.5, 0.22, 0.14, color, 0, 1.42, -0.24)); // gorro de la sudadera
-      g.add(caja(0.36, 0.2, 0.02, corbata, 0, 0.88, 0.215)); // bolsa canguro
-      for (const x of [-0.07, 0.07]) g.add(caja(0.02, 0.22, 0.02, '#f4f5f6', x, 1.28, 0.22)); // cordones
+    if (o.chamarra) {
+      g.add(caja(0.5, 0.22, 0.14, '#151618', 0, 1.42, -0.24)); // gorro
+      g.add(caja(0.02, 0.72, 0.01, '#9aa1a8', 0, 1.0, 0.215)); // cierre
+      const p = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.14), parcheMat); p.position.set(0.17, 1.2, 0.216); g.add(p);
+      for (const b of [bI, bD]) b.add(caja(0.02, 0.16, 0.14, o.acento, b.position.x < 0 ? -0.095 : 0.095, -0.14, 0)); // parche de velcro
+      const aro = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.045, 8, 36), new THREE.MeshBasicMaterial({ color: o.acento }));
+      aro.rotation.x = -Math.PI / 2; aro.position.y = 0.04; g.add(aro);
     } else {
       g.add(caja(0.22, 0.34, 0.02, '#ffffff', 0, 1.2, 0.215));
       g.add(caja(0.09, 0.42, 0.03, corbata, 0, 1.08, 0.23));
@@ -603,8 +622,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     return { nombre, color, x, z, r: 0.45, pts: 0, cool: 0, aturdido: 0, boost: 0, regano: 0, susto: 0, dir: 0, paso: 0, movio: false, m: modelo,
              nav: { atorado: 0, desvio: 0, dx: 0, dz: 0, ux: x, uz: z } };
   }
-  const modelo1 = crearJefe('#ff5a4e', '#d9473c', { escala: 1.1, sudadera: true });
-  const modelo2 = crearJefe('#3ab0ff', '#2b93d9', { escala: 1.1, sudadera: true });
+  const modelo1 = crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { escala: 1.1, chamarra: true, acento: '#ff5a4e' });
+  const modelo2 = crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { escala: 1.1, chamarra: true, acento: '#3ab0ff' });
 
   // Cerón y Deysimar: los dos persiguen y regañan
   function nuevoEnemigo(tipo, modelo, vel, dura, primera, cada, frases, tono, grave) {
@@ -641,6 +660,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   })();
 
   // ---------- Estado ----------
+  let ceremoniaLista = false;
   let estado = 'menu', modoCpu = false, tiempo = DURACION, productividad = 100;
   let internet = true, proxCaida = 18, cafes = [], proxCafe = 8, textos = [], ondas = [], t = 0, temblor = 0;
   const teclas = new Set();
@@ -661,6 +681,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     for (const e of escritorios) ponerFlojo(e.emp, -1), e.emp.prox = (2 + Math.random() * 6) * RITMO;
     for (const e of enemigos) { e.activo = false; e.saliendo = false; e.pausa = 0; e.m.g.visible = false; e.prox = azar(e.primera); }
     fantasma.activo = false; fantasma.g.visible = false; fantasma.prox = azar(fantasma.primera);
+    if (ceremoniaLista) limpiarCeremonia();
     $('h1n').textContent = p1.nombre; $('h2n').textContent = p2.nombre + (modoCpu ? ' (CPU)' : '');
   }
 
@@ -677,6 +698,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   addEventListener('keydown', e => {
     const c = e.code;
     if (e.target instanceof HTMLInputElement) return;
+    if (estado === 'premio') { if (!e.repeat) saltarCeremonia(); return; }
     if (estado === 'jugando' && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Enter'].includes(c)) e.preventDefault();
     teclas.add(c);
     if (e.repeat || estado !== 'jugando') return;
@@ -694,7 +716,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     return ray.ray.intersectPlane(planoPiso, hit) ? { x: hit.x, z: hit.z } : null;
   }
   const lienzo = renderer.domElement;
-  lienzo.addEventListener('pointerdown', ev => { if (estado === 'jugando') { puntero = aPiso(ev); lienzo.setPointerCapture(ev.pointerId); } });
+  lienzo.addEventListener('pointerdown', ev => { if (estado === 'premio') { saltarCeremonia(); return; } if (estado === 'jugando') { puntero = aPiso(ev); lienzo.setPointerCapture(ev.pointerId); } });
   lienzo.addEventListener('pointermove', ev => { if (puntero) puntero = aPiso(ev) || puntero; });
   const soltar = () => { puntero = null; };
   lienzo.addEventListener('pointerup', soltar); lienzo.addEventListener('pointercancel', soltar);
@@ -921,6 +943,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     for (const o of ondas) { o.vida -= dt; const s = 1 + (0.6 - o.vida) * 6.5; o.m.scale.set(s, s, s); o.m.material.opacity = Math.max(0, o.vida / 0.6); }
     ondas = ondas.filter(o => o.vida > 0 || (scene.remove(o.m), false));
     temblor = Math.max(0, temblor - dt);
+    if (cer.activo) ceremonia(dt);
     if (estado !== 'jugando') return;
 
     tiempo -= dt;
@@ -1019,10 +1042,124 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
     $('btn2p').textContent = 'Revancha 2 jugadores';
     $('btnCpu').textContent = 'Revancha contra CPU';
-    $('overlay').hidden = false;
     for (const e of enemigos) { e.activo = false; e.m.g.visible = false; }
     fantasma.activo = false;
-    beep(392, .15); setTimeout(() => beep(523, .15), 160); setTimeout(() => beep(659, .3), 320);
+    if (g && !despedidos) iniciarCeremonia(g, g === p1 ? p2 : p1);
+    else {
+      $('overlay').hidden = false;
+      beep(392, .15); setTimeout(() => beep(523, .15), 160); setTimeout(() => beep(659, .3), 320);
+    }
+  }
+
+  // ---------- Ceremonia: Cerón y Deysimar le entregan el trofeo al ganador ----------
+  const CAM_PREMIO = new THREE.Vector3(0, 5.4, 12.2), MIRA_PREMIO = new THREE.Vector3(0, 1.5, 4.6), miraTmp = new THREE.Vector3();
+  const suave = k => k * k * (3 - 2 * k);
+  let vistaPremio = 0;
+  const trofeo = (() => {
+    const oro = new THREE.MeshPhongMaterial({ color: '#f2c14e', shininess: 120, specular: 0xffffff });
+    const g = new THREE.Group();
+    g.add(caja(0.34, 0.1, 0.34, '#3a2a12', 0, 0.05, 0));
+    g.add(caja(0.26, 0.08, 0.26, oro, 0, 0.14, 0));
+    g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.06, 0.2, 12), oro).translateY(0.28));
+    const copa = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.1, 0.34, 20), oro); copa.position.y = 0.55; g.add(copa);
+    for (const sx of [-1, 1]) { const a = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.025, 8, 16), oro); a.position.set(sx * 0.26, 0.56, 0); g.add(a); }
+    const l = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.16), logoMat); l.position.set(0, 0.05, 0.172); g.add(l);
+    g.scale.setScalar(1.3); g.visible = false; scene.add(g);
+    return g;
+  })();
+  const confeti = (() => {
+    const N = 260, o = new THREE.Object3D(), p = [];
+    const im = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.09, 0.15), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), N);
+    im.visible = false; im.frustumCulled = false; scene.add(im);
+    const cols = ['#f2b632', '#ff5a4e', '#3ab0ff', '#2fbf71', '#ffffff', '#d89a7c'].map(c => new THREE.Color(c));
+    for (let i = 0; i < N; i++) { p.push({}); im.setColorAt(i, cols[i % cols.length]); }
+    if (im.instanceColor) im.instanceColor.needsUpdate = true;
+    const reset = (q, alto) => { q.x = -5 + Math.random() * 10; q.y = alto ? 4 + Math.random() * 4 : 5.5; q.z = 2 + Math.random() * 6; q.v = 1 + Math.random() * 1.4; q.r = Math.random() * 6; q.s = 2 + Math.random() * 4; };
+    return {
+      empezar() { p.forEach(q => reset(q, true)); im.visible = true; },
+      ocultar() { im.visible = false; },
+      actualizar(dt, seguir) {
+        if (!im.visible) return;
+        p.forEach((q, i) => {
+          q.y -= q.v * dt; q.r += q.s * dt; q.x += Math.sin(q.r) * dt * 0.4;
+          if (q.y < 0) { if (seguir) reset(q, false); else q.y = -1; }
+          o.position.set(q.x, q.y, q.z); o.rotation.set(q.r, q.r * 0.7, 0); o.updateMatrix(); im.setMatrixAt(i, o.matrix);
+        });
+        im.instanceMatrix.needsUpdate = true;
+      }
+    };
+  })();
+  const cer = { activo: false, t: 0, w: null, l: null, fanfarria: false, final: false, sprites: [] };
+
+  function fanfarria() {
+    [[523, 0], [659, 140], [784, 280], [1047, 420]].forEach(([f, ms]) => setTimeout(() => beep(f, .16, 'square', .06), ms));
+    setTimeout(() => { beep(1047, .7, 'triangle', .07); beep(1319, .7, 'triangle', .05); beep(1568, .7, 'triangle', .04); }, 600);
+  }
+
+  function iniciarCeremonia(w, l) {
+    estado = 'premio';
+    $('hud').hidden = true; $('gritoTouch').hidden = true; $('regano').hidden = true;
+    Object.assign(cer, { activo: true, t: 0, w, l, fanfarria: false, final: false });
+    for (const e of escritorios) ponerFlojo(e.emp, -1);
+    for (const tx of textos) quitarTexto(tx);
+    textos = [];
+    for (const cf of cafes) scene.remove(cf.m);
+    cafes = []; internet = true;
+    Object.assign(w, { x: 0, z: 4.6, dir: 0, aturdido: 0, boost: 0, movio: false, festeja: false });
+    Object.assign(l, { x: 3.8, z: 4.3, dir: -0.9, aturdido: 0, boost: 0, movio: false, aplaude: true });
+    w.m.etiqueta.visible = false;
+    for (const [e, x] of [[ceron, -0.9], [deysi, 0.9]]) Object.assign(e, { activo: true, saliendo: false, pausa: 0, x, z: 8.8, dir: Math.PI, aplaude: false });
+    ceron.m.g.visible = deysi.m.g.visible = true;
+    trofeo.visible = true;
+  }
+
+  function saltarCeremonia() { if (cer.activo && cer.t < 6.45) cer.t = 6.45; }
+
+  function ceremonia(dt) {
+    cer.t += dt;
+    const T = cer.t, w = cer.w, lado = e => (e === ceron ? -1 : 1);
+    vistaPremio = Math.min(1, T / 1.6);
+    for (const e of [ceron, deysi]) e.movio = false;
+    if (T < 2.2) {
+      // entran juntos cargando el trofeo
+      for (const e of [ceron, deysi]) { e.x = lado(e) * 0.9; e.z = 8.8 - 3.1 * (T / 2.2); e.dir = Math.PI; e.movio = true; e.paso += dt * 9; }
+      trofeo.position.set(0, 1.35, ceron.z);
+    } else if (T < 2.9) {
+      // se lo entregan al ganador
+      const k = suave((T - 2.2) / 0.7);
+      for (const e of [ceron, deysi]) { e.x = lado(e) * 0.9; e.z = 5.7; e.dir = Math.PI; }
+      trofeo.position.set(0, 1.35 + 0.8 * k, 5.7 + (w.z + 0.05 - 5.7) * k);
+      if (k > 0.5) w.festeja = true;
+    } else {
+      // se hacen a un lado, voltean a la cámara y aplauden
+      const k = suave(Math.min(1, (T - 2.9) / 0.7));
+      for (const e of [ceron, deysi]) {
+        e.x = lado(e) * (0.9 + 0.9 * k); e.z = 5.7 - 0.7 * k;
+        if (k < 1) { e.movio = true; e.paso += dt * 9; e.dir = Math.atan2(lado(e) * 0.9, -0.7); }
+        else { e.dir = 0; e.aplaude = true; }
+      }
+      w.festeja = true;
+      trofeo.position.set(w.x, 2.15 + Math.sin(T * 6) * 0.06, w.z + 0.05);
+      if (!cer.fanfarria) {
+        cer.fanfarria = true; fanfarria(); confeti.empezar();
+        const t1 = spriteTexto('EMPLEADO DEL MES', 0.8, { color: '#f2b632', borde: 'rgba(0,0,0,.85)', size: 60 });
+        const cap = x => x.charAt(0) + x.slice(1).toLowerCase();
+        const t2 = spriteTexto(cap(w.nombre), 0.62, { color: w.color, borde: 'rgba(0,0,0,.85)', size: 56 });
+        t1.position.set(0, 4.0, 4.6); t2.position.set(0, 3.35, 4.6);
+        scene.add(t1, t2); cer.sprites.push(t1, t2);
+      }
+    }
+    trofeo.rotation.y += dt * 1.5;
+    confeti.actualizar(dt, T < 6);
+    if (T >= 6.5 && !cer.final) { cer.final = true; estado = 'fin'; $('overlay').hidden = false; }
+  }
+
+  function limpiarCeremonia() {
+    cer.activo = false; cer.final = false; vistaPremio = 0;
+    trofeo.visible = false; confeti.ocultar();
+    for (const sp of cer.sprites) { scene.remove(sp); sp.material.map.dispose(); sp.material.dispose(); }
+    cer.sprites = [];
+    for (const e of enemigos) e.aplaude = false;
   }
 
   // ---------- Visuales ----------
@@ -1036,9 +1173,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       m.g.rotation.y += dif * 0.3;
       const sw = j.movio ? Math.sin(j.paso) * 0.6 : 0;
       m.pI.rotation.x = sw; m.pD.rotation.x = -sw; m.bI.rotation.x = -sw * 0.8; m.bD.rotation.x = sw * 0.8;
+      m.bI.rotation.z = 0; m.bD.rotation.z = 0;
       // al regañar levantan el brazo y señalan
       if (j.pausa > 0) { m.bD.rotation.x = -1.6 + Math.sin(t * 18) * 0.25; }
-      m.g.position.y = j.movio ? Math.abs(Math.sin(j.paso)) * 0.06 : 0;
+      // el ganador levanta el trofeo y brinca; los demás aplauden
+      if (j.festeja) { m.bI.rotation.x = m.bD.rotation.x = -2.8 + Math.sin(t * 8) * 0.1; m.bI.rotation.z = 0.2; m.bD.rotation.z = -0.2; }
+      if (j.aplaude) { const c = Math.sin(t * 16); m.bI.rotation.x = m.bD.rotation.x = -1.25; m.bI.rotation.z = 0.35 + c * 0.2; m.bD.rotation.z = -(0.35 + c * 0.2); }
+      m.g.position.y = j.festeja ? Math.abs(Math.sin(t * 6)) * 0.22 : j.movio ? Math.abs(Math.sin(j.paso)) * 0.06 : 0;
       m.aura.visible = j.boost > 0;
       m.estrellas.forEach((s, i) => {
         s.visible = j.aturdido > 0;
@@ -1073,6 +1214,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       emp.cabeza.rotation.x = dormido ? -0.5 + Math.sin(t * 2) * 0.05 : 0;
       emp.cuerpo.rotation.z = espantado ? Math.sin(t * 30) * 0.06 : emp.flojo && !dormido ? Math.sin(t * 4 + emp.x) * 0.08 : 0;
       if (emp.burbuja) emp.burbuja.position.y = 2.85 + Math.sin(t * 5 + emp.x) * 0.05;
+      emp.cuerpo.position.y = cer.activo && cer.fanfarria ? Math.abs(Math.sin(t * 8 + emp.x)) * 0.14 : 0;
     }
     const parp = Math.floor(t * 4) % 2;
     leds.forEach(l => l.material.color.set(internet ? (Math.random() < 0.3 ? '#2bff88' : '#118a48') : (parp ? '#ff2b2b' : '#5a1111')));
@@ -1084,9 +1226,9 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
     // cámara: vaivén en el menú, temblor cuando te regañan
     if (estado === 'menu') camera.position.set(CAM.x + Math.sin(t * 0.25) * 5, CAM.y, CAM.z);
-    else camera.position.copy(CAM);
+    else camera.position.lerpVectors(CAM, CAM_PREMIO, suave(vistaPremio));
     if (temblor > 0) { const k = temblor * 0.9; camera.position.x += (Math.random() - 0.5) * k; camera.position.y += (Math.random() - 0.5) * k; }
-    camera.lookAt(MIRA);
+    camera.lookAt(miraTmp.lerpVectors(MIRA, MIRA_PREMIO, suave(vistaPremio)));
 
     if (estado !== 'menu') {
       const s = Math.max(0, Math.ceil(tiempo));
@@ -1114,6 +1256,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
   }
 
+  ceremoniaLista = true;
   reiniciar();
   let ultimo = performance.now();
   function loop(ahora) {

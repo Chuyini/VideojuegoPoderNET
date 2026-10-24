@@ -19,6 +19,8 @@ Abre `index.html` en el navegador o súbelo a cualquier hosting estático (Verce
 - **Deysimar, la gerente**: va tras el que va ganando. Si te alcanza te regaña: −30 y te congela. No le grites (−10)
 - **La niña fantasma**: apaga las luces y espanta a la banda. Si te toca: −10. Grítale dos veces y se esfuma: +20
 - Si la productividad llega a 0, Cerón y Deysimar los corren a los dos
+- Al ganador, Cerón y Deysimar le entregan el trofeo de empleado del mes
+- Todos los empleados usan la chamarra negra de poderNET; cada jugador lleva un parche y un aro de su color
 
 ## Archivos
 
