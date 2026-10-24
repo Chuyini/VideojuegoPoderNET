@@ -390,29 +390,57 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     return { t, asp: w / h };
   });
 
-  // [x, z, giro]: giro 0 = el empleado mira al fondo; ±π/2 = mira al muro
+  // Tramo de escritorio: cubierta de vidrio sobre dos rieles plateados y patas en Z en los extremos
+  function tramo(d, x0, x1, z0, z1, extremos) {
+    const w = x1 - x0, p = z1 - z0, mx = (x0 + x1) / 2, mz = (z0 + z1) / 2;
+    const cub = new THREE.Mesh(new THREE.BoxGeometry(w, 0.04, p), vidrio); cub.position.set(mx, 0.76, mz); d.add(cub);
+    const largoX = w >= p;
+    if (largoX) for (const z of [z0 + 0.08, z1 - 0.08]) d.add(caja(w - 0.1, 0.05, 0.05, cromo, mx, 0.71, z));
+    else for (const x of [x0 + 0.08, x1 - 0.08]) d.add(caja(0.05, 0.05, p - 0.1, cromo, x, 0.71, mz));
+    for (const ext of extremos) {
+      if (largoX) {
+        const x = ext < 0 ? x0 + 0.1 : x1 - 0.1;
+        d.add(caja(0.05, 0.05, p - 0.1, cromo, x, 0.03, mz));
+        d.add(caja(0.05, 0.05, p - 0.1, cromo, x, 0.71, mz));
+        const diag = caja(0.05, Math.hypot(0.68, p - 0.2), 0.05, cromo, x, 0.37, mz); diag.rotation.x = Math.atan2(p - 0.2, 0.68); d.add(diag);
+      } else {
+        const z = ext < 0 ? z0 + 0.1 : z1 - 0.1;
+        d.add(caja(w - 0.1, 0.05, 0.05, cromo, mx, 0.03, z));
+        d.add(caja(w - 0.1, 0.05, 0.05, cromo, mx, 0.71, z));
+        const diag = caja(Math.hypot(0.68, w - 0.2), 0.05, 0.05, cromo, mx, 0.37, z); diag.rotation.z = Math.atan2(0.68, w - 0.2); d.add(diag);
+      }
+    }
+  }
+  // Convierte un rectángulo local del escritorio (ya girado) a obstáculo en el mundo
+  function obsLocal(cx, cz, giro, x0, x1, z0, z1) {
+    const c = Math.cos(giro), s = Math.sin(giro), xs = [], zs = [];
+    for (const [x, z] of [[x0, z0], [x1, z0], [x0, z1], [x1, z1]]) { xs.push(cx + x * c + z * s); zs.push(cz - x * s + z * c); }
+    addObs(Math.min(...xs), Math.max(...xs), Math.min(...zs), Math.max(...zs));
+  }
+
+  // [x, z, giro]: giro 0 = el empleado mira al fondo; ±π/2 = mira al muro. Cada escritorio es una L:
+  // tramo principal con el monitor y un ala que sale hacia el pasillo junto al empleado.
   const puestos = [
-    [-10.9, -1.8, Math.PI / 2], [-10.9, 1.2, Math.PI / 2], [-10.9, 4.2, Math.PI / 2],
+    [-10.9, -1.6, Math.PI / 2], [-10.9, 1.6, Math.PI / 2], [-10.9, 4.6, Math.PI / 2],
     [-3.2, -2.8, 0], [1.8, -2.8, 0], [6.6, -2.8, 0],
     [10.9, -0.6, -Math.PI / 2], [10.9, 2.6, -Math.PI / 2]
   ];
   const escritorios = [];
   puestos.forEach(([cx, cz, giro], k) => {
     const d = new THREE.Group(); d.position.set(cx, 0, cz); d.rotation.y = giro; scene.add(d);
-    // escritorio de vidrio con patas cromadas en X
-    const cubierta = new THREE.Mesh(new THREE.BoxGeometry(3, 0.05, 1.2), vidrio); cubierta.position.y = 0.76; d.add(cubierta);
-    for (const lx of [-1.4, 1.4]) for (const s of [1, -1]) { const p = caja(0.05, 1.26, 0.05, cromo, lx, 0.38, 0); p.rotation.x = s * 0.92; d.add(p); }
-    d.add(caja(2.8, 0.04, 0.04, cromo, 0, 0.12, 0));
+    tramo(d, -1.1, 1.1, -0.6, 0.6, [-1, 1]);
+    tramo(d, 1.1, 2.1, -0.6, 1.6, [-1, 1]);
+    obsLocal(cx, cz, giro, -1.1, 1.1, -0.6, 0.6);
+    obsLocal(cx, cz, giro, 1.1, 2.1, -0.6, 1.6);
     d.add(caja(0.12, 0.3, 0.12, '#1a1d20', 0, 0.93, -0.35));
     d.add(caja(1.15, 0.7, 0.07, '#1a1d20', 0, 1.38, -0.35));
     const pantalla = new THREE.Mesh(new THREE.PlaneGeometry(1.02, 0.58), new THREE.MeshBasicMaterial({ color: '#2f7fd6' }));
     pantalla.position.set(0, 1.38, -0.31); d.add(pantalla);
     d.add(caja(0.8, 0.04, 0.26, '#d8d8d8', 0, 0.8, 0.25));
-    d.add(caja(0.16, 0.24, 0.16, k % 2 ? '#1f3a68' : '#111111', 1.05, 0.9, 0.1)); // termo
-    if (k % 3 === 0) d.add(caja(0.14, 0.38, 0.14, '#5a1a12', -1.05, 0.97, 0.05)); // refresco
-    if (k === 4) { d.add(caja(0.62, 0.03, 0.42, '#7b3fa0', -0.95, 0.8, 0.2)); }
-    if (Math.abs(Math.sin(giro)) > 0.5) addObs(cx - 0.6, cx + 0.6, cz - 1.5, cz + 1.5);
-    else addObs(cx - 1.5, cx + 1.5, cz - 0.6, cz + 0.6);
+    d.add(caja(0.16, 0.26, 0.16, k % 2 ? '#1f3a68' : '#111111', 1.6, 0.91, 0.3)); // termo
+    d.add(new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.05, 0.16, 12), new THREE.MeshPhongMaterial({ color: '#ffffff', transparent: true, opacity: 0.5 })).translateX(1.7).translateY(0.86).translateZ(0.8)); // vaso
+    if (k % 3 === 0) d.add(caja(0.14, 0.38, 0.14, '#7a1a12', -0.85, 0.97, 0.05)); // refresco
+    if (k === 4 || k === 1) { d.add(caja(0.62, 0.03, 0.42, '#7b3fa0', 1.6, 0.8, 1.1)); }
 
     // empleado sentado en su silla, viendo su monitor
     const e = new THREE.Group(); e.position.set(0, 0, 1.15); d.add(e);
@@ -434,6 +462,24 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     addObs(ex - 0.42, ex + 0.42, ez - 0.42, ez + 0.42);
     escritorios.push({ pantalla, emp: { nombre: nombres[k], x: ex, z: ez, ax: cx + sx * 2.1, az: cz + sz * 2.1, grupo: e, cuerpo, cabeza, burbuja: null, flojo: null, idx: -1, prox: 2 + Math.random() * 6 } });
   });
+
+  // esquina del frente derecha: refri de acero y rack azul de garrafones
+  scene.add(caja(0.75, 1.8, 0.75, '#b9bec4', 11.25, 0.9, 5.25));
+  scene.add(caja(0.03, 1.7, 0.02, '#7d848b', 11.25, 0.9, 4.86));
+  addObs(10.85, 11.7, 4.85, 5.7);
+  {
+    const r = new THREE.Group(); r.position.set(9.9, 0, 5.3); scene.add(r);
+    for (const y of [0.05, 0.6, 1.15]) r.add(caja(0.9, 0.06, 0.6, '#1f4fd1', 0, y, 0));
+    for (const x of [-0.42, 0.42]) r.add(caja(0.06, 1.5, 0.6, '#1f4fd1', x, 0.75, 0));
+    for (const [y, x] of [[0.33, -0.18], [0.33, 0.2], [0.88, 0]]) {
+      const g = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.48, 14), new THREE.MeshPhongMaterial({ color: '#7fb3ff', transparent: true, opacity: 0.75 }));
+      g.rotation.z = Math.PI / 2; g.position.set(x, y + 0.03, 0); r.add(g);
+    }
+    addObs(9.4, 10.4, 4.95, 5.65);
+  }
+  // reloj y señal de salida en el muro derecho
+  { const reloj = new THREE.Mesh(new THREE.CircleGeometry(0.3, 24), mat('#f4f5f6')); reloj.position.set(11.98, 3.0, 4.2); reloj.rotation.y = -Math.PI / 2; scene.add(reloj); }
+  scene.add(caja(0.03, 0.25, 0.55, '#1f9d55', 11.98, 2.6, 3.2));
 
   // NOC (rack al fondo a la derecha)
   const rack = new THREE.Group(); rack.position.set(11.05, 0, -5.45); scene.add(rack);
