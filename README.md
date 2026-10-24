@@ -13,7 +13,7 @@ Abre `index.html` en el navegador o súbelo a cualquier hosting estático (Verce
 
 - Empleado de flojo: +10
 - Levantar la red en el NOC: +25
-- El grito (¡ÉCHENLE GANAS!) despierta a los que estén cerca y aturde al otro jugador
+- El grito (¡VAMOS!) despierta a los que estén cerca y aturde al otro jugador
 - El café te hace correr más rápido
 - **Cerón, el CEO**: te persigue. Si te alcanza te regaña: −30 y te congela. No le grites (−10)
 - **Deysimar, la gerente**: va tras el que va ganando. Si te alcanza te regaña: −30 y te congela. No le grites (−10)

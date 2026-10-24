@@ -768,7 +768,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const m = new THREE.Mesh(new THREE.RingGeometry(0.85, 1, 48), new THREE.MeshBasicMaterial({ color: j.color, transparent: true, side: THREE.DoubleSide }));
     m.rotation.x = -Math.PI / 2; m.position.set(j.x, 0.08, j.z); scene.add(m);
     ondas.push({ m, vida: 0.6 });
-    flotar(j.x, 3.2, j.z, '¡ÉCHENLE GANAS!', '#f2b632', true);
+    flotar(j.x, 3.2, j.z, '¡VAMOS!', '#f2b632', true);
     beep(180, .25, 'sawtooth', .06);
     for (const e of escritorios) if (e.emp.flojo && Math.hypot(e.emp.x - j.x, e.emp.z - j.z) < 3.9) despertar(j, e.emp);
     if (Math.hypot(rival.x - j.x, rival.z - j.z) < 3.25 && rival.aturdido <= 0) {
