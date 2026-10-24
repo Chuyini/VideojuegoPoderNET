@@ -203,7 +203,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
   new ResizeObserver(ajustar).observe(cont); ajustar();
 
-  scene.add(new THREE.HemisphereLight(0xeef4ff, 0x3a3328, 0.8));
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x4a4f55, 0.95));
   const sol = new THREE.DirectionalLight(0xfff1dd, 0.75);
   sol.position.set(-6, 16, 8); sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048);
   Object.assign(sol.shadow.camera, { left: -14, right: 14, top: 10, bottom: -10, near: 1, far: 40 });
@@ -250,115 +250,122 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
   function spriteTexto(txt, alto, o) { const { t, asp } = texTexto(txt, o); return sprite(t, asp, alto); }
 
-  // ---------- Vista de San Luis Potosí ----------
-  function vista(lado) {
-    const W = 1024, H = 330;
-    const c = document.createElement('canvas'); c.width = W; c.height = H;
-    const g = c.getContext('2d');
-    const cielo = g.createLinearGradient(0, 0, 0, H);
-    cielo.addColorStop(0, '#5aa6e8'); cielo.addColorStop(1, '#e9e2cf');
-    g.fillStyle = cielo; g.fillRect(0, 0, W, H);
-    g.fillStyle = 'rgba(255,255,255,.85)';
-    [[150, 50], [520, 34], [860, 62]].forEach(([x, y]) => { g.beginPath(); g.ellipse(x, y, 70, 18, 0, 0, 7); g.ellipse(x + 46, y - 12, 44, 18, 0, 0, 7); g.fill(); });
-    // Sierra de San Miguelito
-    g.fillStyle = '#8d7a8f';
-    g.beginPath(); g.moveTo(0, 210);
-    for (let x = 0; x <= W; x += 64) g.lineTo(x, 150 + Math.sin(x * 0.011 + (lado ? 2 : 0)) * 34 + Math.sin(x * 0.037) * 12);
-    g.lineTo(W, H); g.lineTo(0, H); g.fill();
-    g.fillStyle = '#a3909f';
-    g.beginPath(); g.moveTo(0, 240);
-    for (let x = 0; x <= W; x += 48) g.lineTo(x, 200 + Math.sin(x * 0.017 + 1) * 20);
-    g.lineTo(W, H); g.lineTo(0, H); g.fill();
-    // ciudad
-    const edif = lado ? [[40,70],[120,50],[700,90],[790,60],[880,110],[950,55]] : [[20,60],[90,85],[180,50],[760,70],[850,95],[940,60]];
-    for (const [x, h] of edif) {
-      g.fillStyle = '#b9a99a'; g.fillRect(x, H - 60 - h, 64, h + 60);
-      g.fillStyle = '#7f95a8'; for (let y = H - 50 - h; y < H - 40; y += 18) for (let i = 0; i < 3; i++) g.fillRect(x + 8 + i * 19, y, 10, 9);
-    }
-    const cantera = '#d89a7c', sombra = '#b87a60';
-    if (!lado) {
-      // Catedral Metropolitana: dos torres de cantera rosa
-      const cx = 512, base = H - 40;
-      g.fillStyle = cantera; g.fillRect(cx - 120, base - 150, 240, 150);
-      g.fillStyle = sombra; g.fillRect(cx - 34, base - 90, 68, 90);
-      g.fillStyle = '#4b3328'; g.beginPath(); g.moveTo(cx - 24, base); g.lineTo(cx - 24, base - 60); g.arc(cx, base - 60, 24, Math.PI, 0); g.lineTo(cx + 24, base); g.fill();
-      g.fillStyle = cantera; g.beginPath(); g.moveTo(cx - 60, base - 150); g.lineTo(cx, base - 196); g.lineTo(cx + 60, base - 150); g.fill();
-      for (const tx of [cx - 150, cx + 150]) {
-        g.fillStyle = cantera; g.fillRect(tx - 40, base - 220, 80, 220);
-        g.fillStyle = sombra; g.fillRect(tx - 30, base - 270, 60, 50);
-        g.fillStyle = cantera; g.fillRect(tx - 22, base - 305, 44, 35);
-        g.fillStyle = '#4b3328'; g.fillRect(tx - 12, base - 262, 24, 34); g.fillRect(tx - 8, base - 298, 16, 22);
-        g.fillStyle = '#e8c9a8'; g.beginPath(); g.arc(tx, base - 305, 22, Math.PI, 0); g.fill();
-        g.fillStyle = '#333'; g.fillRect(tx - 2, base - 345, 4, 22); g.fillRect(tx - 9, base - 338, 18, 4);
-      }
-      // reloj
-      g.fillStyle = '#f4ecdc'; g.beginPath(); g.arc(cx, base - 125, 16, 0, 7); g.fill();
-      g.strokeStyle = '#333'; g.lineWidth = 3; g.beginPath(); g.moveTo(cx, base - 125); g.lineTo(cx, base - 137); g.moveTo(cx, base - 125); g.lineTo(cx + 8, base - 125); g.stroke();
-    } else {
-      // Caja del Agua
-      const cx = 470, base = H - 40;
-      g.fillStyle = '#a07e6c'; g.fillRect(cx - 120, base - 14, 240, 14); g.fillRect(cx - 100, base - 28, 200, 14);
-      g.fillStyle = cantera; g.fillRect(cx - 70, base - 130, 140, 102);
-      g.fillStyle = sombra; for (let i = 0; i < 4; i++) g.fillRect(cx - 62 + i * 38, base - 125, 10, 92);
-      g.fillStyle = '#c98b6f'; g.fillRect(cx - 82, base - 146, 164, 18);
-      g.fillStyle = cantera; g.beginPath(); g.moveTo(cx - 50, base - 146); g.quadraticCurveTo(cx, base - 230, cx + 50, base - 146); g.fill();
-      g.fillStyle = '#c98b6f'; g.beginPath(); g.ellipse(cx, base - 198, 16, 22, 0, 0, 7); g.fill();
-      g.fillRect(cx - 4, base - 236, 8, 18);
-      // nopales y palmas
-      for (const px of [700, 790]) {
-        g.fillStyle = '#6b5a3c'; g.fillRect(px - 4, base - 110, 8, 110);
-        g.strokeStyle = '#3f7d3a'; g.lineWidth = 9; g.lineCap = 'round';
-        for (let a = 0; a < 6; a++) { const an = -Math.PI / 2 + (a - 2.5) * 0.55; g.beginPath(); g.moveTo(px, base - 110); g.quadraticCurveTo(px + Math.cos(an) * 40, base - 140, px + Math.cos(an) * 64, base - 100 + Math.abs(a - 2.5) * 6); g.stroke(); }
-      }
-    }
-    // nopales en primer plano
-    g.fillStyle = '#4c8a46';
-    for (const nx of lado ? [180, 620, 930] : [260, 760]) {
-      g.beginPath(); g.ellipse(nx, H - 22, 16, 22, 0, 0, 7); g.ellipse(nx - 18, H - 46, 12, 16, -0.4, 0, 7); g.ellipse(nx + 18, H - 50, 12, 16, 0.4, 0, 7); g.fill();
-    }
-    const t = new THREE.CanvasTexture(c); t.minFilter = THREE.LinearFilter; return t;
-  }
-
-  // ---------- Oficina ----------
+  // ---------- Oficina: nave industrial de poderNET en San Luis ----------
+  // Distribución como la foto: cuarto de vidrio al fondo a la izquierda, lockers y repisas al fondo,
+  // escritorios de vidrio pegados a los muros izquierdo y derecho, isla al fondo y la planta de luz al centro-derecha.
   const LIM = { x: 11.7, z0: -5.6, z1: 5.7 };
   const obstaculos = [];
   const addObs = (x0, x1, z0, z1) => obstaculos.push({ x0, x1, z0, z1 });
+  const vidrio = new THREE.MeshPhongMaterial({ color: '#bfe6ee', transparent: true, opacity: 0.3, shininess: 90, specular: 0xffffff, depthWrite: false, side: THREE.DoubleSide });
+  const cromo = new THREE.MeshPhongMaterial({ color: '#c9ced4', shininess: 80, specular: 0xffffff });
+  const acero = '#8f979f', blanco = '#e8eaec', carton = ['#b98a55', '#c79a63', '#a87a48'];
 
-  // piso
+  // piso de loseta negra brillante
   {
-    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const c = document.createElement('canvas'); c.width = c.height = 256;
     const g = c.getContext('2d');
-    g.fillStyle = '#5c646d'; g.fillRect(0, 0, 128, 128);
-    g.fillStyle = '#525a63'; g.fillRect(0, 0, 64, 64); g.fillRect(64, 64, 64, 64);
-    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(12, 6); t.magFilter = THREE.NearestFilter;
-    const piso = new THREE.Mesh(new THREE.PlaneGeometry(24, 12), new THREE.MeshLambertMaterial({ map: t }));
+    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
+      g.fillStyle = (i + j) % 2 ? '#1d2127' : '#23282f'; g.fillRect(i * 128, j * 128, 128, 128);
+      g.strokeStyle = 'rgba(255,255,255,.06)'; g.lineWidth = 2;
+      for (let v = 0; v < 4; v++) { g.beginPath(); g.moveTo(i * 128 + Math.random() * 128, j * 128); g.lineTo(i * 128 + Math.random() * 128, j * 128 + 128); g.stroke(); }
+    }
+    g.strokeStyle = '#3d444c'; g.lineWidth = 3;
+    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) g.strokeRect(i * 128, j * 128, 128, 128);
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(10, 5);
+    const piso = new THREE.Mesh(new THREE.PlaneGeometry(24, 12), new THREE.MeshPhongMaterial({ map: t, shininess: 110, specular: 0x666666 }));
     piso.rotation.x = -Math.PI / 2; piso.receiveShadow = true; scene.add(piso);
-    // tapete con logo
     const tapete = new THREE.Mesh(new THREE.PlaneGeometry(3, 2.4), logoMat);
-    tapete.rotation.x = -Math.PI / 2; tapete.position.set(0, 0.015, 0.6); scene.add(tapete);
+    tapete.rotation.x = -Math.PI / 2; tapete.position.set(-1, 0.015, 2.2); scene.add(tapete);
+    const tapeteNegro = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.2), mat('#2c3035'));
+    tapeteNegro.rotation.x = -Math.PI / 2; tapeteNegro.position.set(-2.6, 0.012, -4.4); scene.add(tapeteNegro);
   }
-  // paredes
-  scene.add(caja(24.6, 4.2, 0.3, '#3a4048', 0, 2.1, -6.15));
-  scene.add(caja(0.3, 4.2, 12.3, '#3a4048', -12.15, 2.1, 0));
-  scene.add(caja(0.3, 4.2, 12.3, '#3a4048', 12.15, 2.1, 0));
-  scene.add(caja(24.6, 0.14, 0.08, '#20252b', 0, 0.07, -5.98));
-  // ventanales
-  for (const lado of [0, 1]) {
-    const sx = lado ? 1 : -1;
-    const v = new THREE.Mesh(new THREE.PlaneGeometry(8.9, 2.8), new THREE.MeshBasicMaterial({ map: vista(lado) }));
-    v.position.set(sx * 7.05, 2.3, -5.99); scene.add(v);
-    for (let i = 0; i <= 4; i++) scene.add(caja(0.12, 2.9, 0.1, '#2b3238', sx * (2.6 + i * 2.225), 2.3, -5.95));
-    scene.add(caja(8.95, 0.12, 0.12, '#2b3238', sx * 7.05, 0.9, -5.95));
-    scene.add(caja(8.95, 0.12, 0.12, '#2b3238', sx * 7.05, 3.7, -5.95));
+
+  // muros blancos y armadura de acero
+  scene.add(caja(24.6, 5, 0.3, blanco, 0, 2.5, -6.15));
+  scene.add(caja(0.3, 5, 12.3, blanco, -12.15, 2.5, 0));
+  scene.add(caja(0.3, 5, 12.3, blanco, 12.15, 2.5, 0));
+  scene.add(caja(24.6, 0.12, 0.06, '#2a2e33', 0, 0.06, -5.98));
+  scene.add(caja(24.4, 0.16, 0.16, acero, 0, 4.95, -5.9));
+  scene.add(caja(24.4, 0.16, 0.16, acero, 0, 4.25, -5.9));
+  for (let i = 0; i < 16; i++) {
+    const b = caja(0.07, 1.6, 0.07, acero, -11.25 + i * 1.5, 4.6, -5.9);
+    b.rotation.z = i % 2 ? 1.12 : -1.12; scene.add(b);
   }
-  // logo grande en la pared
-  scene.add(caja(3.9, 3.15, 0.08, '#111317', 0, 2.25, -5.97));
-  { const l = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 2.9), logoMat); l.position.set(0, 2.25, -5.92); scene.add(l); }
+  for (const sx of [-1, 1]) scene.add(caja(0.16, 0.16, 12, acero, sx * 11.92, 4.95, 0));
+
+  // cuarto de vidrio (fondo izquierda) con decoración de Halloween
+  {
+    const frente = new THREE.Mesh(new THREE.PlaneGeometry(5.3, 2.8), vidrio); frente.position.set(-9.05, 1.4, -3.9); scene.add(frente);
+    const lado = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 2.8), vidrio); lado.position.set(-6.4, 1.4, -4.95); lado.rotation.y = Math.PI / 2; scene.add(lado);
+    scene.add(caja(5.35, 0.08, 0.08, '#1f2226', -9.05, 2.8, -3.9));
+    scene.add(caja(0.08, 0.08, 2.1, '#1f2226', -6.4, 2.8, -4.95));
+    for (const x of [-11.65, -9.05, -6.4]) scene.add(caja(0.08, 2.8, 0.08, '#1f2226', x, 1.4, -3.9));
+    scene.add(caja(3.2, 0.05, 0.55, '#d0d4d8', -9.6, 1.0, -5.6));
+    scene.add(caja(3.2, 0.05, 0.55, '#d0d4d8', -9.6, 1.8, -5.6));
+    for (let i = 0; i < 6; i++) scene.add(caja(0.4, 0.25 + (i % 3) * 0.1, 0.35, i % 2 ? '#2b2f33' : '#f0f0f0', -10.9 + i * 0.5, 1.15 + (i % 2) * 0.8, -5.6));
+    scene.add(caja(5.3, 0.28, 0.03, '#ff7a1a', -9.05, 2.6, -3.86));
+    const arana = new THREE.Group(); arana.position.set(-8.2, 2.25, -3.84); scene.add(arana);
+    arana.add(esfera(0.16, '#111111'));
+    for (let i = 0; i < 8; i++) { const p = caja(0.4, 0.03, 0.03, '#111111', (i < 4 ? -1 : 1) * 0.22, 0, 0); p.rotation.z = (i % 4 - 1.5) * 0.35 * (i < 4 ? 1 : -1); arana.add(p); }
+    const neon = new THREE.Mesh(new THREE.CircleGeometry(0.32, 20), new THREE.MeshBasicMaterial({ color: '#ff5ad1' }));
+    neon.position.set(-7.1, 1.9, -3.86); scene.add(neon);
+    addObs(-11.7, -6.35, -6, -3.85);
+  }
+  // tablero eléctrico y minisplit
+  scene.add(caja(0.6, 0.8, 0.12, '#b7bcc1', -5.4, 2.0, -5.95));
+  scene.add(caja(0.25, 0.35, 1.1, '#f4f5f6', -11.85, 3.7, -2.4));
+
+  // lockers metálicos y repisa con cajas (fondo centro)
+  for (let i = 0; i < 3; i++) {
+    const x = -3.95 + i * 1.35;
+    scene.add(caja(1.3, 2.6, 0.6, '#a7aeb5', x, 1.3, -5.65));
+    scene.add(caja(0.02, 2.5, 0.02, '#5d646b', x, 1.3, -5.34));
+    scene.add(caja(0.05, 0.25, 0.05, '#2b2f33', x + 0.12, 1.4, -5.33));
+  }
+  scene.add(caja(0.9, 0.5, 0.5, carton[0], -3.7, 2.85, -5.7));
+  scene.add(caja(0.7, 0.4, 0.5, carton[1], -2.3, 2.8, -5.7));
+  addObs(-4.65, -0.55, -6, -5.3);
+  for (const y of [0.1, 0.9, 1.7]) scene.add(caja(3.2, 0.05, 0.6, '#9aa1a8', 1.9, y, -5.65));
+  for (const x of [0.32, 3.48]) for (const z of [-5.93, -5.37]) scene.add(caja(0.05, 2.2, 0.05, '#7d848b', x, 1.1, z));
+  for (let n = 0; n < 3; n++) for (let i = 0; i < 4; i++) scene.add(caja(0.65, 0.4 + ((i + n) % 2) * 0.15, 0.5, carton[(i + n) % 3], 0.75 + i * 0.75, 0.33 + n * 0.8 + ((i + n) % 2) * 0.07, -5.65));
+  addObs(0.25, 3.55, -6, -5.3);
+
+  // logo grande en el muro
+  scene.add(caja(3.4, 2.75, 0.06, '#0b0d10', 6.5, 2.7, -5.97));
+  { const l = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 2.57), logoMat); l.position.set(6.5, 2.7, -5.93); scene.add(l); }
+
+  // cortinas de calabazas de Halloween colgando de la armadura
+  {
+    const pos = [];
+    for (let x = -11.5; x <= 11.5; x += 0.38) {
+      if (x > 4.6 && x < 8.4) continue;
+      const n = 4 + Math.round(Math.abs(Math.sin(x * 2.3)) * 3);
+      for (let i = 0; i < n; i++) pos.push([x, 4.7 - i * 0.28, -5.72, 0]);
+    }
+    for (const sx of [-1, 1]) for (let z = -5.4; z <= 5.4; z += 0.45) {
+      const n = 3 + Math.round(Math.abs(Math.sin(z * 1.7)) * 3);
+      for (let i = 0; i < n; i++) pos.push([sx * 11.82, 4.7 - i * 0.28, z, Math.PI / 2]);
+    }
+    const cal = new THREE.InstancedMesh(new THREE.CircleGeometry(0.1, 10), new THREE.MeshBasicMaterial({ color: '#ff9a2e', side: THREE.DoubleSide }), pos.length);
+    const o = new THREE.Object3D();
+    pos.forEach(([x, y, z, r], i) => { o.position.set(x, y, z); o.rotation.set(0, r, 0); o.updateMatrix(); cal.setMatrixAt(i, o.matrix); });
+    scene.add(cal);
+  }
+
+  // planta de luz (generador)
+  {
+    const gen = new THREE.Group(); gen.position.set(5.6, 0, 2.6); scene.add(gen);
+    gen.add(caja(1.3, 0.06, 0.85, '#2a2d30', 0, 0.32, 0));
+    gen.add(caja(0.8, 0.45, 0.6, '#3a3d40', -0.1, 0.58, 0));
+    gen.add(caja(1.0, 0.36, 0.6, '#c62828', 0, 1.0, 0));
+    for (const [x, z] of [[-0.62, -0.4], [0.62, -0.4], [-0.62, 0.4], [0.62, 0.4]]) gen.add(caja(0.05, 1.1, 0.05, cromo, x, 0.75, z));
+    for (const z of [-0.47, 0.47]) { const r = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.12, 16), mat('#151515')); r.rotation.x = Math.PI / 2; r.position.set(0.45, 0.2, z); gen.add(r); }
+    addObs(4.85, 6.35, 2.1, 3.1);
+  }
 
   // escritorios y empleados
-  const colsX = [-7.5, -2.5, 2.5, 7.5], filasZ = [-2.2, 2.6];
   const nombres = ['Debi', 'Toño', 'Diana', 'Luis', 'Felipe', 'Brenda', 'Suemmy', 'El Nuevo'];
-  const ropa = ['#7c5cff', '#e07a2f', '#2fa36b', '#c94f7c', '#4f7fc9', '#b8a12b', '#6d8f8a', '#d9534f'];
+  const ropa = ['#7c5cff', '#e07a2f', '#2fa36b', '#c94f7c', '#4f7fc9', '#b8a12b', '#9ee6c8', '#d9534f'];
   const flojeras = [
     { ico: '📱', txt: 'viendo TikTok' }, { ico: '💤', txt: 'dormido' },
     { ico: '⚽', txt: 'viendo el fut' }, { ico: '🌮', txt: 'pidiendo enchiladas' },
@@ -383,23 +390,32 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     return { t, asp: w / h };
   });
 
+  // [x, z, giro]: giro 0 = el empleado mira al fondo; ±π/2 = mira al muro
+  const puestos = [
+    [-10.9, -1.8, Math.PI / 2], [-10.9, 1.2, Math.PI / 2], [-10.9, 4.2, Math.PI / 2],
+    [-3.2, -2.8, 0], [1.8, -2.8, 0], [6.6, -2.8, 0],
+    [10.9, -0.6, -Math.PI / 2], [10.9, 2.6, -Math.PI / 2]
+  ];
   const escritorios = [];
-  let k = 0;
-  for (const dz of filasZ) for (const dx of colsX) {
-    const d = new THREE.Group(); d.position.set(dx, 0, dz); scene.add(d);
-    d.add(caja(3, 0.12, 1.2, '#8a6a4a', 0, 0.76, 0));
-    for (const [lx, lz] of [[-1.4, -0.5], [1.4, -0.5], [-1.4, 0.5], [1.4, 0.5]]) d.add(caja(0.08, 0.72, 0.08, '#3b2e22', lx, 0.36, lz));
-    d.add(caja(0.12, 0.3, 0.12, '#1a1d20', 0, 0.97, -0.35));
-    d.add(caja(1.15, 0.7, 0.07, '#1a1d20', 0, 1.42, -0.35));
+  puestos.forEach(([cx, cz, giro], k) => {
+    const d = new THREE.Group(); d.position.set(cx, 0, cz); d.rotation.y = giro; scene.add(d);
+    // escritorio de vidrio con patas cromadas en X
+    const cubierta = new THREE.Mesh(new THREE.BoxGeometry(3, 0.05, 1.2), vidrio); cubierta.position.y = 0.76; d.add(cubierta);
+    for (const lx of [-1.4, 1.4]) for (const s of [1, -1]) { const p = caja(0.05, 1.26, 0.05, cromo, lx, 0.38, 0); p.rotation.x = s * 0.92; d.add(p); }
+    d.add(caja(2.8, 0.04, 0.04, cromo, 0, 0.12, 0));
+    d.add(caja(0.12, 0.3, 0.12, '#1a1d20', 0, 0.93, -0.35));
+    d.add(caja(1.15, 0.7, 0.07, '#1a1d20', 0, 1.38, -0.35));
     const pantalla = new THREE.Mesh(new THREE.PlaneGeometry(1.02, 0.58), new THREE.MeshBasicMaterial({ color: '#2f7fd6' }));
-    pantalla.position.set(0, 1.42, -0.31); d.add(pantalla);
-    d.add(caja(0.8, 0.04, 0.26, '#d8d8d8', 0, 0.84, 0.25));
-    d.add(caja(0.18, 0.2, 0.18, '#ffffff', 1.05, 0.92, 0.1)); // taza
-    addObs(dx - 1.5, dx + 1.5, dz - 0.6, dz + 0.6);
+    pantalla.position.set(0, 1.38, -0.31); d.add(pantalla);
+    d.add(caja(0.8, 0.04, 0.26, '#d8d8d8', 0, 0.8, 0.25));
+    d.add(caja(0.16, 0.24, 0.16, k % 2 ? '#1f3a68' : '#111111', 1.05, 0.9, 0.1)); // termo
+    if (k % 3 === 0) d.add(caja(0.14, 0.38, 0.14, '#5a1a12', -1.05, 0.97, 0.05)); // refresco
+    if (k === 4) { d.add(caja(0.62, 0.03, 0.42, '#7b3fa0', -0.95, 0.8, 0.2)); }
+    if (Math.abs(Math.sin(giro)) > 0.5) addObs(cx - 0.6, cx + 0.6, cz - 1.5, cz + 1.5);
+    else addObs(cx - 1.5, cx + 1.5, cz - 0.6, cz + 0.6);
 
-    // empleado sentado, de espaldas a la cámara
-    const ez = dz + 1.15;
-    const e = new THREE.Group(); e.position.set(dx, 0, ez); scene.add(e);
+    // empleado sentado en su silla, viendo su monitor
+    const e = new THREE.Group(); e.position.set(0, 0, 1.15); d.add(e);
     e.add(new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.1, 18), mat('#23292e')).translateY(0.5));
     e.add(caja(0.08, 0.45, 0.08, '#23292e', 0, 0.25, 0));
     const cuerpo = new THREE.Group(); e.add(cuerpo);
@@ -412,40 +428,32 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     logoSilla.position.set(0, 0.86, 0.405); e.add(logoSilla);
     const etiqueta = spriteTexto(nombres[k], 0.34, { color: '#fff', bg: 'rgba(0,0,0,.55)', fam: 'Rubik, sans-serif', peso: 700, size: 40, pad: 16 });
     etiqueta.position.set(0, 2.1, 0); e.add(etiqueta);
-    addObs(dx - 0.42, dx + 0.42, ez - 0.35, ez + 0.42);
 
-    escritorios.push({ dx, dz, pantalla, emp: { nombre: nombres[k], x: dx, z: ez, grupo: e, cuerpo, cabeza, burbuja: null, flojo: null, idx: -1, prox: 2 + Math.random() * 6 } });
-    k++;
-  }
+    const sx = Math.sin(giro), sz = Math.cos(giro);
+    const ex = cx + sx * 1.15, ez = cz + sz * 1.15;
+    addObs(ex - 0.42, ex + 0.42, ez - 0.42, ez + 0.42);
+    escritorios.push({ pantalla, emp: { nombre: nombres[k], x: ex, z: ez, ax: cx + sx * 2.1, az: cz + sz * 2.1, grupo: e, cuerpo, cabeza, burbuja: null, flojo: null, idx: -1, prox: 2 + Math.random() * 6 } });
+  });
 
-  // NOC
-  const rack = new THREE.Group(); rack.position.set(11.2, 0, 0); scene.add(rack);
-  rack.add(caja(1, 2.6, 2.4, '#1b1f23', 0, 1.3, 0));
+  // NOC (rack al fondo a la derecha)
+  const rack = new THREE.Group(); rack.position.set(11.05, 0, -5.45); scene.add(rack);
+  rack.add(caja(1.2, 2.6, 0.9, '#1b1f23', 0, 1.3, 0));
   const leds = [];
-  for (let f = 0; f < 6; f++) {
-    rack.add(caja(0.04, 0.28, 2.1, '#2d343b', -0.5, 0.35 + f * 0.33, 0));
+  for (let f = 0; f < 5; f++) {
+    rack.add(caja(1.05, 0.28, 0.04, '#2d343b', 0, 0.35 + f * 0.33, 0.45));
     for (let l = 0; l < 4; l++) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.07, 0.12), new THREE.MeshBasicMaterial({ color: '#2bff88' }));
-      m.position.set(-0.53, 0.35 + f * 0.33, -0.7 + l * 0.25); rack.add(m); leds.push(m);
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.07, 0.05), new THREE.MeshBasicMaterial({ color: '#2bff88' }));
+      m.position.set(-0.36 + l * 0.24, 0.35 + f * 0.33, 0.48); rack.add(m); leds.push(m);
     }
   }
-  { const l = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 0.8), logoMat); l.position.set(-0.52, 2.35, 0.55); l.rotation.y = -Math.PI / 2; rack.add(l); }
+  { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 0.76), logoMat); l.position.set(0, 2.22, 0.46); rack.add(l); }
   const textoNoc = { ok: texTexto('NOC OK', { color: '#2bff88', bg: 'rgba(0,0,0,.6)', size: 44 }), caido: texTexto('SIN RED', { color: '#ff3b3b', bg: 'rgba(0,0,0,.6)', size: 44 }) };
-  const letreroNoc = sprite(textoNoc.ok.t, textoNoc.ok.asp, 0.45); letreroNoc.position.set(10.9, 3.1, 0); scene.add(letreroNoc);
-  addObs(10.7, 11.7, -1.2, 1.2);
-  const zonaRack = { x: 10.1, z: 0 };
+  const letreroNoc = sprite(textoNoc.ok.t, textoNoc.ok.asp, 0.45); letreroNoc.position.set(11.0, 3.2, -5.2); scene.add(letreroNoc);
+  addObs(10.4, 11.7, -6, -4.95);
+  const zonaRack = { x: 10.9, z: -4.1 };
   const anilloRack = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.25, 40), new THREE.MeshBasicMaterial({ color: '#ff3b3b', transparent: true }));
-  anilloRack.rotation.x = -Math.PI / 2; anilloRack.position.set(zonaRack.x, 0.03, 0); anilloRack.visible = false; scene.add(anilloRack);
-
-  // cafetera y plantas
-  scene.add(caja(1.2, 1.1, 0.9, '#1e1e1e', -11.1, 0.55, -4.9));
-  scene.add(caja(0.3, 0.2, 0.05, '#c0392b', -11.3, 0.85, -4.43));
-  addObs(-11.7, -10.5, -5.6, -4.45);
-  for (const [px, pz] of [[-11.2, 5.2], [11.2, 5.2], [11.2, -5.1]]) {
-    scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.24, 0.5, 14), mat('#8b5a2b')).translateX(px).translateY(0.25).translateZ(pz));
-    const hoja = esfera(0.5, '#2f8f46', px, 0.85, pz); scene.add(hoja);
-    addObs(px - 0.35, px + 0.35, pz - 0.35, pz + 0.35);
-  }
+  anilloRack.rotation.x = -Math.PI / 2; anilloRack.position.set(zonaRack.x, 0.03, zonaRack.z); anilloRack.visible = false; scene.add(anilloRack);
+  luzAlarma.position.set(10.4, 2.8, -3.9);
 
   // ---------- Jefes ----------
   function crearJefe(color, corbata, o = {}) {
@@ -507,8 +515,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   const leerNombre = (id, def) => ($(id).value.trim() || def).toUpperCase();
   function reiniciar() {
-    p1 = nuevoJefe(leerNombre('n1', 'Jesús'), '#ff5a4e', '#f2b632', -10, 0.6, modelo1);
-    p2 = nuevoJefe(leerNombre('n2', modoCpu ? 'CPU' : 'El Retador'), '#3ab0ff', '#d89a7c', 9, 4.8, modelo2);
+    p1 = nuevoJefe(leerNombre('n1', 'Jesús'), '#ff5a4e', '#f2b632', -6, 3.6, modelo1);
+    p2 = nuevoJefe(leerNombre('n2', modoCpu ? 'CPU' : 'El Retador'), '#3ab0ff', '#d89a7c', 7.5, 4.6, modelo2);
     p2.dir = Math.PI;
     tiempo = DURACION; productividad = 100; internet = true; proxCaida = 15 + Math.random() * 8;
     for (const cf of cafes) scene.remove(cf.m);
@@ -641,7 +649,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   function aparecer(e) {
     e.activo = true; e.saliendo = false; e.resta = e.dura; e.objetivo = null;
-    e.x = -8 + Math.random() * 16; e.z = 6.8; e.dir = Math.PI; e.m.g.visible = true;
+    e.x = -7 + Math.random() * 14; e.z = 6.8; e.dir = Math.PI; e.m.g.visible = true;
     if (e === ceron) {
       flotar(e.x, 3.6, 5.2, '¡AGUAS! LLEGÓ CERÓN', '#ffd23f', true);
       beep(147, .3, 'sawtooth', .07); setTimeout(() => beep(110, .5, 'sawtooth', .07), 280);
@@ -665,7 +673,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       e.resta -= dt;
       if (e.resta <= 0 && !e.saliendo) salir(e);
       if (e.saliendo) {
-        navegar(e, e.x < 0 ? -10.5 : 10.5, 7.4, dt, 1, e.vel * 1.3, true);
+        navegar(e, e.x < 0 ? -6 : 6, 7.4, dt, 1, e.vel * 1.3, true);
         if (e.z > 7) { e.activo = false; e.m.g.visible = false; e.prox = azar(e.cada); }
         continue;
       }
@@ -682,7 +690,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
           e.objetivo = libres.length ? libres[Math.floor(Math.random() * libres.length)] : null;
         }
         if (e.objetivo) {
-          navegar(e, e.objetivo.x, e.objetivo.z + 0.95, dt, 1, e.vel, libre);
+          navegar(e, e.objetivo.ax, e.objetivo.az, dt, 1, e.vel, libre);
           if (Math.hypot(e.x - e.objetivo.x, e.z - e.objetivo.z) < 1.1) {
             ponerFlojo(e.objetivo, DEYSI); e.objetivo = null; beep(660, .06, 'triangle');
           }
@@ -699,7 +707,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     if (ceron.activo && !ceron.saliendo && j.regano <= 0 && Math.hypot(ceron.x - j.x, ceron.z - j.z) < 4) {
       navegar(j, j.x + (j.x - ceron.x) * 3, j.z + (j.z - ceron.z) * 3, dt, .95); return;
     }
-    for (const e of escritorios) if (e.emp.flojo) objetivos.push({ x: e.emp.x, z: e.emp.z + 0.95, peso: 1 });
+    for (const e of escritorios) if (e.emp.flojo) objetivos.push({ x: e.emp.ax, z: e.emp.az, peso: 1 });
     if (!internet) objetivos.push({ x: zonaRack.x - 0.3, z: zonaRack.z, peso: 0.6 });
     for (const cf of cafes) objetivos.push({ x: cf.x, z: cf.z, peso: 1.3 });
     let mejor = null, md = Infinity;
@@ -752,7 +760,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       proxCaida -= dt;
       if (proxCaida <= 0) {
         internet = false; beep(220, .3, 'square', .06); setTimeout(() => beep(165, .4, 'square', .06), 200);
-        flotar(8, 3.4, 0, '¡SE CAYÓ LA RED!', '#ff3b3b', true);
+        flotar(8.6, 3.4, -3.6, '¡SE CAYÓ LA RED!', '#ff3b3b', true);
       }
     } else {
       for (const j of [p1, p2]) if (j.aturdido <= 0 && Math.hypot(j.x - zonaRack.x, j.z - zonaRack.z) < 1.2) {
