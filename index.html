@@ -989,8 +989,9 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
     // con un jefe en la oficina cada flojo pesa más
     const hayJefe = enemigos.some(jefeEnOficina);
-    const drenaje = flojos * (hayJefe ? 1.5 : 0.9) + (internet ? 0 : 2.0);
-    productividad = Math.max(0, Math.min(100, productividad + (drenaje > 0 ? -drenaje : 1.4) * dt));
+    // la oficina siempre recupera un poco; con 3 flojos se mantiene y con muchos baja poco a poco
+    const drenaje = flojos * (hayJefe ? 0.5 : 0.32) + (internet ? 0 : 0.9);
+    productividad = Math.max(0, Math.min(100, productividad + (1.0 - drenaje) * dt));
     if (productividad <= 0) terminar(true);
     else if (tiempo <= 0) terminar(false);
   }
