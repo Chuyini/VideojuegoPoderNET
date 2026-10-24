@@ -78,6 +78,11 @@ h1 span { color: var(--oro); }
 }
 .overlay h2 { font-family: var(--display); font-weight: 400; margin: 0; font-size: clamp(18px, 3.6vw, 38px); color: var(--oro); text-wrap: balance; }
 .overlay p { margin: 0; max-width: 54ch; }
+.overlay.resumen { justify-content: flex-end; gap: 8px; padding-bottom: 14px; background: linear-gradient(to bottom, rgba(11,13,16,0) 50%, rgba(11,13,16,.92) 84%); }
+.overlay.resumen h2 { font-size: clamp(15px, 2.6vw, 26px); }
+.overlay.resumen p { font-size: 13px; }
+.overlay.resumen .nombres { display: none; }
+.overlay.resumen button { font-size: 13px; padding: 9px 14px; }
 .nombres { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
 .nombres label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--tenue); text-align: left; }
 .nombres input { font: 600 15px var(--body); width: 170px; max-width: 100%; padding: 8px 10px; border-radius: 4px; border: 2px solid var(--linea); background: var(--fondo-2); color: var(--texto); }
@@ -137,6 +142,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       <div class="botones">
         <button id="btn2p">2 jugadores</button>
         <button id="btnCpu" class="alt">Contra la CPU</button>
+        <button id="btnMusica" class="alt" hidden>Quitar música</button>
       </div>
     </div>
     <button id="gritoTouch" class="alt" hidden>¡GRITO!</button>
@@ -245,6 +251,83 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     trem.connect(tg).connect(g.gain); o.connect(g).connect(ac.destination);
     o.start(t0); trem.start(t0); o.stop(t0 + dur); trem.stop(t0 + dur);
   }
+
+  // ---------- Música de victoria ----------
+  // Canción original hecha aquí mismo (sin derechos de autor). Si existe musica-ganador.mp3 junto al juego, se usa esa.
+  const musicaSintetica = (() => {
+    let timer = null, siguiente = 0, paso = 0, master = null;
+    const CORCHEA = 60 / 132 / 2;
+    const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+    const mel = [72, 0, 72, 74, 76, 0, 72, 0, 79, 0, 79, 0, 77, 76, 74, 0, 72, 0, 72, 74, 76, 0, 79, 0, 81, 0, 79, 0, 77, 0, 76, 0,
+                 77, 0, 77, 76, 74, 0, 77, 0, 76, 0, 76, 74, 72, 0, 76, 0, 74, 0, 74, 76, 77, 0, 79, 0, 84, 0, 0, 0, 79, 0, 0, 0];
+    const acordes = [[60, 64, 67], [59, 62, 67], [60, 64, 67], [60, 65, 69], [60, 65, 69], [60, 64, 67], [59, 62, 67], [60, 64, 72]];
+    function nota(f, t0, d, tipo, v) {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = tipo; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+      o.connect(g).connect(master); o.start(t0); o.stop(t0 + d + 0.02);
+    }
+    function golpe(t0, d, filtro, fr, v) {
+      const n = ruido(d), f = ac.createBiquadFilter(), g = ac.createGain();
+      f.type = filtro; f.frequency.value = fr;
+      g.gain.setValueAtTime(v, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+      n.connect(f).connect(g).connect(master); n.start(t0); n.stop(t0 + d);
+    }
+    function bombo(t0) {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.frequency.setValueAtTime(150, t0); o.frequency.exponentialRampToValueAtTime(45, t0 + 0.12);
+      g.gain.setValueAtTime(0.55, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.16);
+      o.connect(g).connect(master); o.start(t0); o.stop(t0 + 0.18);
+    }
+    function programar() {
+      while (siguiente < ac.currentTime + 0.15) {
+        const i = paso % mel.length, compas = Math.floor(i / 8), raiz = acordes[compas][0] - 12;
+        if (mel[i]) nota(hz(mel[i]), siguiente, CORCHEA * 0.9, 'square', 0.1);
+        if (i % 2 === 0) nota(hz(i % 4 === 0 ? raiz : raiz + 7), siguiente, CORCHEA * 1.8, 'triangle', 0.25);
+        if (i % 8 === 0) for (const m of acordes[compas]) nota(hz(m), siguiente, CORCHEA * 7.5, 'sawtooth', 0.02);
+        if (i % 4 === 0) bombo(siguiente);
+        if (i % 4 === 2) golpe(siguiente, 0.12, 'bandpass', 1800, 0.22);
+        golpe(siguiente, 0.04, 'highpass', 7000, 0.06);
+        siguiente += CORCHEA; paso++;
+      }
+    }
+    return {
+      sonando: () => !!timer,
+      iniciar() {
+        if (!ac || timer) return;
+        master = ac.createGain(); master.gain.setValueAtTime(0.0001, ac.currentTime);
+        master.gain.exponentialRampToValueAtTime(0.55, ac.currentTime + 0.5); master.connect(ac.destination);
+        siguiente = ac.currentTime + 0.05; paso = 0;
+        timer = setInterval(programar, 50); programar();
+      },
+      parar() {
+        if (!timer) return;
+        clearInterval(timer); timer = null;
+        const m = master; m.gain.setTargetAtTime(0.0001, ac.currentTime, 0.15); setTimeout(() => m.disconnect(), 900);
+      }
+    };
+  })();
+  let pista = null, pistaLista = false;
+  try {
+    pista = new Audio('musica-ganador.mp3'); pista.loop = true; pista.preload = 'auto';
+    pista.addEventListener('canplaythrough', () => { pistaLista = true; }, { once: true });
+    pista.addEventListener('error', () => { pista = null; pistaLista = false; }, { once: true });
+  } catch (_) { pista = null; }
+  let musicaOn = false;
+  const musica = {
+    iniciar() {
+      musicaOn = true;
+      if (pista && pistaLista) { pista.currentTime = 0; pista.volume = 0.7; pista.play().catch(() => musicaSintetica.iniciar()); }
+      else musicaSintetica.iniciar();
+      $('btnMusica').textContent = 'Quitar música';
+    },
+    parar() {
+      musicaOn = false;
+      if (pista) pista.pause();
+      musicaSintetica.parar();
+      $('btnMusica').textContent = 'Poner música';
+    }
+  };
 
   // ---------- Three ----------
   const cont = $('escena');
@@ -610,10 +693,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     if (o.calvo) pelo.visible = false;
     if (o.falda) g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.5, 0.5, 18), mat(o.falda)).translateY(0.52));
     if (o.escala) g.scale.setScalar(o.escala);
-    if (o.etiqueta) { const s = spriteTexto(o.etiqueta, 0.46, { color: o.colorEtiqueta, bg: 'rgba(0,0,0,.7)', size: 44 }); s.position.y = 2.35; g.add(s); }
+    let fija = null;
+    if (o.etiqueta) { fija = spriteTexto(o.etiqueta, 0.46, { color: o.colorEtiqueta, bg: 'rgba(0,0,0,.7)', size: 44 }); fija.position.y = 2.35; g.add(fija); }
     g.visible = !o.oculto;
     scene.add(g);
-    return { g, pI, pD, bI, bD, aura, estrellas, etiqueta: null };
+    return { g, pI, pD, bI, bD, aura, estrellas, etiqueta: null, fija };
   }
   function nuevoJefe(nombre, color, corbata, x, z, modelo) {
     if (modelo.etiqueta) { modelo.g.remove(modelo.etiqueta); modelo.etiqueta.material.map.dispose(); }
@@ -725,11 +809,12 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   function iniciar(cpu) {
     if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
     modoCpu = cpu; reiniciar(); estado = 'jugando';
-    $('overlay').hidden = true; $('hud').hidden = false; $('gritoTouch').hidden = !esTouch;
+    $('overlay').hidden = true; $('overlay').classList.remove('resumen'); $('hud').hidden = false; $('gritoTouch').hidden = !esTouch;
     beep(523, .1); setTimeout(() => beep(659, .1), 110); setTimeout(() => beep(784, .18), 220);
   }
   $('btn2p').addEventListener('click', () => iniciar(false));
   $('btnCpu').addEventListener('click', () => iniciar(true));
+  $('btnMusica').addEventListener('click', () => (musicaOn ? musica.parar() : musica.iniciar()));
 
   // ---------- Movimiento ----------
   function choca(x, z, r, libre) {
@@ -1052,7 +1137,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
 
   // ---------- Ceremonia: Cerón y Deysimar le entregan el trofeo al ganador ----------
-  const CAM_PREMIO = new THREE.Vector3(0, 5.4, 12.2), MIRA_PREMIO = new THREE.Vector3(0, 1.5, 4.6), miraTmp = new THREE.Vector3();
+  const CAM_PREMIO = new THREE.Vector3(0, 4.6, 12.8), MIRA_PREMIO = new THREE.Vector3(0, 1.1, 4.6), miraTmp = new THREE.Vector3();
   const suave = k => k * k * (3 - 2 * k);
   let vistaPremio = 0;
   const trofeo = (() => {
@@ -1107,7 +1192,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     cafes = []; internet = true;
     Object.assign(w, { x: 0, z: 4.6, dir: 0, aturdido: 0, boost: 0, movio: false, festeja: false });
     Object.assign(l, { x: 3.8, z: 4.3, dir: -0.9, aturdido: 0, boost: 0, movio: false, aplaude: true });
-    w.m.etiqueta.visible = false;
+    w.m.etiqueta.visible = false; l.m.etiqueta.visible = false;
+    ceron.m.fija.visible = deysi.m.fija.visible = false;
     for (const [e, x] of [[ceron, -0.9], [deysi, 0.9]]) Object.assign(e, { activo: true, saliendo: false, pausa: 0, x, z: 8.8, dir: Math.PI, aplaude: false });
     ceron.m.g.visible = deysi.m.g.visible = true;
     trofeo.visible = true;
@@ -1142,16 +1228,20 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       trofeo.position.set(w.x, 2.15 + Math.sin(T * 6) * 0.06, w.z + 0.05);
       if (!cer.fanfarria) {
         cer.fanfarria = true; fanfarria(); confeti.empezar();
-        const t1 = spriteTexto('EMPLEADO DEL MES', 0.8, { color: '#f2b632', borde: 'rgba(0,0,0,.85)', size: 60 });
+        const t1 = spriteTexto('EMPLEADO DEL MES', 0.55, { color: '#f2b632', borde: 'rgba(0,0,0,.85)', size: 60 });
         const cap = x => x.charAt(0) + x.slice(1).toLowerCase();
-        const t2 = spriteTexto(cap(w.nombre), 0.62, { color: w.color, borde: 'rgba(0,0,0,.85)', size: 56 });
-        t1.position.set(0, 4.0, 4.6); t2.position.set(0, 3.35, 4.6);
+        const t2 = spriteTexto(cap(w.nombre), 0.42, { color: w.color, borde: 'rgba(0,0,0,.85)', size: 56 });
+        t1.position.set(0, 3.9, 4.6); t2.position.set(0, 3.38, 4.6);
+        setTimeout(() => { if (cer.activo) musica.iniciar(); }, 1300);
         scene.add(t1, t2); cer.sprites.push(t1, t2);
       }
     }
     trofeo.rotation.y += dt * 1.5;
     confeti.actualizar(dt, T < 6);
-    if (T >= 6.5 && !cer.final) { cer.final = true; estado = 'fin'; $('overlay').hidden = false; }
+    if (T >= 6.5 && !cer.final) {
+      cer.final = true; estado = 'fin';
+      $('overlay').classList.add('resumen'); $('btnMusica').hidden = false; $('overlay').hidden = false;
+    }
   }
 
   function limpiarCeremonia() {
@@ -1159,7 +1249,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     trofeo.visible = false; confeti.ocultar();
     for (const sp of cer.sprites) { scene.remove(sp); sp.material.map.dispose(); sp.material.dispose(); }
     cer.sprites = [];
-    for (const e of enemigos) e.aplaude = false;
+    for (const e of enemigos) { e.aplaude = false; e.m.fija.visible = true; }
+    musica.parar(); $('btnMusica').hidden = true;
   }
 
   // ---------- Visuales ----------

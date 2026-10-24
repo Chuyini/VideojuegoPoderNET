@@ -22,6 +22,10 @@ Abre `index.html` en el navegador o súbelo a cualquier hosting estático (Verce
 - Al ganador, Cerón y Deysimar le entregan el trofeo de empleado del mes
 - Todos los empleados usan la chamarra negra de poderNET; cada jugador lleva un parche y un aro de su color
 
+## Música del ganador
+
+Al ganar suena una canción de victoria compuesta dentro del juego (sin derechos de autor). Si quieres otra canción, sube un archivo `musica-ganador.mp3` a la raíz del repo y el juego la usará en su lugar (con loop). Usa música libre de derechos, por ejemplo de Pixabay Music.
+
 ## Archivos
 
 - `index.html`: el juego (HTML, CSS y JavaScript con Three.js r128)
