@@ -55,6 +55,7 @@ h1 span { color: var(--oro); }
 .grito { height: 6px; background: var(--linea); border-radius: 3px; overflow: hidden; width: clamp(60px, 12vw, 120px); }
 .caja.p2 .grito { justify-self: end; }
 .grito i { display: block; height: 100%; background: var(--oro); width: 100%; }
+.caja .extra { font-size: clamp(9px, 1.2vw, 11px); font-weight: 800; letter-spacing: .06em; color: var(--oro); min-height: 1.2em; white-space: nowrap; }
 .centro { text-align: center; }
 #reloj { font-family: var(--display); font-size: clamp(16px, 2.8vw, 28px); font-variant-numeric: tabular-nums; }
 #reloj.urge { color: #ff3b3b; }
@@ -126,14 +127,14 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     <div id="flash"></div>
     <div id="regano" hidden></div>
     <div class="hud" id="hud" hidden>
-      <div class="caja p1"><span class="nom" id="h1n">JESÚS</span><span class="pts" id="h1p">0000</span><div class="grito"><i id="h1g"></i></div></div>
+      <div class="caja p1"><span class="nom" id="h1n">JESÚS</span><span class="pts" id="h1p">0000</span><div class="grito"><i id="h1g"></i></div><span class="extra" id="h1x"></span></div>
       <div class="caja centro"><span id="nivelTxt" class="nivel">NIVEL 1 / 3</span><span id="reloj">1:50</span><div class="barra"><i id="prod"></i></div><small id="prodTxt">PRODUCTIVIDAD 100%</small>
         <span id="alerta" class="aviso" hidden>RED CAÍDA · VE AL NOC</span>
         <span id="alertaJefe" class="aviso" hidden></span>
         <span id="alertaFantasma" class="aviso" hidden>APARECIÓ LA NIÑA FANTASMA · GRÍTALE DOS VECES</span>
         <span id="alertaRata" class="aviso" hidden>¡RATA SUELTA! · ATRÁPALA ANTES DE QUE LLEGUE AL NOC</span>
       </div>
-      <div class="caja p2"><span class="nom" id="h2n">EL RETADOR</span><span class="pts" id="h2p">0000</span><div class="grito"><i id="h2g"></i></div></div>
+      <div class="caja p2"><span class="nom" id="h2n">EL RETADOR</span><span class="pts" id="h2p">0000</span><div class="grito"><i id="h2g"></i></div><span class="extra" id="h2x"></span></div>
     </div>
     <div class="overlay" id="overlay">
       <h2 id="ovTitulo">¿Quién será el empleado del mes?</h2>
@@ -174,6 +175,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
         <li>Levanta la red en el NOC: <b>+25</b></li>
         <li>El grito despierta a todos cerca y aturde al otro jugador (+10 c/u)</li>
         <li>El café te hace correr más rápido</li>
+        <li><b>Combos:</b> despierta empleados seguidos (menos de 6 s entre uno y otro). Desde el 3.º valen <b>+15</b> y desde el 6.º <b>+20</b>. Si te regañan o te espantan, se pierde la racha</li>
+        <li><b>Poderes en el piso:</b> <b>Fibra</b> (corres al doble), <b>Antena</b> (grito al doble de lejos), <b>Gafete</b> (los jefes y el cliente no te agarran) y <b>WiFi</b> (despiertas solo a quien pases cerca)</li>
         <li>Al ganador, toda la banda se levanta a aplaudirle y Cerón y Deysimar le entregan el trofeo</li>
       </ul>
     </div>
@@ -908,6 +911,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     g.add(caja(0.44, 0.08, 0.04, '#111111', 0, 1.68, 0.26));
     const aura = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.05, 8, 32), new THREE.MeshBasicMaterial({ color: '#c98b4a' }));
     aura.rotation.x = -Math.PI / 2; aura.position.y = 0.06; aura.visible = false; g.add(aura);
+    const poder = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.06, 8, 36), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true }));
+    poder.rotation.x = -Math.PI / 2; poder.position.y = 0.1; poder.visible = false; g.add(poder);
     const estrellas = [0, 1, 2].map(() => { const s = spriteTexto('⭐', 0.35, { fam: EMOJI, size: 48, pad: 4 }); s.visible = false; g.add(s); return s; });
     if (o.peloLargo) { pelo.material.color.set(o.peloLargo); g.add(caja(0.52, 0.62, 0.14, o.peloLargo, 0, 1.5, -0.2)); }
     if (o.calvo) pelo.visible = false;
@@ -921,13 +926,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     if (o.etiqueta) { fija = spriteTexto(o.etiqueta, 0.46, { color: o.colorEtiqueta, bg: 'rgba(0,0,0,.7)', size: 44 }); fija.position.y = 2.35; g.add(fija); }
     g.visible = !o.oculto;
     scene.add(g);
-    return { g, pI, pD, bI, bD, aura, estrellas, etiqueta: null, fija };
+    return { g, pI, pD, bI, bD, aura, poder, estrellas, etiqueta: null, fija };
   }
   function nuevoJefe(nombre, color, corbata, x, z, modelo) {
     if (modelo.etiqueta) { modelo.g.remove(modelo.etiqueta); modelo.etiqueta.material.map.dispose(); }
     modelo.etiqueta = spriteTexto(nombre, 0.46, { color, bg: 'rgba(0,0,0,.6)', size: 44 });
     modelo.etiqueta.position.y = 2.35; modelo.g.add(modelo.etiqueta);
-    return { nombre, color, x, z, r: 0.45, pts: 0, cool: 0, aturdido: 0, boost: 0, regano: 0, susto: 0, dir: 0, paso: 0, movio: false, m: modelo,
+    return { nombre, color, x, z, r: 0.45, pts: 0, cool: 0, aturdido: 0, boost: 0, regano: 0, susto: 0, racha: 0, rachaT: 0, fibra: 0, antena: 0, gafete: 0, wifi: 0, dir: 0, paso: 0, movio: false, m: modelo,
              nav: { atorado: 0, desvio: 0, dx: 0, dz: 0, ux: x, uz: z } };
   }
   const modelo1 = crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { escala: 1.1, chamarra: true, acento: '#ff5a4e' });
@@ -1018,11 +1023,12 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   // deja la oficina lista para el nivel actual; los puntos se conservan
   function prepararNivel() {
-    Object.assign(p1, { x: -6, z: 5.3, dir: 0, cool: 0, aturdido: 0, boost: 0, regano: 0, susto: 0 });
-    Object.assign(p2, { x: 6, z: 5.3, dir: Math.PI, cool: 0, aturdido: 0, boost: 0, regano: 0, susto: 0 });
+    Object.assign(p1, { x: -6, z: 5.3, dir: 0, cool: 0, aturdido: 0, boost: 0, regano: 0, susto: 0, racha: 0, rachaT: 0, fibra: 0, antena: 0, gafete: 0, wifi: 0 });
+    Object.assign(p2, { x: 6, z: 5.3, dir: Math.PI, cool: 0, aturdido: 0, boost: 0, regano: 0, susto: 0, racha: 0, rachaT: 0, fibra: 0, antena: 0, gafete: 0, wifi: 0 });
     tiempo = DURACION; productividad = 100; internet = true; proxCaida = 15 + Math.random() * 8;
     for (const cf of cafes) scene.remove(cf.m);
     cafes = []; proxCafe = 7;
+    quitarPoderes(); proxPoder = 9;
     for (const tx of textos) quitarTexto(tx);
     textos = [];
     for (const o of ondas) scene.remove(o.m);
@@ -1108,6 +1114,69 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   $('btnCpu').addEventListener('click', () => iniciar(true));
   $('btnSiguiente').addEventListener('click', siguienteNivel);
 
+  // ---------- Poderes de ISP ----------
+  const TIPOS_PODER = {
+    fibra:  { nombre: 'FIBRA', color: '#2de2ff', dura: 5, aviso: '¡FIBRA ÓPTICA! · VELOCIDAD x2' },
+    antena: { nombre: 'ANTENA', color: '#f2b632', dura: 10, aviso: '¡ANTENA! · GRITO DE LARGO ALCANCE' },
+    gafete: { nombre: 'GAFETE', color: '#ff5ad1', dura: 6, aviso: '¡GAFETE DE GERENTE! · INTOCABLE' },
+    wifi:   { nombre: 'WIFI', color: '#7cff6b', dura: 4, aviso: '¡ROUTER WIFI! · DESPIERTA A TODOS' }
+  };
+  let poderes = [], proxPoder = 9, estela = [];
+  const geoEstela = new THREE.SphereGeometry(0.09, 8, 6);
+  function modeloPoder(tipo) {
+    const d = TIPOS_PODER[tipo], g = new THREE.Group(), objeto = new THREE.Group();
+    const aro = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.52, 32), new THREE.MeshBasicMaterial({ color: d.color, transparent: true, opacity: 0.8, side: THREE.DoubleSide }));
+    aro.rotation.x = -Math.PI / 2; aro.position.y = 0.03; g.add(aro);
+    g.add(objeto);
+    const brillo = new THREE.MeshBasicMaterial({ color: d.color });
+    if (tipo === 'fibra') {
+      objeto.add(new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.035, 8, 24), brillo));
+      const t2 = new THREE.Mesh(new THREE.TorusGeometry(0.14, 0.03, 8, 24), brillo); t2.rotation.y = Math.PI / 2; objeto.add(t2);
+    } else if (tipo === 'antena') {
+      objeto.add(caja(0.14, 0.5, 0.06, '#f4f5f6', 0, 0, 0));
+      objeto.add(caja(0.03, 0.2, 0.03, '#9aa1a8', 0, -0.33, -0.05));
+      objeto.add(new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), brillo).translateY(0.3));
+    } else if (tipo === 'gafete') {
+      objeto.add(caja(0.26, 0.34, 0.02, '#ffffff', 0, -0.05, 0));
+      objeto.add(caja(0.2, 0.08, 0.025, d.color, 0, 0.06, 0));
+      objeto.add(caja(0.03, 0.26, 0.02, '#c0392b', -0.08, 0.24, 0)); objeto.add(caja(0.03, 0.26, 0.02, '#c0392b', 0.08, 0.24, 0));
+    } else {
+      objeto.add(caja(0.34, 0.08, 0.24, '#f4f5f6', 0, 0, 0));
+      for (const x of [-0.12, 0.12]) objeto.add(caja(0.025, 0.26, 0.025, '#e3e6e9', x, 0.17, -0.08));
+      for (let i = 0; i < 3; i++) objeto.add(new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 4), brillo).translateX(-0.09 + i * 0.09).translateY(0.045).translateZ(0.12));
+    }
+    objeto.position.y = 0.75;
+    const et = spriteTexto(d.nombre, 0.3, { color: d.color, bg: 'rgba(0,0,0,.65)', size: 40 }); et.position.y = 1.35; g.add(et);
+    g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+    return { g, objeto, aro, et };
+  }
+  function quitarPoder(p) { scene.remove(p.g); p.et.material.map.dispose(); p.et.material.dispose(); }
+  function quitarPoderes() { for (const p of poderes) quitarPoder(p); poderes = []; for (const e of estela) { scene.remove(e.m); e.m.material.dispose(); } estela = []; }
+  function aparecerPoder() {
+    for (let i = 0; i < 40; i++) {
+      const x = -14.5 + Math.random() * 29, z = -4 + Math.random() * 11;
+      if (choca(x, z, 0.6) || poderes.some(p => Math.hypot(p.x - x, p.z - z) < 3)) continue;
+      const tipos = Object.keys(TIPOS_PODER), tipo = tipos[Math.floor(Math.random() * tipos.length)];
+      const mp = modeloPoder(tipo); mp.g.position.set(x, 0, z); scene.add(mp.g);
+      poderes.push({ tipo, x, z, ...mp, vida: 14 });
+      beep(1400, .05, 'triangle', .04);
+      return;
+    }
+  }
+  function tomarPoder(j, p) {
+    const d = TIPOS_PODER[p.tipo];
+    j[p.tipo] = d.dura;
+    flotar(p.x, 2.2, p.z, d.aviso, d.color, true);
+    beep(880, .06, 'triangle'); setTimeout(() => beep(1320, .1, 'triangle'), 70);
+  }
+  function poderActivo(j) {
+    if (j.gafete > 0) return 'gafete';
+    if (j.fibra > 0) return 'fibra';
+    if (j.wifi > 0) return 'wifi';
+    if (j.antena > 0) return 'antena';
+    return null;
+  }
+
   // ---------- Movimiento ----------
   function choca(x, z, r, libre) {
     if (!libre && (x - r < -LIM.x || x + r > LIM.x || z - r < LIM.z0 || z + r > LIM.z1)) return true;
@@ -1121,7 +1190,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const len = Math.hypot(dx, dz);
     if (j.aturdido > 0 || len < 0.01) return false;
     dx /= len; dz /= len;
-    const v = (vel ?? (j.boost > 0 ? 7.8 : 5.2)) * factor * dt;
+    const v = (vel ?? (j.fibra > 0 ? 10.4 : j.boost > 0 ? 7.8 : 5.2)) * factor * dt;
     const nx = j.x + dx * v, nz = j.z + dz * v;
     if (!choca(nx, j.z, j.r, libre)) j.x = nx;
     if (!choca(j.x, nz, j.r, libre)) j.z = nz;
@@ -1154,7 +1223,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   function despertar(j, emp) {
     ponerFlojo(emp, -1);
     emp.prox = (3 + Math.random() * 6) * RITMO * (1 - 0.4 * (1 - tiempo / DURACION)) * (internet ? 1 : 0.6);
-    sumar(j, 10, emp.x, emp.z);
+    // racha: si despiertas al siguiente en menos de 6 s, sube el combo
+    j.racha = j.rachaT > 0 ? j.racha + 1 : 1; j.rachaT = 6;
+    const valor = j.racha >= 6 ? 20 : j.racha >= 3 ? 15 : 10;
+    sumar(j, valor, emp.x, emp.z);
+    if (j.racha >= 3) { flotar(emp.x, 3.3, emp.z, `¡COMBO x${j.racha}!`, '#f2b632', true); beep(700 + Math.min(j.racha, 10) * 80, .06, 'triangle'); }
     productividad = Math.min(100, productividad + 3);
     beep(880, .07);
   }
@@ -1166,10 +1239,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     j.cool = 6;
     const m = new THREE.Mesh(new THREE.RingGeometry(0.85, 1, 48), new THREE.MeshBasicMaterial({ color: j.color, transparent: true, side: THREE.DoubleSide }));
     m.rotation.x = -Math.PI / 2; m.position.set(j.x, 0.08, j.z); scene.add(m);
-    ondas.push({ m, vida: 0.6 });
+    const alcance = j.antena > 0 ? 7.6 : 3.9;
+    ondas.push({ m, vida: 0.6, k: j.antena > 0 ? 12.6 : 6.5 });
     flotar(j.x, 3.2, j.z, '¡VAMOS!', '#f2b632', true);
     beep(180, .25, 'sawtooth', .06);
-    for (const e of escritorios) if (e.emp.flojo && Math.hypot(e.emp.x - j.x, e.emp.z - j.z) < 3.9) despertar(j, e.emp);
+    for (const e of escritorios) if (e.emp.flojo && Math.hypot(e.emp.x - j.x, e.emp.z - j.z) < alcance) despertar(j, e.emp);
     if (Math.hypot(rival.x - j.x, rival.z - j.z) < 3.25 && rival.aturdido <= 0) {
       rival.aturdido = 1.4; flotar(rival.x, 3.0, rival.z, '¡ZAS!', rival.color);
     }
@@ -1180,7 +1254,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
     // a la niña fantasma hay que gritarle dos veces
     const f = fantasma;
-    if (f.activo && Math.hypot(f.x - j.x, f.z - j.z) < 3.9) {
+    if (f.activo && Math.hypot(f.x - j.x, f.z - j.z) < alcance) {
       f.golpes++;
       if (f.golpes >= 2) {
         f.activo = false; f.prox = azar(f.cada);
@@ -1209,7 +1283,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   let reganoTimer = null;
   function regano(j, e) {
-    j.pts = Math.max(0, j.pts - e.castigo); j.aturdido = e.aturde; j.regano = 4;
+    j.pts = Math.max(0, j.pts - e.castigo); j.aturdido = e.aturde; j.regano = 4; j.racha = 0; j.rachaT = 0;
     e.pausa = 1.3; // se queda regañando y te da chance de escapar
     const frase = e.frases[Math.floor(Math.random() * e.frases.length)];
     flotar(j.x, 3.3, j.z, `-${e.castigo}`, '#ff3b3b', true);
@@ -1245,7 +1319,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       if (e.pausa > 0) { e.pausa -= dt; continue; }
       const libre = e.z > LIM.z1 - 0.6;
       // Cerón va por el más cercano; Deysimar va por el que va ganando
-      const candidatos = [p1, p2].filter(j => j.regano <= 0);
+      const candidatos = [p1, p2].filter(j => j.regano <= 0 && j.gafete <= 0);
       let obj = null;
       if (candidatos.length) {
         if (e === deysi && candidatos.length === 2 && p1.pts !== p2.pts) obj = p1.pts > p2.pts ? p1 : p2;
@@ -1254,7 +1328,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       const vel = e === cliente && !internet ? e.vel * 1.15 : e.vel; // sin internet el cliente viene más enojado
       if (obj) navegar(e, obj.x, obj.z, dt, 1, vel, libre);
       else navegar(e, 0, 3.6, dt, 1, e.vel * 0.6, libre);
-      for (const j of [p1, p2]) if (j.regano <= 0 && Math.hypot(j.x - e.x, j.z - e.z) < e.r + j.r + 0.05) { regano(j, e); break; }
+      for (const j of [p1, p2]) if (j.regano <= 0 && j.gafete <= 0 && Math.hypot(j.x - e.x, j.z - e.z) < e.r + j.r + 0.05) { regano(j, e); break; }
     }
   }
 
@@ -1284,7 +1358,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     if (d > 0.01) { f.x += dx / d * v * dt; f.z += dz / d * v * dt; f.g.rotation.y = Math.atan2(dx, dz); }
     // espanta a quien toca
     for (const j of [p1, p2]) if (j.susto <= 0 && Math.hypot(j.x - f.x, j.z - f.z) < 0.9) {
-      j.susto = 4; j.aturdido = 1.5; j.pts = Math.max(0, j.pts - 10);
+      j.susto = 4; j.aturdido = 1.5; j.pts = Math.max(0, j.pts - 10); j.racha = 0; j.rachaT = 0;
       flotar(j.x, 3.2, j.z, '¡BUUU! -10', '#bcd2ff', true);
       gritoFantasma(); temblor = 0.4;
     }
@@ -1358,6 +1432,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     if (!internet) objetivos.push({ x: zonaRack.x - 0.3, z: zonaRack.z + 0.6, peso: jefeEnOficina(cliente) ? 0.3 : 0.6 });
     if (rata.activo && Math.hypot(rata.x - j.x, rata.z - j.z) < 9) objetivos.push({ x: rata.x, z: rata.z, peso: 0.5 });
     for (const cf of cafes) objetivos.push({ x: cf.x, z: cf.z, peso: 1.3 });
+    for (const p of poderes) objetivos.push({ x: p.x, z: p.z, peso: 1.1 });
     let mejor = null, md = Infinity;
     for (const o of objetivos) { const d = Math.hypot(o.x - j.x, o.z - j.z) * o.peso; if (d < md) { md = d; mejor = o; } }
     let cerca = 0;
@@ -1373,7 +1448,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     t += dt;
     for (const tx of textos) { tx.vida -= dt; tx.s.position.y += 0.9 * dt; tx.s.material.opacity = Math.min(1, tx.vida * 2); }
     textos = textos.filter(tx => tx.vida > 0 || (quitarTexto(tx), false));
-    for (const o of ondas) { o.vida -= dt; const s = 1 + (0.6 - o.vida) * 6.5; o.m.scale.set(s, s, s); o.m.material.opacity = Math.max(0, o.vida / 0.6); }
+    for (const o of ondas) { o.vida -= dt; const s = 1 + (0.6 - o.vida) * (o.k || 6.5); o.m.scale.set(s, s, s); o.m.material.opacity = Math.max(0, o.vida / 0.6); }
     ondas = ondas.filter(o => o.vida > 0 || (scene.remove(o.m), false));
     temblor = Math.max(0, temblor - dt);
     if (cer.activo) ceremonia(dt);
@@ -1383,6 +1458,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     for (const j of [p1, p2]) {
       j.cool = Math.max(0, j.cool - dt); j.aturdido = Math.max(0, j.aturdido - dt); j.boost = Math.max(0, j.boost - dt);
       j.regano = Math.max(0, j.regano - dt); j.susto = Math.max(0, j.susto - dt); j.movio = false;
+      j.rachaT = Math.max(0, j.rachaT - dt); if (j.rachaT <= 0) j.racha = 0;
+      for (const k of ['fibra', 'antena', 'gafete', 'wifi']) j[k] = Math.max(0, j[k] - dt);
     }
     actualizarEnemigos(dt);
     actualizarFantasma(dt);
@@ -1450,6 +1527,28 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       }
       return true;
     });
+
+    // poderes en el piso
+    proxPoder -= dt;
+    if (proxPoder <= 0 && poderes.length < 2) { aparecerPoder(); proxPoder = 10 + Math.random() * 6; }
+    for (const p of poderes) p.vida -= dt;
+    poderes = poderes.filter(p => {
+      const j = [p1, p2].find(j => j.aturdido <= 0 && Math.hypot(p.x - j.x, p.z - j.z) < 0.85);
+      if (j) { tomarPoder(j, p); quitarPoder(p); return false; }
+      if (p.vida <= 0) { quitarPoder(p); return false; }
+      return true;
+    });
+    for (const j of [p1, p2]) {
+      // WiFi: despierta solo a quien pases cerca
+      if (j.wifi > 0) for (const e of escritorios) if (e.emp.flojo && Math.hypot(e.emp.x - j.x, e.emp.z - j.z) < 2.6) despertar(j, e.emp);
+      // fibra: deja un rastro de luz
+      if (j.fibra > 0 && j.movio && Math.random() < 0.6) {
+        const m = new THREE.Mesh(geoEstela, new THREE.MeshBasicMaterial({ color: TIPOS_PODER.fibra.color, transparent: true }));
+        m.position.set(j.x, 0.25, j.z); scene.add(m); estela.push({ m, vida: 0.45 });
+      }
+    }
+    for (const e of estela) { e.vida -= dt; e.m.material.opacity = Math.max(0, e.vida / 0.45); e.m.scale.setScalar(Math.max(0.1, e.vida / 0.45)); }
+    estela = estela.filter(e => e.vida > 0 || (scene.remove(e.m), e.m.material.dispose(), false));
 
     // con un jefe en la oficina cada flojo pesa más
     const hayJefe = enemigos.some(e => e.jefe && jefeEnOficina(e));
@@ -1552,7 +1651,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     for (const tx of textos) quitarTexto(tx);
     textos = [];
     for (const cf of cafes) scene.remove(cf.m);
-    cafes = []; internet = true;
+    cafes = []; internet = true; quitarPoderes();
+    for (const j of [w, l]) Object.assign(j, { fibra: 0, antena: 0, gafete: 0, wifi: 0 });
     Object.assign(w, { x: 0, z: 4.6, dir: 0, aturdido: 0, boost: 0, movio: false, festeja: false });
     Object.assign(l, { x: 3.2, z: 5.0, dir: Math.atan2(-3.2, -0.4), aturdido: 0, boost: 0, movio: false, aplaude: true });
     parados.forEach((p, i) => {
@@ -1651,6 +1751,9 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       if (j.aplaude) { const c = Math.sin(t * 16); m.bI.rotation.x = m.bD.rotation.x = -1.25; m.bI.rotation.z = 0.35 + c * 0.2; m.bD.rotation.z = -(0.35 + c * 0.2); }
       m.g.position.y = j.festeja ? Math.abs(Math.sin(t * 6)) * 0.22 : j.movio ? Math.abs(Math.sin(j.paso)) * 0.06 : 0;
       m.aura.visible = j.boost > 0;
+      const pa = j.fibra !== undefined ? poderActivo(j) : null;
+      m.poder.visible = !!pa;
+      if (pa) { m.poder.material.color.set(TIPOS_PODER[pa].color); m.poder.material.opacity = 0.55 + Math.abs(Math.sin(t * 8)) * 0.45; m.poder.scale.setScalar(pa === 'gafete' ? 1.15 + Math.sin(t * 6) * 0.05 : 1); }
       m.estrellas.forEach((s, i) => {
         s.visible = j.aturdido > 0;
         const a = t * 6 + i * 2.1; s.position.set(Math.cos(a) * 0.45, 2.05 + Math.sin(a * 2) * 0.05, Math.sin(a) * 0.45);
@@ -1693,6 +1796,10 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const tn = internet ? textoNoc.ok : textoNoc.caido;
     if (letreroNoc.material.map !== tn.t) { letreroNoc.material.map = tn.t; letreroNoc.scale.set(0.55 * tn.asp, 0.55, 1); letreroNoc.material.needsUpdate = true; }
     for (const cf of cafes) { cf.m.rotation.y += 0.04; cf.m.position.y = 0.3 + Math.sin(t * 4) * 0.08; }
+    for (const p of poderes) {
+      p.objeto.rotation.y += 0.05; p.objeto.position.y = 0.75 + Math.sin(t * 3 + p.x) * 0.1;
+      p.aro.material.opacity = p.vida < 3 ? (Math.floor(t * 6) % 2 ? 0.9 : 0.15) : 0.8; // parpadea cuando está por desaparecer
+    }
     if (rata.activo) {
       let dif = rata.dir - rata.g.rotation.y; dif = Math.atan2(Math.sin(dif), Math.cos(dif));
       rata.g.rotation.y += dif * 0.35;
@@ -1709,13 +1816,21 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
     if (estado !== 'menu') {
       const s = Math.max(0, Math.ceil(tiempo));
-      const hud = [p1.pts, p2.pts, s, Math.round(productividad), internet, Math.round(p1.cool * 10), Math.round(p2.cool * 10), jefeEnOficina(ceron), jefeEnOficina(deysi), jefeEnOficina(cliente), rata.activo, f.activo].join('|');
+      const hud = [p1.pts, p2.pts, s, Math.round(productividad), internet, Math.round(p1.cool * 10), Math.round(p2.cool * 10), p1.racha, p2.racha, poderActivo(p1), poderActivo(p2), Math.ceil(p1.fibra + p1.antena + p1.gafete + p1.wifi), Math.ceil(p2.fibra + p2.antena + p2.gafete + p2.wifi), jefeEnOficina(ceron), jefeEnOficina(deysi), jefeEnOficina(cliente), rata.activo, f.activo].join('|');
       if (hud !== ultimoHud) {
         ultimoHud = hud;
         $('h1p').textContent = String(p1.pts).padStart(4, '0');
         $('h2p').textContent = String(p2.pts).padStart(4, '0');
         $('h1g').style.width = `${100 * (1 - p1.cool / 6)}%`;
         $('h2g').style.width = `${100 * (1 - p2.cool / 6)}%`;
+        for (const [j, id] of [[p1, 'h1x'], [p2, 'h2x']]) {
+          const partes = [];
+          if (j.racha >= 2) partes.push(`COMBO x${j.racha}`);
+          const pa = poderActivo(j);
+          if (pa) partes.push(`${TIPOS_PODER[pa].nombre} ${Math.ceil(j[pa])}s`);
+          $(id).textContent = partes.join(' · ');
+          $(id).style.color = pa ? TIPOS_PODER[pa].color : '';
+        }
         $('reloj').textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
         $('reloj').classList.toggle('urge', s <= 10);
         const pr = Math.round(productividad);

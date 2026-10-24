@@ -25,6 +25,8 @@ El NOC tiene 4 racks y un video wall con dos cámaras de seguridad en vivo, grá
 - Levantar la red en el NOC: +25
 - El grito (¡VAMOS!) despierta a los que estén cerca y aturde al otro jugador
 - El café te hace correr más rápido
+- **Combos**: despierta empleados seguidos (menos de 6 s entre uno y otro). Desde el 3.º valen +15 y desde el 6.º +20. Si te regañan o te espantan, se pierde la racha
+- **Poderes en el piso**: Fibra (corres al doble), Antena (grito al doble de lejos), Gafete (los jefes y el cliente no te agarran) y WiFi (despiertas solo a quien pases cerca)
 - **Cerón, el CEO**: te persigue. Si te alcanza te regaña: −30 y te congela. No le grites (−10)
 - **Deysimar, la gerente**: va tras el que va ganando. Si te alcanza te regaña: −30 y te congela. No le grites (−10)
 - **La niña fantasma**: apaga las luces y espanta a la banda. Si te toca: −10. Grítale dos veces y se esfuma: +20
