@@ -65,6 +65,7 @@ h1 span { color: var(--oro); }
 #alerta { background: #ff3b3b; }
 #alertaJefe { background: #ffd23f; color: #0b0d10; }
 #alertaFantasma { background: #6d7fd6; }
+#alertaRata { background: #8a8f96; }
 
 /* regaño: destello rojo + letrero grande */
 #flash { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle, rgba(255,0,0,0) 30%, rgba(255,0,0,.55) 100%); opacity: 0; transition: opacity .5s; }
@@ -78,6 +79,8 @@ h1 span { color: var(--oro); }
 }
 .overlay h2 { font-family: var(--display); font-weight: 400; margin: 0; font-size: clamp(18px, 3.6vw, 38px); color: var(--oro); text-wrap: balance; }
 .overlay p { margin: 0; max-width: 54ch; }
+.overlay.entre .nombres { display: none; }
+.nivel { display: block; font-weight: 800; font-size: 10px; letter-spacing: .16em; color: var(--oro); margin-bottom: 2px; }
 .overlay.resumen { justify-content: flex-end; gap: 8px; padding-bottom: 14px; background: linear-gradient(to bottom, rgba(11,13,16,0) 50%, rgba(11,13,16,.92) 84%); }
 .overlay.resumen h2 { font-size: clamp(15px, 2.6vw, 26px); }
 .overlay.resumen p { font-size: 13px; }
@@ -124,16 +127,17 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     <div id="regano" hidden></div>
     <div class="hud" id="hud" hidden>
       <div class="caja p1"><span class="nom" id="h1n">JESÚS</span><span class="pts" id="h1p">0000</span><div class="grito"><i id="h1g"></i></div></div>
-      <div class="caja centro"><span id="reloj">1:50</span><div class="barra"><i id="prod"></i></div><small id="prodTxt">PRODUCTIVIDAD 100%</small>
+      <div class="caja centro"><span id="nivelTxt" class="nivel">NIVEL 1 / 3</span><span id="reloj">1:50</span><div class="barra"><i id="prod"></i></div><small id="prodTxt">PRODUCTIVIDAD 100%</small>
         <span id="alerta" class="aviso" hidden>RED CAÍDA · VE AL NOC</span>
         <span id="alertaJefe" class="aviso" hidden></span>
         <span id="alertaFantasma" class="aviso" hidden>APARECIÓ LA NIÑA FANTASMA · GRÍTALE DOS VECES</span>
+        <span id="alertaRata" class="aviso" hidden>¡RATA SUELTA! · ATRÁPALA ANTES DE QUE LLEGUE AL NOC</span>
       </div>
       <div class="caja p2"><span class="nom" id="h2n">EL RETADOR</span><span class="pts" id="h2p">0000</span><div class="grito"><i id="h2g"></i></div></div>
     </div>
     <div class="overlay" id="overlay">
       <h2 id="ovTitulo">¿Quién será el empleado del mes?</h2>
-      <p id="ovTexto">1:50 en la oficina de San Luis. El que junte más puntos es el empleado del mes. Cuando lleguen Cerón, el CEO, o Deysimar, la gerente, córreles: si te alcanzan te regañan. Y cuidado con la niña fantasma.</p>
+      <p id="ovTexto">3 niveles de 1:50 en la oficina de poderNET. Nivel 1: Cerón, Deysimar y la niña fantasma. Nivel 2: llega el cliente enojado. Nivel 3: sale la rata come-cables del almacén. El que junte más puntos es el empleado del mes.</p>
       <div class="nombres">
         <label for="n1">JUGADOR 1<input id="n1" maxlength="12" value="Jesús"></label>
         <label for="n2">JUGADOR 2<input id="n2" maxlength="12" value="El Retador"></label>
@@ -141,6 +145,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       <div class="botones">
         <button id="btn2p">2 jugadores</button>
         <button id="btnCpu" class="alt">Contra la CPU</button>
+        <button id="btnSiguiente" hidden>Siguiente nivel</button>
       </div>
     </div>
     <button id="gritoTouch" class="alt" hidden>¡GRITO!</button>
@@ -175,9 +180,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     <div class="card enemigos">
       <h3>Cuidado con</h3>
       <ul>
-        <li><b>Cerón, el CEO:</b> te persigue. Si te alcanza te regaña: <b>−30</b> y te congela. No le grites (−10)</li>
-        <li><b>Deysimar, la gerente:</b> va tras el que va ganando. Si te alcanza te regaña: <b>−30</b> y te congela. No le grites (−10)</li>
-        <li><b>La niña fantasma:</b> apaga las luces y espanta a la banda. Si te toca: <b>−10</b>. Grítale <b>dos veces</b> y se esfuma: <b>+20</b></li>
+        <li><b>Nivel 1 · Cerón, el CEO:</b> te persigue. Si te alcanza te regaña: <b>−30</b> y te congela. No le grites (−10)</li>
+        <li><b>Nivel 1 · Deysimar, la gerente:</b> va tras el que va ganando. Si te alcanza te regaña: <b>−30</b> y te congela. No le grites (−10)</li>
+        <li><b>Nivel 1 · La niña fantasma:</b> apaga las luces y espanta a la banda. Si te toca: <b>−10</b>. Grítale <b>dos veces</b> y se esfuma: <b>+20</b></li>
+        <li><b>Nivel 2 · El cliente enojado:</b> tumba la red al llegar y te persigue para quejarse: <b>−20</b>. Levanta la red y se va contento: <b>+15</b></li>
+        <li><b>Nivel 3 · La rata come-cables:</b> sale del almacén y va al NOC a morder los cables. Atrápala: <b>+25</b></li>
       </ul>
     </div>
   </section>
@@ -363,6 +370,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.autoUpdate = false;
   cont.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#0b0d10');
@@ -572,7 +580,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   {
     const pos = [];
     for (let x = -15.5; x <= 15.5; x += 0.38) {
-      if (x > 3.8 && x < 8.2) continue;
+      if ((x > 3.8 && x < 8.2) || x > 10.5) continue; // libre para el logo y el video wall del NOC
       const n = 4 + Math.round(Math.abs(Math.sin(x * 2.3)) * 3);
       for (let i = 0; i < n; i++) pos.push([x, 5.7 - i * 0.3, -7.72, 0]);
     }
@@ -720,25 +728,159 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     escritorios.push({ pantalla, emp: { nombre: nombres[k], x: ex, z: ez, ax: cx + sx * 2.1, az: cz + sz * 2.1, grupo: e, cuerpo, cabeza, burbuja: null, flojo: null, idx: -1, prox: 2 + Math.random() * 6 } });
   });
 
-  // NOC (rack al fondo a la derecha)
-  const rack = new THREE.Group(); rack.position.set(15.05, 0, -7.45); scene.add(rack);
-  rack.add(caja(1.2, 2.6, 0.9, '#1b1f23', 0, 1.3, 0));
-  const leds = [];
-  for (let f = 0; f < 5; f++) {
-    rack.add(caja(1.05, 0.28, 0.04, '#2d343b', 0, 0.35 + f * 0.33, 0.45));
-    for (let l = 0; l < 4; l++) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.07, 0.05), new THREE.MeshBasicMaterial({ color: '#2bff88' }));
-      m.position.set(-0.36 + l * 0.24, 0.35 + f * 0.33, 0.48); rack.add(m); leds.push(m);
-    }
+  // NOC (fondo derecha): piso técnico, 4 racks, video wall con cámaras en vivo y gráficas
+  const NOC = { x0: 10.6, x1: 15.7, z0: -8, z1: -4.6 };
+  {
+    const piso = new THREE.Mesh(new THREE.PlaneGeometry(NOC.x1 - NOC.x0, NOC.z1 - NOC.z0), mat('#4a5058'));
+    piso.rotation.x = -Math.PI / 2; piso.position.set((NOC.x0 + NOC.x1) / 2, 0.012, (NOC.z0 + NOC.z1) / 2); piso.receiveShadow = true; scene.add(piso);
+    const linea = (w, d, x, z) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ color: '#f2b632' })); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.016, z); scene.add(m); };
+    linea(NOC.x1 - NOC.x0, 0.08, (NOC.x0 + NOC.x1) / 2, NOC.z1);
+    linea(0.08, NOC.z1 - NOC.z0, NOC.x0, (NOC.z0 + NOC.z1) / 2);
   }
-  { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.8), logoMat); l.position.set(0, 2.18, 0.46); rack.add(l); }
+  const leds = [];
+  for (const [i, rx] of [11.5, 12.75, 14.0, 15.1].entries()) {
+    const rack = new THREE.Group(); rack.position.set(rx, 0, -7.45); scene.add(rack);
+    rack.add(caja(1.15, 2.6, 0.9, '#1b1f23', 0, 1.3, 0));
+    for (let f = 0; f < 5; f++) {
+      rack.add(caja(1.0, 0.28, 0.04, '#2d343b', 0, 0.35 + f * 0.33, 0.45));
+      for (let l = 0; l < 4; l++) {
+        const m = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.07, 0.05), new THREE.MeshBasicMaterial({ color: '#2bff88' }));
+        m.position.set(-0.36 + l * 0.24, 0.35 + f * 0.33, 0.48); rack.add(m); leds.push(m);
+      }
+    }
+    if (i === 3) { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.8), logoMat); l.position.set(0, 2.18, 0.46); rack.add(l); }
+    else rack.add(caja(1.0, 0.5, 0.04, '#24292f', 0, 2.15, 0.45));
+  }
+  addObs(10.9, 15.7, -8, -6.95);
   const textoNoc = { ok: texTexto('NOC OK', { color: '#2bff88', bg: 'rgba(0,0,0,.6)', size: 44 }), caido: texTexto('SIN RED', { color: '#ff3b3b', bg: 'rgba(0,0,0,.6)', size: 44 }) };
-  const letreroNoc = sprite(textoNoc.ok.t, textoNoc.ok.asp, 0.55); letreroNoc.position.set(15.0, 3.3, -7.2); scene.add(letreroNoc);
-  addObs(14.4, 15.7, -8, -6.95);
-  const zonaRack = { x: 14.9, z: -6.1 };
-  const anilloRack = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.25, 40), new THREE.MeshBasicMaterial({ color: '#ff3b3b', transparent: true }));
+  const letreroNoc = sprite(textoNoc.ok.t, textoNoc.ok.asp, 0.5); letreroNoc.position.set(13.3, 2.85, -6.85); scene.add(letreroNoc);
+  const zonaRack = { x: 13.3, z: -6.2 };
+  const anilloRack = new THREE.Mesh(new THREE.RingGeometry(1.35, 1.5, 48), new THREE.MeshBasicMaterial({ color: '#ff3b3b', transparent: true }));
   anilloRack.rotation.x = -Math.PI / 2; anilloRack.position.set(zonaRack.x, 0.03, zonaRack.z); anilloRack.visible = false; scene.add(anilloRack);
-  luzAlarma.position.set(14.4, 2.8, -5.9);
+  luzAlarma.position.set(13.3, 3.0, -5.6);
+
+  // cámaras de seguridad en las esquinas (dos de ellas transmiten al video wall)
+  const ledsCamara = [];
+  function camaraSeguridad(p, mira) {
+    const g = new THREE.Group(); g.position.copy(p); scene.add(g); g.lookAt(mira);
+    g.add(caja(0.06, 0.06, 0.3, '#cfd3d7', 0, 0, -0.1));
+    g.add(caja(0.2, 0.2, 0.46, '#f4f5f6', 0, 0, 0.18));
+    g.add(caja(0.24, 0.04, 0.5, '#e3e6e9', 0, 0.12, 0.2));
+    g.add(caja(0.14, 0.14, 0.03, '#0d0f12', 0, 0, 0.42));
+    const led = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, 0.02), new THREE.MeshBasicMaterial({ color: '#ff2020' }));
+    led.position.set(0.07, -0.07, 0.42); g.add(led); ledsCamara.push(led);
+  }
+  const posCam = {
+    A: [new THREE.Vector3(-15.5, 4.6, -7.7), new THREE.Vector3(2, 0, 2)],
+    B: [new THREE.Vector3(15.5, 4.6, 7.5), new THREE.Vector3(-3, 0, -2)],
+    C: [new THREE.Vector3(-15.5, 4.6, 7.5), new THREE.Vector3(3, 0, -2)],
+    D: [new THREE.Vector3(10.2, 4.6, -7.7), new THREE.Vector3(12.8, 0, -5.4)]
+  };
+  for (const [p, m] of Object.values(posCam)) camaraSeguridad(p, m);
+  function camaraVirtual([p, m]) {
+    const c = new THREE.PerspectiveCamera(68, 16 / 9, 0.1, 80);
+    const dir = m.clone().sub(p).normalize();
+    c.position.copy(p).addScaledVector(dir, 0.7); c.lookAt(m); return c;
+  }
+  const feeds = [
+    { cam: camaraVirtual(posCam.A), rt: new THREE.WebGLRenderTarget(384, 216), nombre: 'CAM 01 · OFICINA' },
+    { cam: camaraVirtual(posCam.B), rt: new THREE.WebGLRenderTarget(384, 216), nombre: 'CAM 02 · ENTRADA' }
+  ];
+
+  // pantallas del video wall (gráficas tipo monitoreo)
+  const pantallasNoc = [];
+  function pantallaCanvas(dibujar) {
+    const c = document.createElement('canvas'); c.width = 320; c.height = 180;
+    const tex = new THREE.CanvasTexture(c); tex.minFilter = THREE.LinearFilter;
+    pantallasNoc.push({ g: c.getContext('2d'), tex, dibujar });
+    return new THREE.MeshBasicMaterial({ map: tex });
+  }
+  const traficoHist = Array.from({ length: 48 }, () => 520 + Math.random() * 300);
+  const sensores = ['Torre Lomas', 'Torre Centro', 'Nodo Soledad', 'Enlace Pozos', 'OLT Industrial', 'Core San Luis'];
+  function encabezado(g, txt, color = '#9aa4af') {
+    g.fillStyle = '#0d1117'; g.fillRect(0, 0, 320, 180);
+    g.fillStyle = '#161b22'; g.fillRect(0, 0, 320, 26);
+    g.fillStyle = color; g.font = '700 14px Rubik, Arial, sans-serif'; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillText(txt, 10, 14);
+  }
+  const pantallasDef = [
+    'camA',
+    pantallaCanvas(g => {
+      encabezado(g, 'TRÁFICO · CORE SAN LUIS');
+      g.strokeStyle = '#21262d'; g.lineWidth = 1;
+      for (let y = 50; y < 180; y += 30) { g.beginPath(); g.moveTo(0, y); g.lineTo(320, y); g.stroke(); }
+      const col = internet ? '#2bff88' : '#ff3b3b';
+      g.beginPath(); g.moveTo(0, 175);
+      traficoHist.forEach((v, i) => g.lineTo(i * (320 / 47), 175 - v / 1000 * 140));
+      g.lineTo(320, 175); g.closePath(); g.fillStyle = internet ? 'rgba(43,255,136,.18)' : 'rgba(255,59,59,.18)'; g.fill();
+      g.beginPath(); traficoHist.forEach((v, i) => (i ? g.lineTo : g.moveTo).call(g, i * (320 / 47), 175 - v / 1000 * 140));
+      g.strokeStyle = col; g.lineWidth = 2; g.stroke();
+      g.fillStyle = col; g.font = '800 22px Rubik, Arial, sans-serif'; g.textAlign = 'right';
+      g.fillText(`${Math.round(traficoHist[47])} Mbps`, 310, 46);
+    }),
+    'camB',
+    pantallaCanvas(g => {
+      encabezado(g, 'SENSORES');
+      sensores.forEach((n, i) => {
+        const caido = !internet && i % 2 === 0;
+        g.fillStyle = caido ? '#ff3b3b' : '#2bff88'; g.fillRect(12, 36 + i * 23, 12, 12);
+        g.fillStyle = '#e6edf3'; g.font = '600 14px Rubik, Arial, sans-serif'; g.textAlign = 'left'; g.fillText(n, 32, 43 + i * 23);
+        g.fillStyle = caido ? '#ff3b3b' : '#7ee2a8'; g.textAlign = 'right'; g.fillText(caido ? 'CAÍDO' : 'OK', 308, 43 + i * 23);
+      });
+    }),
+    pantallaCanvas(g => {
+      encabezado(g, 'MAPA DE NODOS · SLP');
+      const nodos = [[60, 70], [150, 55], [250, 80], [95, 140], [200, 135], [280, 150]];
+      g.strokeStyle = '#30363d'; g.lineWidth = 2;
+      [[0, 1], [1, 2], [0, 3], [3, 4], [1, 4], [4, 5], [2, 5]].forEach(([a, b]) => { g.beginPath(); g.moveTo(...nodos[a]); g.lineTo(...nodos[b]); g.stroke(); });
+      nodos.forEach(([x, y], i) => {
+        const mal = !internet && i % 2 === 0;
+        g.fillStyle = mal ? (Math.floor(t * 4) % 2 ? '#ff3b3b' : '#5a1111') : '#2bff88';
+        g.beginPath(); g.arc(x, y, 9, 0, 7); g.fill();
+      });
+    }),
+    logoMat,
+    pantallaCanvas(g => {
+      if (!internet) {
+        g.fillStyle = Math.floor(t * 4) % 2 ? '#b3121b' : '#5a0a0e'; g.fillRect(0, 0, 320, 180);
+        g.fillStyle = '#fff'; g.font = '800 30px Rubik, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillText('ALERTA', 160, 72); g.font = '700 18px Rubik, Arial, sans-serif'; g.fillText('RED CAÍDA · VE AL NOC', 160, 112);
+      } else {
+        encabezado(g, 'ALERTAS', '#7ee2a8');
+        g.fillStyle = '#2bff88'; g.font = '800 26px Rubik, Arial, sans-serif'; g.textAlign = 'center'; g.fillText('SIN ALERTAS', 160, 90);
+        g.fillStyle = '#9aa4af'; g.font = '600 15px Rubik, Arial, sans-serif'; g.fillText('UPTIME 99.9%', 160, 130);
+      }
+    }),
+    pantallaCanvas(g => {
+      encabezado(g, 'TICKETS ABIERTOS');
+      const n = escritorios.filter(e => e.emp.flojo).length * 3 + (internet ? 0 : 12);
+      g.fillStyle = n > 20 ? '#ff9a3c' : '#e6edf3'; g.font = '800 64px Rubik, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(n), 160, 100);
+      g.fillStyle = '#9aa4af'; g.font = '600 14px Rubik, Arial, sans-serif'; g.fillText('clientes esperando respuesta', 160, 155);
+    })
+  ];
+  const muroVideo = new THREE.Group(); scene.add(muroVideo);
+  pantallasDef.forEach((def, i) => {
+    const col = i % 4, fila = Math.floor(i / 4);
+    const x = 11.5 + col * 1.21, y = 4.29 - fila * 0.74;
+    muroVideo.add(caja(1.18, 0.7, 0.05, '#0b0d10', x, y, -7.96));
+    let material = def;
+    if (def === 'camA' || def === 'camB') {
+      const fd = feeds[def === 'camA' ? 0 : 1];
+      material = new THREE.MeshBasicMaterial({ map: fd.rt.texture });
+      const et = texTexto(`● REC  ${fd.nombre}`, { color: '#ffffff', bg: 'rgba(0,0,0,.55)', fam: 'Rubik, Arial, sans-serif', peso: 700, size: 30, pad: 10 });
+      const lbl = new THREE.Mesh(new THREE.PlaneGeometry(0.16 * et.asp, 0.16), new THREE.MeshBasicMaterial({ map: et.t, transparent: true }));
+      lbl.position.set(x - 0.53 + 0.08 * et.asp, y + 0.24, -7.9); muroVideo.add(lbl);
+    }
+    const pant = new THREE.Mesh(def === logoMat ? new THREE.PlaneGeometry(0.62, 0.62) : new THREE.PlaneGeometry(1.1, 0.62), material); pant.position.set(x, y, -7.92); muroVideo.add(pant);
+  });
+  let relojPantallas = 0;
+  function actualizarPantallas(dt) {
+    relojPantallas -= dt;
+    if (relojPantallas > 0) return;
+    relojPantallas = 0.5;
+    traficoHist.shift(); traficoHist.push(internet ? Math.max(200, Math.min(980, traficoHist[traficoHist.length - 1] + (Math.random() - 0.5) * 160)) : Math.random() * 15);
+    for (const p of pantallasNoc) { p.dibujar(p.g); p.tex.needsUpdate = true; }
+    ledsCamara.forEach(l => { l.visible = !l.visible; });
+  }
 
   // ---------- Personajes ----------
   function crearJefe(color, corbata, o = {}) {
@@ -756,7 +898,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
         const aro = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.045, 8, 36), new THREE.MeshBasicMaterial({ color: o.acento }));
         aro.rotation.x = -Math.PI / 2; aro.position.y = 0.04; g.add(aro);
       }
-    } else {
+    } else if (!o.casual) {
       g.add(caja(0.22, 0.34, 0.02, '#ffffff', 0, 1.2, 0.215));
       g.add(caja(0.09, 0.42, 0.03, corbata, 0, 1.08, 0.23));
     }
@@ -770,6 +912,10 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     if (o.peloLargo) { pelo.material.color.set(o.peloLargo); g.add(caja(0.52, 0.62, 0.14, o.peloLargo, 0, 1.5, -0.2)); }
     if (o.calvo) pelo.visible = false;
     if (o.falda) g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.5, 0.5, 18), mat(o.falda)).translateY(0.52));
+    if (o.router) { // trae su módem en la mano para reclamar
+      bD.add(caja(0.34, 0.07, 0.24, '#f4f5f6', 0, -0.6, 0.12));
+      for (const x of [-0.12, 0.12]) bD.add(caja(0.025, 0.3, 0.025, '#e3e6e9', x, -0.44, 0.02));
+    }
     if (o.escala) g.scale.setScalar(o.escala);
     let fija = null;
     if (o.etiqueta) { fija = spriteTexto(o.etiqueta, 0.46, { color: o.colorEtiqueta, bg: 'rgba(0,0,0,.7)', size: 44 }); fija.position.y = 2.35; g.add(fija); }
@@ -801,7 +947,36 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     crearJefe('#5b2a86', '#f3e9ff', { escala: 1.15, peloLargo: '#3a2016', falda: '#2b2238', etiqueta: 'DEYSIMAR · GERENTE', colorEtiqueta: '#e7c6ff', oculto: true }),
     3.8, 11, [45, 52], [30, 40],
     ['¡¿Dónde está el reporte?! ¡Lo quiero ya!', '¡Te estoy viendo! ¡A trabajar!', '¡Así no se trabaja en poderNET!'], 1.15, false);
-  const enemigos = [ceron, deysi];
+  Object.assign(ceron, { nivel: 1, jefe: true, castigo: 30, aturde: 2, quien: 'CERÓN, EL CEO', verbo: 'REGAÑÓ A', aviso: '¡AGUAS! LLEGÓ EL CEO', colorAviso: '#ffd23f', noGritar: '¡A MÍ NO ME GRITES! -10' });
+  Object.assign(deysi, { nivel: 1, jefe: true, castigo: 30, aturde: 2, quien: 'DEYSIMAR, LA GERENTE', verbo: 'REGAÑÓ A', aviso: '¡AGUAS! LLEGÓ LA GERENTE', colorAviso: '#e7c6ff', noGritar: '¡CON LA GERENTE NO SE GRITA! -10' });
+  // Nivel 2: el cliente enojado
+  const cliente = nuevoEnemigo('cliente',
+    crearJefe('#8a4b2a', '#8a4b2a', { escala: 1.1, casual: true, router: true, etiqueta: 'CLIENTE ENOJADO', colorEtiqueta: '#ff9a3c', oculto: true }),
+    3.5, 14, [10, 16], [22, 30],
+    ['¡¿Y mi internet?! ¡Llevo tres días sin servicio!', '¡Quiero hablar con la gerente!', '¡Les pago a tiempo y no tengo internet!'], 1, true);
+  Object.assign(cliente, { nivel: 2, jefe: false, castigo: 20, aturde: 1.5, quien: 'EL CLIENTE ENOJADO', verbo: 'SE QUEJÓ CON', aviso: '¡LLEGÓ UN CLIENTE ENOJADO!', colorAviso: '#ff9a3c', noGritar: '¡AL CLIENTE NO SE LE GRITA! -10' });
+  const enemigos = [ceron, deysi, cliente];
+
+  // Nivel 3: la rata come-cables del almacén
+  const rata = (() => {
+    const g = new THREE.Group();
+    const gris = mat('#6e6a66'), rosa = mat('#d79a9a');
+    const cuerpo = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 12), gris); cuerpo.scale.set(0.8, 0.6, 1.3); cuerpo.position.y = 0.22; cuerpo.castShadow = true; g.add(cuerpo);
+    const cab = new THREE.Mesh(new THREE.SphereGeometry(0.16, 14, 10), gris); cab.scale.set(1, 0.9, 1.3); cab.position.set(0, 0.26, 0.42); g.add(cab);
+    for (const x of [-0.1, 0.1]) {
+      const oreja = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), rosa); oreja.scale.set(1, 1, 0.4); oreja.position.set(x, 0.4, 0.36); g.add(oreja);
+      const ojo = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 6), new THREE.MeshBasicMaterial({ color: '#ff2020' })); ojo.position.set(x * 0.7, 0.3, 0.58); g.add(ojo);
+    }
+    const nariz = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), rosa); nariz.position.set(0, 0.25, 0.63); g.add(nariz);
+    const cola = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.01, 0.75, 6), rosa); cola.rotation.x = 1.25; cola.position.set(0, 0.16, -0.68); g.add(cola);
+    const et = spriteTexto('RATA COME-CABLES', 0.34, { color: '#d0d0d0', bg: 'rgba(0,0,0,.7)', size: 44 }); et.position.y = 1.0; g.add(et);
+    g.visible = false; scene.add(g);
+    return { g, cola, x: 0, z: 0, r: 0.3, dir: 0, paso: 0, movio: false, aturdido: 0, boost: 0, activo: false, fase: '', mordida: 0,
+             prox: 10, primera: [8, 12], cada: [16, 22], vel: 4.0, vida: 0, susto: 0, wp: 0, nav: { atorado: 0, desvio: 0, dx: 0, dz: 0, ux: 0, uz: 0 } };
+  })();
+  const PUERTA_ALMACEN = { x: -10.5, z: -5.6 }, CABLES_NOC = { x: 13.3, z: -6.35 };
+  // camino de la rata: sale por la puerta del almacén, rodea por el pasillo de atrás y llega a los cables del NOC
+  const RUTA_RATA = [[-10.5, -4.1], [-6.35, -4.2], [-6.35, -6.25], [10.0, -6.25], [CABLES_NOC.x, CABLES_NOC.z]];
   const azar = ([a, b]) => a + Math.random() * (b - a);
 
   // La niña fantasma
@@ -823,7 +998,12 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   // ---------- Estado ----------
   let ceremoniaLista = false;
-  let estado = 'menu', modoCpu = false, tiempo = DURACION, productividad = 100;
+  let estado = 'menu', modoCpu = false, tiempo = DURACION, productividad = 100, nivel = 1;
+  const NIVELES = 3;
+  const NIVEL_INFO = {
+    2: { titulo: 'Nivel 2: el cliente enojado', texto: 'Llega un cliente furioso que se quedó sin internet: tumba la red al entrar y te persigue para quejarse (−20). Levanta la red en el NOC y se va contento (+15). Al cliente no se le grita.' },
+    3: { titulo: 'Nivel 3: la rata come-cables', texto: 'Del almacén sale una rata que va directo al NOC a morder los cables y tumba la red. Atrápala antes de que llegue (+25). Siguen el cliente, Cerón, Deysimar y la niña fantasma.' }
+  };
   let internet = true, proxCaida = 18, cafes = [], proxCafe = 8, textos = [], ondas = [], t = 0, temblor = 0;
   const teclas = new Set();
   let puntero = null, p1, p2;
@@ -833,6 +1013,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     p1 = nuevoJefe(leerNombre('n1', 'Jesús'), '#ff5a4e', '#f2b632', -6, 5.3, modelo1);
     p2 = nuevoJefe(leerNombre('n2', modoCpu ? 'CPU' : 'El Retador'), '#3ab0ff', '#d89a7c', 6, 5.3, modelo2);
     p2.dir = Math.PI;
+    prepararNivel();
+  }
+
+  // deja la oficina lista para el nivel actual; los puntos se conservan
+  function prepararNivel() {
+    Object.assign(p1, { x: -6, z: 5.3, dir: 0, cool: 0, aturdido: 0, boost: 0, regano: 0, susto: 0 });
+    Object.assign(p2, { x: 6, z: 5.3, dir: Math.PI, cool: 0, aturdido: 0, boost: 0, regano: 0, susto: 0 });
     tiempo = DURACION; productividad = 100; internet = true; proxCaida = 15 + Math.random() * 8;
     for (const cf of cafes) scene.remove(cf.m);
     cafes = []; proxCafe = 7;
@@ -843,6 +1030,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     for (const e of escritorios) ponerFlojo(e.emp, -1), e.emp.prox = (2 + Math.random() * 6) * RITMO;
     for (const e of enemigos) { e.activo = false; e.saliendo = false; e.pausa = 0; e.m.g.visible = false; e.prox = azar(e.primera); }
     fantasma.activo = false; fantasma.g.visible = false; fantasma.prox = azar(fantasma.primera);
+    rata.activo = false; rata.g.visible = false; rata.prox = azar(rata.primera);
+    $('nivelTxt').textContent = `NIVEL ${nivel} / ${NIVELES}`;
     if (ceremoniaLista) limpiarCeremonia();
     $('h1n').textContent = p1.nombre; $('h2n').textContent = p2.nombre + (modoCpu ? ' (CPU)' : '');
   }
@@ -861,6 +1050,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const c = e.code;
     if (e.target instanceof HTMLInputElement) return;
     if (estado === 'premio') { if (!e.repeat) saltarCeremonia(); return; }
+    if (estado === 'entre') { if (!e.repeat && (c === 'Enter' || c === 'Space')) { e.preventDefault(); siguienteNivel(); } return; }
     if (estado === 'jugando' && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Enter'].includes(c)) e.preventDefault();
     teclas.add(c);
     if (e.repeat || estado !== 'jugando') return;
@@ -886,12 +1076,37 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   function iniciar(cpu) {
     if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
-    modoCpu = cpu; reiniciar(); estado = 'jugando';
-    $('overlay').hidden = true; $('overlay').classList.remove('resumen'); $('hud').hidden = false; $('gritoTouch').hidden = !esTouch;
+    modoCpu = cpu; nivel = 1; reiniciar(); arrancarNivel();
+  }
+  function arrancarNivel() {
+    estado = 'jugando';
+    $('overlay').hidden = true; $('overlay').classList.remove('resumen', 'entre');
+    $('btn2p').hidden = $('btnCpu').hidden = false; $('btnSiguiente').hidden = true;
+    $('hud').hidden = false; $('gritoTouch').hidden = !esTouch;
+    flotar(0, 3.6, 3.6, `NIVEL ${nivel}`, '#f2b632', true);
     beep(523, .1); setTimeout(() => beep(659, .1), 110); setTimeout(() => beep(784, .18), 220);
+  }
+  function siguienteNivel() {
+    if (estado !== 'entre') return;
+    nivel++; prepararNivel(); arrancarNivel();
+  }
+  function finNivel() {
+    estado = 'entre'; puntero = null; $('gritoTouch').hidden = true;
+    for (const e of enemigos) { e.activo = false; e.m.g.visible = false; }
+    fantasma.activo = false; rata.activo = false; rata.g.visible = false;
+    const cap = x => x.charAt(0) + x.slice(1).toLowerCase();
+    const info = NIVEL_INFO[nivel + 1];
+    $('ovTitulo').textContent = `¡Nivel ${nivel} superado! Sigue el ${info.titulo.toLowerCase()}`;
+    $('ovTexto').textContent = `${cap(p1.nombre)} ${p1.pts} · ${cap(p2.nombre)} ${p2.pts}. ${info.texto}`;
+    $('overlay').classList.remove('resumen'); $('overlay').classList.add('entre');
+    $('btn2p').hidden = $('btnCpu').hidden = true; $('btnSiguiente').hidden = false;
+    $('btnSiguiente').textContent = `Empezar nivel ${nivel + 1}`;
+    $('overlay').hidden = false;
+    beep(659, .12); setTimeout(() => beep(784, .12), 130); setTimeout(() => beep(988, .25), 260);
   }
   $('btn2p').addEventListener('click', () => iniciar(false));
   $('btnCpu').addEventListener('click', () => iniciar(true));
+  $('btnSiguiente').addEventListener('click', siguienteNivel);
 
   // ---------- Movimiento ----------
   function choca(x, z, r, libre) {
@@ -961,7 +1176,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     // a los jefes no se les grita
     for (const e of enemigos) if (jefeEnOficina(e) && Math.hypot(e.x - j.x, e.z - j.z) < 3.9) {
       j.pts = Math.max(0, j.pts - 10);
-      flotar(e.x, 3.7, e.z, e === ceron ? '¡A MÍ NO ME GRITES! -10' : '¡CON LA GERENTE NO SE GRITA! -10', '#ffd23f', true);
+      flotar(e.x, 3.7, e.z, e.noGritar, e.colorAviso, true);
     }
     // a la niña fantasma hay que gritarle dos veces
     const f = fantasma;
@@ -984,7 +1199,9 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   function aparecer(e) {
     e.activo = true; e.saliendo = false; e.resta = e.dura; e.pausa = 0;
     e.x = -9 + Math.random() * 18; e.z = 8.8; e.dir = Math.PI; e.m.g.visible = true;
-    flotar(e.x, 3.8, 6.8, e === ceron ? '¡AGUAS! LLEGÓ EL CEO' : '¡AGUAS! LLEGÓ LA GERENTE', e === ceron ? '#ffd23f' : '#e7c6ff', true);
+    flotar(e.x, 3.8, 6.8, e.aviso, e.colorAviso, true);
+    // el cliente llega porque se quedó sin internet
+    if (e === cliente && internet) { internet = false; flotar(12.6, 3.6, -5.2, '¡SE CAYÓ LA RED!', '#ff3b3b', true); }
     const f = e.grave ? [147, 110] : [330, 247];
     beep(f[0], .3, 'sawtooth', .07); setTimeout(() => beep(f[1], .5, 'sawtooth', .07), 280);
   }
@@ -992,18 +1209,17 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   let reganoTimer = null;
   function regano(j, e) {
-    j.pts = Math.max(0, j.pts - 30); j.aturdido = 2; j.regano = 4;
+    j.pts = Math.max(0, j.pts - e.castigo); j.aturdido = e.aturde; j.regano = 4;
     e.pausa = 1.3; // se queda regañando y te da chance de escapar
     const frase = e.frases[Math.floor(Math.random() * e.frases.length)];
-    flotar(j.x, 3.3, j.z, '-30', '#ff3b3b', true);
+    flotar(j.x, 3.3, j.z, `-${e.castigo}`, '#ff3b3b', true);
     gritoRegano(e.grave);
     temblor = 0.6;
     const fl = $('flash'); fl.classList.add('on'); requestAnimationFrame(() => requestAnimationFrame(() => fl.classList.remove('on')));
     const r = $('regano');
-    const quien = e === ceron ? 'CERÓN, EL CEO' : 'DEYSIMAR, LA GERENTE';
     r.innerHTML = '';
     r.append(`“${frase}”`);
-    const s = document.createElement('small'); s.textContent = `${quien} REGAÑÓ A ${j.nombre} · −30`; r.append(s);
+    const s = document.createElement('small'); s.textContent = `${e.quien} ${e.verbo} ${j.nombre} · −${e.castigo}`; r.append(s);
     r.hidden = false;
     clearTimeout(reganoTimer); reganoTimer = setTimeout(() => { r.hidden = true; }, 1900);
   }
@@ -1011,10 +1227,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   function actualizarEnemigos(dt) {
     for (const e of enemigos) {
       e.movio = false;
-      const otro = e === ceron ? deysi : ceron;
+      if (e.nivel > nivel) continue;
       if (!e.activo) {
         e.prox -= dt;
-        if (jefeEnOficina(otro) && e.prox < 8) e.prox = 8; // uno a la vez, para que haya chance
+        // Cerón y Deysimar llegan uno a la vez, para que haya chance
+        if (e.jefe && enemigos.some(o => o !== e && o.jefe && jefeEnOficina(o)) && e.prox < 8) e.prox = 8;
         if (e.prox <= 0 && tiempo > 10) aparecer(e);
         continue;
       }
@@ -1034,7 +1251,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
         if (e === deysi && candidatos.length === 2 && p1.pts !== p2.pts) obj = p1.pts > p2.pts ? p1 : p2;
         else obj = candidatos.reduce((a, b) => Math.hypot(a.x - e.x, a.z - e.z) <= Math.hypot(b.x - e.x, b.z - e.z) ? a : b);
       }
-      if (obj) navegar(e, obj.x, obj.z, dt, 1, e.vel, libre);
+      const vel = e === cliente && !internet ? e.vel * 1.15 : e.vel; // sin internet el cliente viene más enojado
+      if (obj) navegar(e, obj.x, obj.z, dt, 1, vel, libre);
       else navegar(e, 0, 3.6, dt, 1, e.vel * 0.6, libre);
       for (const j of [p1, p2]) if (j.regano <= 0 && Math.hypot(j.x - e.x, j.z - e.z) < e.r + j.r + 0.05) { regano(j, e); break; }
     }
@@ -1073,6 +1291,58 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     for (const e of escritorios) if (!e.emp.flojo && Math.hypot(e.emp.x - f.x, e.emp.z - f.z) < 1.6) ponerFlojo(e.emp, ESPANTO);
   }
 
+  // ---------- Rata come-cables ----------
+  function chillido() { beep(2600, .05, 'sine', .05); setTimeout(() => beep(3100, .04, 'sine', .05), 60); }
+  function quitarRata() { rata.activo = false; rata.g.visible = false; rata.prox = azar(rata.cada); }
+  function actualizarRata(dt) {
+    const r = rata;
+    r.movio = false;
+    if (nivel < 3) return;
+    if (!r.activo) {
+      r.prox -= dt;
+      if (r.prox <= 0 && tiempo > 8) {
+        Object.assign(r, { activo: true, fase: 'hacia_noc', x: PUERTA_ALMACEN.x, z: PUERTA_ALMACEN.z, mordida: 0, vida: 0, susto: 0, wp: 0 });
+        Object.assign(r.nav, { atorado: 0, desvio: 0, ux: r.x, uz: r.z });
+        r.g.visible = true; chillido();
+        flotar(r.x, 2.6, r.z + 1, '¡SALIÓ LA RATA DEL ALMACÉN!', '#d0d0d0', true);
+      }
+      return;
+    }
+    for (const j of [p1, p2]) if (j.aturdido <= 0 && Math.hypot(j.x - r.x, j.z - r.z) < j.r + r.r + 0.2) {
+      sumar(j, 25, r.x, r.z, '+25 ¡ATRAPASTE A LA RATA!'); chillido(); quitarRata(); return;
+    }
+    r.vida += dt; r.susto = Math.max(0, r.susto - dt);
+    if (r.vida > 24) { flotar(r.x, 2.4, r.z, 'LA RATA SE ESCAPÓ', '#d0d0d0'); quitarRata(); return; }
+    let cerca = null, dmin = 2.4;
+    for (const j of [p1, p2]) { const d = Math.hypot(j.x - r.x, j.z - r.z); if (d < dmin) { dmin = d; cerca = j; } }
+    if (r.fase === 'mordiendo') {
+      r.mordida -= dt;
+      if (cerca && dmin < 1.8) r.fase = 'huyendo';
+      else if (r.mordida <= 0) {
+        if (internet) { internet = false; beep(220, .3, 'square', .06); flotar(12.6, 3.6, -5.2, '¡LA RATA SE COMIÓ LOS CABLES!', '#ff3b3b', true); }
+        r.fase = 'huyendo';
+      }
+      return;
+    }
+    if (cerca && r.susto <= 0) r.susto = 1.2;
+    if (cerca && r.susto > 0.4) { navegar(r, r.x + (r.x - cerca.x) * 3, r.z + (r.z - cerca.z) * 3, dt, 1, r.vel); return; }
+    if (r.fase === 'huyendo') {
+      // regresa por el mismo camino hasta meterse al almacén
+      const [hx, hz] = r.wp >= 0 ? RUTA_RATA[r.wp] : [PUERTA_ALMACEN.x, PUERTA_ALMACEN.z];
+      navegar(r, hx, hz, dt, 1, r.vel);
+      if (Math.hypot(r.x - hx, r.z - hz) < 0.45) { if (r.wp < 0) quitarRata(); else r.wp--; }
+      return;
+    }
+    const [rx, rz] = RUTA_RATA[r.wp];
+    navegar(r, rx, rz, dt, 1, r.vel * 0.85);
+    if (r.wp < RUTA_RATA.length - 1) { if (Math.hypot(r.x - rx, r.z - rz) < 0.45) r.wp++; }
+    else if (Math.hypot(r.x - CABLES_NOC.x, r.z - CABLES_NOC.z) < 0.8) {
+      r.fase = 'mordiendo'; r.mordida = 2;
+      flotar(CABLES_NOC.x, 3.2, CABLES_NOC.z + 0.8, '¡LA RATA ESTÁ MORDIENDO LOS CABLES!', '#ff9a3c', true);
+    }
+    for (const e of escritorios) if (!e.emp.flojo && Math.hypot(e.emp.x - r.x, e.emp.z - r.z) < 1.3) ponerFlojo(e.emp, ESPANTO);
+  }
+
   // ---------- CPU ----------
   function cpu(j, rival, dt) {
     // si viene un jefe, a correr
@@ -1085,7 +1355,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
     const objetivos = [];
     for (const e of escritorios) if (e.emp.flojo) objetivos.push({ x: e.emp.ax, z: e.emp.az, peso: 1 });
-    if (!internet) objetivos.push({ x: zonaRack.x - 0.3, z: zonaRack.z + 0.6, peso: 0.6 });
+    if (!internet) objetivos.push({ x: zonaRack.x - 0.3, z: zonaRack.z + 0.6, peso: jefeEnOficina(cliente) ? 0.3 : 0.6 });
+    if (rata.activo && Math.hypot(rata.x - j.x, rata.z - j.z) < 9) objetivos.push({ x: rata.x, z: rata.z, peso: 0.5 });
     for (const cf of cafes) objetivos.push({ x: cf.x, z: cf.z, peso: 1.3 });
     let mejor = null, md = Infinity;
     for (const o of objetivos) { const d = Math.hypot(o.x - j.x, o.z - j.z) * o.peso; if (d < md) { md = d; mejor = o; } }
@@ -1115,6 +1386,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
     actualizarEnemigos(dt);
     actualizarFantasma(dt);
+    actualizarRata(dt);
 
     let dx = (teclas.has('KeyD') ? 1 : 0) - (teclas.has('KeyA') ? 1 : 0);
     let dz = (teclas.has('KeyS') ? 1 : 0) - (teclas.has('KeyW') ? 1 : 0);
@@ -1147,9 +1419,10 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
         flotar(12.6, 3.6, -5.2, '¡SE CAYÓ LA RED!', '#ff3b3b', true);
       }
     } else {
-      for (const j of [p1, p2]) if (j.aturdido <= 0 && Math.hypot(j.x - zonaRack.x, j.z - zonaRack.z) < 1.2) {
+      for (const j of [p1, p2]) if (j.aturdido <= 0 && Math.hypot(j.x - zonaRack.x, j.z - zonaRack.z) < 1.5) {
         internet = true; proxCaida = 16 + Math.random() * 12;
         sumar(j, 25, zonaRack.x - 1, zonaRack.z, '+25 RED ARRIBA');
+        if (jefeEnOficina(cliente)) { salir(cliente); sumar(j, 15, cliente.x, cliente.z, '+15 ¡CLIENTE CONTENTO!'); }
         productividad = Math.min(100, productividad + 8);
         beep(660, .08); setTimeout(() => beep(990, .12), 90);
         break;
@@ -1179,12 +1452,12 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     });
 
     // con un jefe en la oficina cada flojo pesa más
-    const hayJefe = enemigos.some(jefeEnOficina);
+    const hayJefe = enemigos.some(e => e.jefe && jefeEnOficina(e));
     // la oficina siempre recupera un poco; con 3 flojos se mantiene y con muchos baja poco a poco
     const drenaje = flojos * (hayJefe ? 0.5 : 0.32) + (internet ? 0 : 0.9);
     productividad = Math.max(0, Math.min(100, productividad + (1.0 - drenaje) * dt));
     if (productividad <= 0) terminar(true);
-    else if (tiempo <= 0) terminar(false);
+    else if (tiempo <= 0) { if (nivel < NIVELES) finNivel(); else terminar(false); }
   }
 
   function terminar(despedidos) {
@@ -1194,7 +1467,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const n1 = cap(p1.nombre), n2 = cap(p2.nombre);
     if (despedidos) {
       $('ovTitulo').textContent = 'Cerón y Deysimar los corrieron a los dos';
-      $('ovTexto').textContent = `La productividad llegó a cero. ${n1} ${p1.pts} · ${n2} ${p2.pts}. Este mes no hay empleado del mes.`;
+      $('ovTexto').textContent = `La productividad llegó a cero en el nivel ${nivel}. ${n1} ${p1.pts} · ${n2} ${p2.pts}. Este mes no hay empleado del mes.`;
     } else if (!g) {
       $('ovTitulo').textContent = '¡Empate!';
       $('ovTexto').textContent = `${p1.pts} a ${p2.pts}. Los dos quedaron parejos. Échense la revancha.`;
@@ -1204,8 +1477,9 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
     $('btn2p').textContent = 'Revancha 2 jugadores';
     $('btnCpu').textContent = 'Revancha contra CPU';
+    $('btn2p').hidden = $('btnCpu').hidden = false; $('btnSiguiente').hidden = true; $('overlay').classList.remove('entre');
     for (const e of enemigos) { e.activo = false; e.m.g.visible = false; }
-    fantasma.activo = false;
+    fantasma.activo = false; rata.activo = false; rata.g.visible = false;
     if (g && !despedidos) iniciarCeremonia(g, g === p1 ? p2 : p1);
     else {
       $('overlay').hidden = false;
@@ -1360,7 +1634,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   // ---------- Visuales ----------
   const colFlojo = ['#ff2d6f', '#7a3cff', '#18c964'];
   let ultimoHud = '';
-  function visuales() {
+  function visuales(dt) {
+    actualizarPantallas(dt);
     for (const j of [p1, p2, ...enemigos.filter(e => e.activo), ...(cer.activo ? parados : [])]) {
       const m = j.m;
       m.g.position.set(j.x, 0, j.z);
@@ -1418,6 +1693,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const tn = internet ? textoNoc.ok : textoNoc.caido;
     if (letreroNoc.material.map !== tn.t) { letreroNoc.material.map = tn.t; letreroNoc.scale.set(0.55 * tn.asp, 0.55, 1); letreroNoc.material.needsUpdate = true; }
     for (const cf of cafes) { cf.m.rotation.y += 0.04; cf.m.position.y = 0.3 + Math.sin(t * 4) * 0.08; }
+    if (rata.activo) {
+      let dif = rata.dir - rata.g.rotation.y; dif = Math.atan2(Math.sin(dif), Math.cos(dif));
+      rata.g.rotation.y += dif * 0.35;
+      const mordiendo = rata.fase === 'mordiendo';
+      rata.g.position.set(rata.x, rata.movio || mordiendo ? Math.abs(Math.sin(t * (mordiendo ? 30 : 20))) * 0.05 : 0, rata.z);
+      rata.cola.rotation.z = Math.sin(t * 12) * 0.4;
+    }
 
     // cámara: vaivén en el menú, temblor cuando te regañan
     if (estado === 'menu') camera.position.set(CAM.x + Math.sin(t * 0.25) * 5, CAM.y, CAM.z);
@@ -1427,7 +1709,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
     if (estado !== 'menu') {
       const s = Math.max(0, Math.ceil(tiempo));
-      const hud = [p1.pts, p2.pts, s, Math.round(productividad), internet, Math.round(p1.cool * 10), Math.round(p2.cool * 10), jefeEnOficina(ceron), jefeEnOficina(deysi), f.activo].join('|');
+      const hud = [p1.pts, p2.pts, s, Math.round(productividad), internet, Math.round(p1.cool * 10), Math.round(p2.cool * 10), jefeEnOficina(ceron), jefeEnOficina(deysi), jefeEnOficina(cliente), rata.activo, f.activo].join('|');
       if (hud !== ultimoHud) {
         ultimoHud = hud;
         $('h1p').textContent = String(p1.pts).padStart(4, '0');
@@ -1444,20 +1726,30 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
         const avisos = [];
         if (jefeEnOficina(ceron)) avisos.push('¡AGUAS! EL CEO CERÓN ANDA AQUÍ · CORRAN');
         if (jefeEnOficina(deysi)) avisos.push('¡AGUAS! LA GERENTE DEYSIMAR ESTÁ SUPERVISANDO · CORRAN');
+        if (jefeEnOficina(cliente)) avisos.push('¡CLIENTE ENOJADO! · LEVANTA LA RED PARA QUE SE VAYA');
         $('alertaJefe').textContent = avisos.join(' · ');
         $('alertaJefe').hidden = !avisos.length;
         $('alertaFantasma').hidden = !f.activo;
+        $('alertaRata').hidden = !rata.activo;
       }
     }
   }
 
   ceremoniaLista = true;
   reiniciar();
-  let ultimo = performance.now();
+  let ultimo = performance.now(), cuadro = 0;
   function loop(ahora) {
     const dt = Math.min(0.05, (ahora - ultimo) / 1000); ultimo = ahora;
-    actualizar(dt); visuales();
+    actualizar(dt); visuales(dt);
+    renderer.shadowMap.needsUpdate = true;
     renderer.render(scene, camera);
+    // cada 3 cuadros se actualiza una de las cámaras de seguridad (sin el video wall, para no verse a sí mismo)
+    if (++cuadro % 3 === 0) {
+      const fd = feeds[(cuadro / 3) % feeds.length];
+      muroVideo.visible = false;
+      renderer.setRenderTarget(fd.rt); renderer.render(scene, fd.cam); renderer.setRenderTarget(null);
+      muroVideo.visible = true;
+    }
     requestAnimationFrame(loop);
   }
   // espera las fuentes para que los letreros 3D salgan con su tipografía

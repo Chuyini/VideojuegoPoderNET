@@ -4,7 +4,17 @@ Juego 3D de 2 jugadores en la oficina de poderNET en San Luis Potosí. Dos compa
 
 ## Cómo jugar
 
-Abre `index.html` en el navegador o súbelo a cualquier hosting estático (Vercel, sin configuración). Necesita internet para cargar Three.js. Cada partida dura 1 minuto 50 segundos.
+Abre `index.html` en el navegador o súbelo a cualquier hosting estático (Vercel, sin configuración). Necesita internet para cargar Three.js. Cada nivel dura 1 minuto 50 segundos.
+
+## Niveles
+
+Son 3 niveles de 1:50; los puntos se van sumando. Cada nivel agrega un enemigo nuevo:
+
+1. **Cerón, el CEO**, **Deysimar, la gerente** y **la niña fantasma**.
+2. **El cliente enojado**: tumba la red al llegar y te persigue para quejarse (−20). Levanta la red en el NOC y se va contento (+15). Al cliente no se le grita (−10).
+3. **La rata come-cables**: sale del almacén y va al NOC a morder los cables. Atrápala antes de que llegue (+25).
+
+El NOC tiene 4 racks y un video wall con dos cámaras de seguridad en vivo, gráficas de tráfico, sensores, mapa de nodos, alertas y tickets.
 
 | | Moverse | Grito |
 |---|---|---|
