@@ -4,7 +4,7 @@ Juego 3D de 2 jugadores en la oficina de poderNET en San Luis Potosí. Dos compa
 
 ## Cómo jugar
 
-Abre `index.html` en el navegador o súbelo a cualquier hosting estático (Vercel, sin configuración). Necesita internet para cargar Three.js. Cada partida dura 3 minutos.
+Abre `index.html` en el navegador o súbelo a cualquier hosting estático (Vercel, sin configuración). Necesita internet para cargar Three.js. Cada partida dura 1 minuto 50 segundos.
 
 | | Moverse | Grito |
 |---|---|---|
@@ -24,7 +24,7 @@ Abre `index.html` en el navegador o súbelo a cualquier hosting estático (Verce
 
 ## Música del ganador
 
-Al ganar suena una canción de victoria compuesta dentro del juego (sin derechos de autor). Si quieres otra canción, sube un archivo `musica-ganador.mp3` a la raíz del repo y el juego la usará en su lugar (con loop). Usa música libre de derechos, por ejemplo de Pixabay Music.
+Al ganar suena un himno épico compuesto dentro del juego (sin derechos de autor). Si quieres otra canción, sube un archivo `musica-ganador.mp3` a la raíz del repo y el juego la usará en su lugar (con loop). Usa música libre de derechos, por ejemplo de Pixabay Music.
 
 ## Archivos
 

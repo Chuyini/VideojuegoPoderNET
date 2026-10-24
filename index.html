@@ -125,7 +125,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     <div id="regano" hidden></div>
     <div class="hud" id="hud" hidden>
       <div class="caja p1"><span class="nom" id="h1n">JESÚS</span><span class="pts" id="h1p">0000</span><div class="grito"><i id="h1g"></i></div></div>
-      <div class="caja centro"><span id="reloj">3:00</span><div class="barra"><i id="prod"></i></div><small id="prodTxt">PRODUCTIVIDAD 100%</small>
+      <div class="caja centro"><span id="reloj">1:50</span><div class="barra"><i id="prod"></i></div><small id="prodTxt">PRODUCTIVIDAD 100%</small>
         <span id="alerta" class="aviso" hidden>RED CAÍDA · VE AL NOC</span>
         <span id="alertaJefe" class="aviso" hidden></span>
         <span id="alertaFantasma" class="aviso" hidden>APARECIÓ LA NIÑA FANTASMA · GRÍTALE DOS VECES</span>
@@ -134,7 +134,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     </div>
     <div class="overlay" id="overlay">
       <h2 id="ovTitulo">¿Quién será el empleado del mes?</h2>
-      <p id="ovTexto">3 minutos en la oficina de San Luis. El que junte más puntos es el empleado del mes. Cuando lleguen Cerón, el CEO, o Deysimar, la gerente, córreles: si te alcanzan te regañan. Y cuidado con la niña fantasma.</p>
+      <p id="ovTexto">1:50 en la oficina de San Luis. El que junte más puntos es el empleado del mes. Cuando lleguen Cerón, el CEO, o Deysimar, la gerente, córreles: si te alcanzan te regañan. Y cuidado con la niña fantasma.</p>
       <div class="nombres">
         <label for="n1">JUGADOR 1<input id="n1" maxlength="12" value="Jesús"></label>
         <label for="n2">JUGADOR 2<input id="n2" maxlength="12" value="El Retador"></label>
@@ -191,7 +191,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 (() => {
   const LOGO = window.LOGO_PODERNET;
   document.getElementById('logoImg').src = LOGO;
-  const DURACION = 180;
+  const DURACION = 110;
   const $ = id => document.getElementById(id);
   const esTouch = matchMedia('(pointer: coarse)').matches;
 
@@ -254,41 +254,75 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   // ---------- Música de victoria ----------
   // Canción original hecha aquí mismo (sin derechos de autor). Si existe musica-ganador.mp3 junto al juego, se usa esa.
+  // Himno épico de premiación: cuerdas, metales, bajo pulsante y timbales con eco de sala (88 BPM, Re mayor: D–A–Bm–G)
   const musicaSintetica = (() => {
-    let timer = null, siguiente = 0, paso = 0, master = null;
-    const CORCHEA = 60 / 132 / 2;
+    let timer = null, siguiente = 0, paso = 0, master = null, eco = null;
+    const OCTAVO = 60 / 88 / 2, PASOS = 64;
     const hz = m => 440 * Math.pow(2, (m - 69) / 12);
-    const mel = [72, 0, 72, 74, 76, 0, 72, 0, 79, 0, 79, 0, 77, 76, 74, 0, 72, 0, 72, 74, 76, 0, 79, 0, 81, 0, 79, 0, 77, 0, 76, 0,
-                 77, 0, 77, 76, 74, 0, 77, 0, 76, 0, 76, 74, 72, 0, 76, 0, 74, 0, 74, 76, 77, 0, 79, 0, 84, 0, 0, 0, 79, 0, 0, 0];
-    const acordes = [[60, 64, 67], [59, 62, 67], [60, 64, 67], [60, 65, 69], [60, 65, 69], [60, 64, 67], [59, 62, 67], [60, 64, 72]];
-    function nota(f, t0, d, tipo, v) {
-      const o = ac.createOscillator(), g = ac.createGain();
-      o.type = tipo; o.frequency.value = f;
-      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
-      o.connect(g).connect(master); o.start(t0); o.stop(t0 + d + 0.02);
+    const acordes = [[50, 57, 62, 66], [45, 57, 61, 64], [47, 54, 59, 62], [43, 55, 59, 62]];
+    // melodía de metales: [paso, nota, duración en octavos]
+    const melodia = [
+      [0, 69, 4], [4, 66, 2], [6, 69, 2], [8, 76, 4], [12, 73, 4], [16, 74, 2], [18, 73, 2], [20, 71, 4], [24, 69, 8],
+      [32, 69, 4], [36, 74, 4], [40, 76, 2], [42, 78, 2], [44, 76, 4], [48, 78, 4], [52, 74, 4], [56, 76, 4], [60, 74, 4]
+    ];
+    function sala() {
+      const c = ac.createConvolver(), seg = 2.4, b = ac.createBuffer(2, Math.ceil(ac.sampleRate * seg), ac.sampleRate);
+      for (let ch = 0; ch < 2; ch++) { const d = b.getChannelData(ch); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 3); }
+      c.buffer = b; return c;
     }
-    function golpe(t0, d, filtro, fr, v) {
+    function salida(nodo, envio) {
+      nodo.connect(master);
+      if (envio) { const g = ac.createGain(); g.gain.value = envio; nodo.connect(g).connect(eco); }
+    }
+    function cuerdas(midis, t0, d) {
+      const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1300;
+      const g = ac.createGain();
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.05, t0 + 0.5); g.gain.setValueAtTime(0.05, t0 + d - 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d + 0.4);
+      lp.connect(g); salida(g, 0.5);
+      for (const m of midis) for (const det of [-7, 7]) {
+        const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = hz(m); o.detune.value = det;
+        o.connect(lp); o.start(t0); o.stop(t0 + d + 0.5);
+      }
+    }
+    function metales(m, t0, d) {
+      const o = ac.createOscillator(), o2 = ac.createOscillator(); o.type = 'sawtooth'; o2.type = 'sawtooth';
+      o.frequency.value = hz(m); o2.frequency.value = hz(m - 12); o2.detune.value = 5;
+      const vib = ac.createOscillator(), vg = ac.createGain(); vib.frequency.value = 5; vg.gain.value = 3; vib.connect(vg); vg.connect(o.detune);
+      const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 2;
+      lp.frequency.setValueAtTime(500, t0); lp.frequency.exponentialRampToValueAtTime(2600, t0 + 0.12); lp.frequency.exponentialRampToValueAtTime(1400, t0 + d);
+      const g = ac.createGain();
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.09, t0 + 0.06); g.gain.setValueAtTime(0.08, t0 + d * 0.85); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d + 0.15);
+      o.connect(lp); o2.connect(lp); lp.connect(g); salida(g, 0.35);
+      for (const x of [o, o2, vib]) { x.start(t0); x.stop(t0 + d + 0.2); }
+    }
+    function bajo(m, t0) {
+      const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = hz(m);
+      const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 380;
+      const g = ac.createGain(); g.gain.setValueAtTime(0.16, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + OCTAVO * 0.9);
+      o.connect(lp).connect(g); salida(g, 0); o.start(t0); o.stop(t0 + OCTAVO);
+    }
+    function timbal(t0, v) {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.frequency.setValueAtTime(95, t0); o.frequency.exponentialRampToValueAtTime(48, t0 + 0.4);
+      g.gain.setValueAtTime(v, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.7);
+      o.connect(g); salida(g, 0.4); o.start(t0); o.stop(t0 + 0.75);
+    }
+    function golpe(t0, d, tipo, fr, v, envio) {
       const n = ruido(d), f = ac.createBiquadFilter(), g = ac.createGain();
-      f.type = filtro; f.frequency.value = fr;
+      f.type = tipo; f.frequency.value = fr;
       g.gain.setValueAtTime(v, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
-      n.connect(f).connect(g).connect(master); n.start(t0); n.stop(t0 + d);
-    }
-    function bombo(t0) {
-      const o = ac.createOscillator(), g = ac.createGain();
-      o.frequency.setValueAtTime(150, t0); o.frequency.exponentialRampToValueAtTime(45, t0 + 0.12);
-      g.gain.setValueAtTime(0.55, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.16);
-      o.connect(g).connect(master); o.start(t0); o.stop(t0 + 0.18);
+      n.connect(f).connect(g); salida(g, envio); n.start(t0); n.stop(t0 + d);
     }
     function programar() {
-      while (siguiente < ac.currentTime + 0.15) {
-        const i = paso % mel.length, compas = Math.floor(i / 8), raiz = acordes[compas][0] - 12;
-        if (mel[i]) nota(hz(mel[i]), siguiente, CORCHEA * 0.9, 'square', 0.1);
-        if (i % 2 === 0) nota(hz(i % 4 === 0 ? raiz : raiz + 7), siguiente, CORCHEA * 1.8, 'triangle', 0.25);
-        if (i % 8 === 0) for (const m of acordes[compas]) nota(hz(m), siguiente, CORCHEA * 7.5, 'sawtooth', 0.02);
-        if (i % 4 === 0) bombo(siguiente);
-        if (i % 4 === 2) golpe(siguiente, 0.12, 'bandpass', 1800, 0.22);
-        golpe(siguiente, 0.04, 'highpass', 7000, 0.06);
-        siguiente += CORCHEA; paso++;
+      while (siguiente < ac.currentTime + 0.2) {
+        const i = paso % PASOS, compas = Math.floor(i / 8), acorde = acordes[compas % 4];
+        if (i % 8 === 0) cuerdas(acorde, siguiente, OCTAVO * 8);
+        if (i === 0) golpe(siguiente, 1.8, 'highpass', 5000, 0.07, 0.6); // platillo al inicio de cada vuelta
+        bajo(acorde[0] - 12, siguiente);
+        if (i % 4 === 0) timbal(siguiente, i % 8 === 0 ? 0.5 : 0.35);
+        if (i % 4 === 2) golpe(siguiente, 0.25, 'bandpass', 1500, 0.12, 0.5);
+        for (const [p, m, d] of melodia) if (p === i) metales(m, siguiente, OCTAVO * d * 0.95);
+        siguiente += OCTAVO; paso++;
       }
     }
     return {
@@ -296,14 +330,15 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       iniciar() {
         if (!ac || timer) return;
         master = ac.createGain(); master.gain.setValueAtTime(0.0001, ac.currentTime);
-        master.gain.exponentialRampToValueAtTime(0.55, ac.currentTime + 0.5); master.connect(ac.destination);
+        master.gain.exponentialRampToValueAtTime(0.7, ac.currentTime + 0.8); master.connect(ac.destination);
+        eco = sala(); const ge = ac.createGain(); ge.gain.value = 0.6; eco.connect(ge).connect(master);
         siguiente = ac.currentTime + 0.05; paso = 0;
         timer = setInterval(programar, 50); programar();
       },
       parar() {
         if (!timer) return;
         clearInterval(timer); timer = null;
-        const m = master; m.gain.setTargetAtTime(0.0001, ac.currentTime, 0.15); setTimeout(() => m.disconnect(), 900);
+        const m = master; m.gain.setTargetAtTime(0.0001, ac.currentTime, 0.3); setTimeout(() => m.disconnect(), 1800);
       }
     };
   })();
@@ -723,7 +758,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     ['¡¿Qué están haciendo?! ¡A trabajar!', '¡Esto no es un parque! ¡A chambear!', '¡¿Otra vez tú?! ¡Ponte a trabajar!'], 0.6, true);
   const deysi = nuevoEnemigo('deysi',
     crearJefe('#5b2a86', '#f3e9ff', { escala: 1.15, peloLargo: '#3a2016', falda: '#2b2238', etiqueta: 'DEYSIMAR · GERENTE', colorEtiqueta: '#e7c6ff', oculto: true }),
-    3.8, 11, [62, 72], [34, 46],
+    3.8, 11, [45, 52], [30, 40],
     ['¡¿Dónde está el reporte?! ¡Lo quiero ya!', '¡Te estoy viendo! ¡A trabajar!', '¡Así no se trabaja en poderNET!'], 1.15, false);
   const enemigos = [ceron, deysi];
   const azar = ([a, b]) => a + Math.random() * (b - a);
