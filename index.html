@@ -479,26 +479,74 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
   for (const sx of [-1, 1]) scene.add(caja(0.18, 0.18, 16, acero, sx * 15.92, 5.95, 0));
 
-  // cuarto de vidrio (fondo izquierda) con decoración de Halloween
+  // ALMACÉN (fondo izquierda): cuarto de vidrio con puerta al frente, repisas con equipo y antenas
   {
-    const frente = new THREE.Mesh(new THREE.PlaneGeometry(6.2, 2.9), vidrio); frente.position.set(-12.6, 1.45, -5.2); scene.add(frente);
-    const lado = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 2.9), vidrio); lado.position.set(-9.5, 1.45, -6.6); lado.rotation.y = Math.PI / 2; scene.add(lado);
-    scene.add(caja(6.25, 0.08, 0.08, '#1f2226', -12.6, 2.9, -5.2));
-    scene.add(caja(0.08, 0.08, 2.8, '#1f2226', -9.5, 2.9, -6.6));
-    for (const x of [-15.65, -12.6, -9.5]) scene.add(caja(0.08, 2.9, 0.08, '#1f2226', x, 1.45, -5.2));
-    scene.add(caja(4.2, 0.05, 0.55, '#d0d4d8', -12.8, 1.0, -7.6));
-    scene.add(caja(4.2, 0.05, 0.55, '#d0d4d8', -12.8, 1.8, -7.6));
-    for (let i = 0; i < 8; i++) scene.add(caja(0.4, 0.25 + (i % 3) * 0.1, 0.35, i % 2 ? '#2b2f33' : '#f0f0f0', -14.6 + i * 0.5, 1.15 + (i % 2) * 0.8, -7.6));
-    scene.add(caja(6.2, 0.28, 0.03, '#ff7a1a', -12.6, 2.65, -5.16));
-    const arana = new THREE.Group(); arana.position.set(-11.6, 2.25, -5.14); scene.add(arana);
+    const A = { x0: -15.7, x1: -7.0, z0: -8, z1: -4.85 }, P = { x0: -11.4, x1: -9.6 }, alto = 2.9, marco = '#1f2226';
+    const cx = (A.x0 + A.x1) / 2, cz = (A.z0 + A.z1) / 2;
+    const piso = new THREE.Mesh(new THREE.PlaneGeometry(A.x1 - A.x0, A.z1 - A.z0), mat('#3a3f45'));
+    piso.rotation.x = -Math.PI / 2; piso.position.set(cx, 0.01, cz); piso.receiveShadow = true; scene.add(piso);
+    // vidrios: frente en dos tramos (hueco de la puerta) y costado derecho
+    const panel = (w, x, z, rot) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, alto), vidrio); m.position.set(x, alto / 2, z); m.rotation.y = rot; scene.add(m); };
+    panel(P.x0 - A.x0, (A.x0 + P.x0) / 2, A.z1, 0);
+    panel(A.x1 - P.x1, (P.x1 + A.x1) / 2, A.z1, 0);
+    panel(A.z1 - A.z0, A.x1, cz, Math.PI / 2);
+    scene.add(caja(A.x1 - A.x0, 0.08, 0.08, marco, cx, alto, A.z1));
+    scene.add(caja(0.08, 0.08, A.z1 - A.z0, marco, A.x1, alto, cz));
+    for (const x of [A.x0 + 0.04, P.x0, P.x1, A.x1]) scene.add(caja(0.08, alto, 0.08, marco, x, alto / 2, A.z1));
+    addObs(A.x0, P.x0, A.z1 - 0.06, A.z1 + 0.06);
+    addObs(P.x1, A.x1, A.z1 - 0.06, A.z1 + 0.06);
+    addObs(A.x1 - 0.06, A.x1 + 0.06, A.z0, A.z1);
+    const letrero = spriteTexto('ALMACÉN', 0.45, { color: '#ffffff', bg: 'rgba(0,0,0,.65)', size: 44 });
+    letrero.position.set((P.x0 + P.x1) / 2, 3.35, A.z1); scene.add(letrero);
+    // decoración de Halloween en el vidrio
+    scene.add(caja(P.x0 - A.x0, 0.26, 0.03, '#ff7a1a', (A.x0 + P.x0) / 2, 2.65, A.z1 + 0.04));
+    scene.add(caja(A.x1 - P.x1, 0.26, 0.03, '#ff7a1a', (P.x1 + A.x1) / 2, 2.65, A.z1 + 0.04));
+    const arana = new THREE.Group(); arana.position.set(-13.0, 2.2, A.z1 + 0.05); scene.add(arana);
     arana.add(esfera(0.18, '#111111'));
     for (let i = 0; i < 8; i++) { const p = caja(0.45, 0.03, 0.03, '#111111', (i < 4 ? -1 : 1) * 0.24, 0, 0); p.rotation.z = (i % 4 - 1.5) * 0.35 * (i < 4 ? 1 : -1); arana.add(p); }
     const neon = new THREE.Mesh(new THREE.CircleGeometry(0.34, 20), new THREE.MeshBasicMaterial({ color: '#ff5ad1' }));
-    neon.position.set(-10.3, 1.9, -5.16); scene.add(neon);
-    addObs(-15.7, -9.45, -8, -5.15);
+    neon.position.set(-8.2, 1.9, A.z1 + 0.04); scene.add(neon);
+
+    // repisas al fondo con cajas y equipo
+    for (const y of [0.35, 1.05, 1.75]) scene.add(caja(8.3, 0.05, 0.6, '#c3c8cd', -11.45, y, -7.65));
+    for (const x of [-15.55, -11.45, -7.35]) for (const z of [-7.93, -7.37]) scene.add(caja(0.05, 2.1, 0.05, '#7d848b', x, 1.05, z));
+    const colCajas = ['#b98a55', '#f0f0f0', '#2b2f33', '#c79a63', '#ffffff'];
+    for (let n = 0; n < 3; n++) for (let i = 0; i < 10; i++) {
+      const h = 0.3 + ((i + n) % 3) * 0.08;
+      scene.add(caja(0.6, h, 0.45, colCajas[(i * 3 + n) % colCajas.length], -15.1 + i * 0.8, 0.38 + n * 0.7 + h / 2, -7.65));
+    }
+    addObs(A.x0, -7.1, A.z0, -7.3);
+
+    // antena de plato en tripié
+    const blancoDoble = new THREE.MeshLambertMaterial({ color: '#f2f3f4', side: THREE.DoubleSide });
+    function plato(x, z, giro) {
+      const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = giro; scene.add(g);
+      for (let i = 0; i < 3; i++) { const p = caja(0.04, 1.3, 0.04, '#5d646b', Math.sin(i * 2.09) * 0.18, 0.62, Math.cos(i * 2.09) * 0.18); p.rotation.set(-Math.cos(i * 2.09) * 0.28, 0, Math.sin(i * 2.09) * 0.28); g.add(p); }
+      g.add(caja(0.05, 0.45, 0.05, '#7d848b', 0, 1.38, 0));
+      const disco = new THREE.Mesh(new THREE.SphereGeometry(0.48, 24, 10, 0, Math.PI * 2, 0, Math.PI * 0.3), blancoDoble);
+      disco.rotation.x = -Math.PI / 2; disco.position.set(0, 1.62, 0.42); disco.castShadow = true; g.add(disco);
+      g.add(caja(0.05, 0.05, 0.42, '#cfd3d7', 0, 1.62, 0.32));
+      g.add(caja(0.14, 0.14, 0.1, '#e8eaec', 0, 1.62, 0.55));
+      addObs(x - 0.42, x + 0.42, z - 0.42, z + 0.42);
+    }
+    plato(-14.9, -5.75, 0.5);
+    plato(-13.4, -6.5, 0.2);
+    // mástil con 3 antenas sectoriales y una omni arriba
+    {
+      const x = -7.9, z = -6.2;
+      scene.add(caja(0.6, 0.08, 0.6, '#3a3d40', x, 0.04, z));
+      scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3.0, 10), mat('#8f979f')).translateX(x).translateY(1.5).translateZ(z));
+      for (let i = 0; i < 3; i++) {
+        const a = i * 2.094 + 0.5;
+        const sec = caja(0.26, 1.15, 0.1, '#f4f5f6', x + Math.sin(a) * 0.2, 2.05, z + Math.cos(a) * 0.2);
+        sec.rotation.y = a; scene.add(sec);
+      }
+      scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.7, 8), mat('#f4f5f6')).translateX(x).translateY(3.35).translateZ(z));
+      addObs(x - 0.42, x + 0.42, z - 0.42, z + 0.42);
+    }
   }
   // tablero eléctrico y minisplit
-  scene.add(caja(0.6, 0.8, 0.12, '#b7bcc1', -8.6, 2.0, -7.95));
+  scene.add(caja(0.6, 0.8, 0.12, '#b7bcc1', 2.6, 2.0, -7.95));
   scene.add(caja(0.25, 0.35, 1.1, '#f4f5f6', -15.85, 3.9, -3.5));
 
   // lockers metálicos y repisa con cajas (fondo centro)
@@ -624,7 +672,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const P2 = Math.PI / 2;
   const puestos = [
     [-14.9, -2.6, P2], [-14.9, 1.0, P2], [-14.9, 4.6, P2],   // muro izquierdo
-    [-7.0, -4.6, 0], [-1.5, -4.6, 0], [4.0, -4.6, 0],         // fila del fondo
+    [-4.6, -4.6, 0], [0.6, -4.6, 0], [5.6, -4.6, 0],          // fila del fondo
     [14.9, -2.6, -P2], [14.9, 2.4, -P2],                       // muro derecho
     [-8.0, 0.6, 0], [-2.5, 0.6, 0], [3.0, 0.6, 0]              // fila del centro
   ];
