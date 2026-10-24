@@ -1,6 +1,6 @@
 # Jefes de poderNET 3D
 
-Juego 3D de 2 jugadores en la oficina de poderNET en San Luis Potosí. Pon a jalar a Debi, Toño, Diana, Luis, Felipe, Brenda y Suemmy, levanta la red en el NOC y demuestra quién es el jefe más cabrón. Pero cuidado: el jefe Cerón te persigue y Deysimar pone a platicar a la banda.
+Juego 3D de 2 jugadores en la oficina de poderNET en San Luis Potosí. Pon a jalar a Debi, Toño, Diana, Luis, Felipe, Brenda y Suemmy, levanta la red en el NOC y demuestra quién es el mejor jefe. Pero cuidado: el jefe Cerón te persigue y Deysimar pone a platicar a la banda.
 
 ## Cómo jugar
 

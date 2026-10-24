@@ -102,7 +102,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     <div class="titulo">
       <small>OFICINA · SAN LUIS POTOSÍ</small>
       <h1>Jefes de <span>poderNET</span> 3D</h1>
-      <p class="sub">Jesús es el jefe más cabrón de poderNET. Pon a jalar a la banda, levanta la red del NOC y que nadie te quite la oficina.</p>
+      <p class="sub">Jesús es el mejor jefe de poderNET. Pon a jalar a la banda, levanta la red del NOC y que nadie te quite la oficina.</p>
     </div>
   </header>
 
@@ -464,6 +464,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     aura.rotation.x = -Math.PI / 2; aura.position.y = 0.06; aura.visible = false; g.add(aura);
     const estrellas = [0, 1, 2].map(() => { const s = spriteTexto('⭐', 0.35, { fam: EMOJI, size: 48, pad: 4 }); s.visible = false; g.add(s); return s; });
     if (o.peloLargo) { pelo.material.color.set(o.peloLargo); g.add(caja(0.52, 0.62, 0.14, o.peloLargo, 0, 1.5, -0.2)); }
+    if (o.calvo) pelo.visible = false;
     if (o.falda) g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.5, 0.5, 18), mat(color)).translateY(0.52));
     if (o.escala) g.scale.setScalar(o.escala);
     if (o.etiqueta) { const s = spriteTexto(o.etiqueta, 0.42, { color: o.colorEtiqueta, bg: 'rgba(0,0,0,.7)', size: 44 }); s.position.y = 2.35; g.add(s); }
@@ -489,7 +490,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
   const enemigos = [
     nuevoEnemigo('ceron', 'JEFE CERÓN',
-      crearJefe('#2b2f3a', '#c0392b', { escala: 1.15, etiqueta: 'JEFE CERÓN', colorEtiqueta: '#ffd23f', oculto: true }),
+      crearJefe('#2b2f3a', '#c0392b', { escala: 1.15, calvo: true, etiqueta: 'JEFE CERÓN', colorEtiqueta: '#ffd23f', oculto: true }),
       3.7, 12, [28, 38], [24, 34]),
     nuevoEnemigo('deysi', 'DEYSIMAR',
       crearJefe('#b0306a', '#b0306a', { peloLargo: '#3a2016', falda: true, etiqueta: 'DEYSIMAR', colorEtiqueta: '#ff8cc6', oculto: true }),
@@ -799,12 +800,12 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const n1 = cap(p1.nombre), n2 = cap(p2.nombre);
     if (despedidos) {
       $('ovTitulo').textContent = 'El jefe Cerón los corrió a los dos';
-      $('ovTexto').textContent = `La productividad llegó a cero. ${n1} ${p1.pts} · ${n2} ${p2.pts}. Nadie es el jefe más cabrón hoy.`;
+      $('ovTexto').textContent = `La productividad llegó a cero. ${n1} ${p1.pts} · ${n2} ${p2.pts}. Hoy nadie se quedó con la oficina.`;
     } else if (!g) {
       $('ovTitulo').textContent = 'Empate de jefes';
       $('ovTexto').textContent = `${p1.pts} a ${p2.pts}. La oficina de San Luis sigue sin dueño. Échense la revancha.`;
     } else {
-      $('ovTitulo').textContent = `${g === p1 ? n1 : n2}, el jefe más cabrón de poderNET`;
+      $('ovTitulo').textContent = `${g === p1 ? n1 : n2}, el mejor jefe de poderNET`;
       $('ovTexto').textContent = `${n1} ${p1.pts} · ${n2} ${p2.pts}. Productividad final: ${Math.round(productividad)}%.`;
     }
     $('btn2p').textContent = 'Revancha 2 jugadores';
