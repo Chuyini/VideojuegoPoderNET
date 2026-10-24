@@ -224,24 +224,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const gn = ac.createGain(); envolvente(gn, t0, .18, .03, dur * .9); n.connect(bn).connect(gn).connect(salida);
     o.start(t0); lfo.start(t0); n.start(t0); o.stop(t0 + dur); lfo.stop(t0 + dur); n.stop(t0 + dur);
   }
-  // Voz real del navegador diciendo el regaño
-  let vozEs = null;
-  function cargarVoces() {
-    if (!('speechSynthesis' in window)) return;
-    const vs = speechSynthesis.getVoices();
-    vozEs = vs.find(v => /es[-_]MX/i.test(v.lang)) || vs.find(v => /^es/i.test(v.lang)) || null;
-  }
-  if ('speechSynthesis' in window) { cargarVoces(); speechSynthesis.onvoiceschanged = cargarVoces; }
-  function decir(txt, tono) {
-    try {
-      if (!('speechSynthesis' in window)) return;
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(txt);
-      u.lang = 'es-MX'; if (vozEs) u.voice = vozEs;
-      u.pitch = tono; u.rate = 1.15; u.volume = 1;
-      speechSynthesis.speak(u);
-    } catch (_) {}
-  }
   function gritoFantasma() {
     if (!ac) return;
     const t0 = ac.currentTime, dur = 1.1;
@@ -714,7 +696,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   function iniciar(cpu) {
     if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
-    cargarVoces();
     modoCpu = cpu; reiniciar(); estado = 'jugando';
     $('overlay').hidden = true; $('hud').hidden = false; $('gritoTouch').hidden = !esTouch;
     beep(523, .1); setTimeout(() => beep(659, .1), 110); setTimeout(() => beep(784, .18), 220);
@@ -815,7 +796,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const frase = e.frases[Math.floor(Math.random() * e.frases.length)];
     flotar(j.x, 3.3, j.z, '-30', '#ff3b3b', true);
     gritoRegano(e.grave);
-    setTimeout(() => decir(frase, e.tono), 150);
     temblor = 0.6;
     const fl = $('flash'); fl.classList.add('on'); requestAnimationFrame(() => requestAnimationFrame(() => fl.classList.remove('on')));
     const r = $('regano');
