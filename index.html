@@ -113,7 +113,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   <header>
     <img id="logoImg" alt="Logo de poderNET: El Poder de InterNET">
     <div class="titulo">
-      <small>OFICINA · SAN LUIS POTOSÍ</small>
       <h1>Empleado del mes <span>poderNET</span></h1>
       <p class="sub">Dos compañeros de poderNET compiten por ser el empleado del mes. Mantén a la banda trabajando, levanta la red del NOC y que no te cachen ni el CEO ni la gerente echando hueva.</p>
     </div>
@@ -142,7 +141,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       <div class="botones">
         <button id="btn2p">2 jugadores</button>
         <button id="btnCpu" class="alt">Contra la CPU</button>
-        <button id="btnMusica" class="alt" hidden>Quitar música</button>
       </div>
     </div>
     <button id="gritoTouch" class="alt" hidden>¡GRITO!</button>
@@ -348,19 +346,14 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     pista.addEventListener('canplaythrough', () => { pistaLista = true; }, { once: true });
     pista.addEventListener('error', () => { pista = null; pistaLista = false; }, { once: true });
   } catch (_) { pista = null; }
-  let musicaOn = false;
   const musica = {
     iniciar() {
-      musicaOn = true;
       if (pista && pistaLista) { pista.currentTime = 0; pista.volume = 0.7; pista.play().catch(() => musicaSintetica.iniciar()); }
       else musicaSintetica.iniciar();
-      $('btnMusica').textContent = 'Quitar música';
     },
     parar() {
-      musicaOn = false;
       if (pista) pista.pause();
       musicaSintetica.parar();
-      $('btnMusica').textContent = 'Poner música';
     }
   };
 
@@ -851,7 +844,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
   $('btn2p').addEventListener('click', () => iniciar(false));
   $('btnCpu').addEventListener('click', () => iniciar(true));
-  $('btnMusica').addEventListener('click', () => (musicaOn ? musica.parar() : musica.iniciar()));
 
   // ---------- Movimiento ----------
   function choca(x, z, r, libre) {
@@ -1303,7 +1295,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     confeti.actualizar(dt, T < 6);
     if (T >= 6.5 && !cer.final) {
       cer.final = true; estado = 'fin';
-      $('overlay').classList.add('resumen'); $('btnMusica').hidden = false; $('overlay').hidden = false;
+      $('overlay').classList.add('resumen'); $('overlay').hidden = false;
     }
   }
 
@@ -1314,7 +1306,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     cer.sprites = [];
     for (const e of enemigos) { e.aplaude = false; e.m.fija.visible = true; }
     for (const p of parados) { p.aplaude = false; p.m.g.visible = false; p.emp.grupo.visible = true; }
-    musica.parar(); $('btnMusica').hidden = true;
+    musica.parar();
   }
 
   // ---------- Visuales ----------
