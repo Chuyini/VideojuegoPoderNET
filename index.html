@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Los Jefes de Chapultepec</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +24,9 @@
   --body: "Rubik", "Segoe UI", system-ui, sans-serif;
   color-scheme: dark;
 }
-html, body { background: var(--bosque); color: var(--texto); }
+[hidden] { display: none !important; }
+*, *::before, *::after { box-sizing: border-box; }
+html, body { background: var(--bosque); color: var(--texto); margin: 0; }
 body {
   font-family: var(--body);
   font-size: 15px;
@@ -69,6 +76,8 @@ button:focus-visible { outline: 3px solid var(--texto); outline-offset: 3px; }
 kbd { font-family: var(--body); font-weight: 800; color: var(--texto); background: var(--linea); border-radius: 3px; padding: 1px 6px; font-size: 13px; }
 @media (prefers-reduced-motion: reduce) { button:active { transform: none; } }
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <header>
@@ -662,3 +671,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   requestAnimationFrame(loop);
 })();
 </script>
+
+</body>
+</html>
