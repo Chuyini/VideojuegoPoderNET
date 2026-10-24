@@ -111,7 +111,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 <body>
 <div class="wrap">
   <header>
-    <img id="logoImg" alt="Logo de poderNET: El Poder de InterNET">
+    <img id="logoImg" alt="Logo de poderNET: el poder de internet">
     <div class="titulo">
       <h1>Empleado del mes <span>poderNET</span></h1>
       <p class="sub">Dos compañeros de poderNET compiten por ser el empleado del mes. Mantén a la banda trabajando, levanta la red del NOC y que no te cachen ni el CEO ni la gerente echando hueva.</p>
@@ -460,7 +460,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(13, 7);
     const piso = new THREE.Mesh(new THREE.PlaneGeometry(32, 16), new THREE.MeshPhongMaterial({ map: t, shininess: 110, specular: 0x666666 }));
     piso.rotation.x = -Math.PI / 2; piso.receiveShadow = true; scene.add(piso);
-    const tapete = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 2.9), logoMat);
+    const tapete = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.2), logoMat);
     tapete.rotation.x = -Math.PI / 2; tapete.position.set(-0.5, 0.015, 5.3); scene.add(tapete);
     const tapeteNegro = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.3), mat('#2c3035'));
     tapeteNegro.rotation.x = -Math.PI / 2; tapeteNegro.position.set(-4.6, 0.012, -6.4); scene.add(tapeteNegro);
@@ -517,8 +517,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   addObs(-1.25, 2.05, -8, -7.3);
 
   // logo grande en el muro
-  scene.add(caja(4.0, 3.25, 0.06, '#0b0d10', 6.0, 3.0, -7.97));
-  { const l = new THREE.Mesh(new THREE.PlaneGeometry(3.8, 3.05), logoMat); l.position.set(6.0, 3.0, -7.93); scene.add(l); }
+  scene.add(caja(3.6, 3.6, 0.06, '#0b0d10', 6.0, 3.0, -7.97));
+  { const l = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 3.4), logoMat); l.position.set(6.0, 3.0, -7.93); scene.add(l); }
 
   // cortinas de calabazas de Halloween colgando de la armadura
   {
@@ -661,7 +661,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     cabeza.add(esfera(0.27, '#e0ac7e', 0, 0.27, 0));
     cabeza.add(esfera(0.28, '#2a1d14', 0, 0.33, 0.06));
     e.add(caja(0.74, 0.62, 0.08, '#2a3036', 0, 0.86, 0.36));
-    const logoSilla = new THREE.Mesh(new THREE.PlaneGeometry(0.54, 0.43), logoMat);
+    const logoSilla = new THREE.Mesh(new THREE.PlaneGeometry(0.46, 0.46), logoMat);
     logoSilla.position.set(0, 0.86, 0.405); e.add(logoSilla);
     const etiqueta = spriteTexto(nombres[k], 0.42, { color: '#fff', bg: 'rgba(0,0,0,.55)', fam: 'Rubik, sans-serif', peso: 700, size: 40, pad: 16 });
     etiqueta.position.set(0, 2.15, 0); e.add(etiqueta);
@@ -683,7 +683,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       m.position.set(-0.36 + l * 0.24, 0.35 + f * 0.33, 0.48); rack.add(m); leds.push(m);
     }
   }
-  { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 0.76), logoMat); l.position.set(0, 2.22, 0.46); rack.add(l); }
+  { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.8), logoMat); l.position.set(0, 2.18, 0.46); rack.add(l); }
   const textoNoc = { ok: texTexto('NOC OK', { color: '#2bff88', bg: 'rgba(0,0,0,.6)', size: 44 }), caido: texTexto('SIN RED', { color: '#ff3b3b', bg: 'rgba(0,0,0,.6)', size: 44 }) };
   const letreroNoc = sprite(textoNoc.ok.t, textoNoc.ok.asp, 0.55); letreroNoc.position.set(15.0, 3.3, -7.2); scene.add(letreroNoc);
   addObs(14.4, 15.7, -8, -6.95);
@@ -1177,7 +1177,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.06, 0.2, 12), oro).translateY(0.28));
     const copa = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.1, 0.34, 20), oro); copa.position.y = 0.55; g.add(copa);
     for (const sx of [-1, 1]) { const a = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.025, 8, 16), oro); a.position.set(sx * 0.26, 0.56, 0); g.add(a); }
-    const l = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.16), logoMat); l.position.set(0, 0.05, 0.172); g.add(l);
+    const l = new THREE.Mesh(new THREE.PlaneGeometry(0.15, 0.15), logoMat); l.position.set(0, 0.1, 0.172); g.add(l);
     g.scale.setScalar(1.3); g.visible = false; scene.add(g);
     return g;
   })();
