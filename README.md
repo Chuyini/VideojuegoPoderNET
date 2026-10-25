@@ -10,7 +10,7 @@ Abre `index.html` en el navegador o súbelo a cualquier hosting estático (Verce
 
 Al abrir el juego entras a la oficina en modo libre: caminas con WASD o flechas (en celular, con el dedo en el piso) y la cámara te sigue. Acércate a alguien y presiona **E** (en celular, el botón **Platicar**) para platicar con la banda, con Cerón y con Deysimar. También puedes meterte al **almacén**, donde duerme la rata come-cables, y revisar el NOC, la planta de luz y los garrafones.
 
-La oficina está dividida en dos: del lado izquierdo la nave (NOC, almacén y la banda) y del lado derecho **Humanidades**. Sal por la puerta de vidrio del muro derecho a la **terraza** con vista a San Luis; enfrente está la **cafetería** y unos pasos más allá la puerta de Humanidades, donde están atención a clientes (Diana), el contador (Isai), facturación, el escritorio de Cerón y la **sala de juntas** con el servidor principal y su ventilación. En la partida, Cerón, Deysimar y el cliente entran a la nave por esa puerta.
+La oficina es como el edificio real: en el segundo piso hay una **terraza** al frente, con barandal y palmeras, que da al estacionamiento (del otro lado está el Starbucks). Desde la terraza hay dos puertas: la **izquierda** entra a la nave (NOC, almacén y la banda) y la **derecha** a **Humanidades**, donde están atención a clientes (Diana), el contador (Isai), facturación, el escritorio de Cerón y la **sala de juntas** con el servidor principal y su ventilación. En el techo está la torre de antenas. En la partida, Cerón, Deysimar y el cliente entran a la nave por la puerta izquierda.
 
 Cuando estés listo, presiona **Empezar a trabajar** para elegir entre 2 jugadores o contra la CPU. Al terminar una partida puedes volver a explorar.
 

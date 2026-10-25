@@ -151,7 +151,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       <div class="caja p2"><span class="nom" id="h2n">EL RETADOR</span><span class="pts" id="h2p">0000</span><div class="grito"><i id="h2g"></i></div><span class="extra" id="h2x"></span></div>
     </div>
     <div class="explora" id="explora" hidden>
-      <div class="caja"><span class="nom">EXPLORA LA OFICINA</span><small id="exploraAyuda">WASD o flechas para caminar · E para platicar · Sal a la terraza por la puerta de la derecha</small></div>
+      <div class="caja"><span class="nom">EXPLORA LA OFICINA</span><small id="exploraAyuda">WASD o flechas para caminar · E para platicar · Sal a la terraza y entra a Humanidades por la puerta derecha</small></div>
       <button id="btnTrabajar">Empezar a trabajar</button>
     </div>
     <div class="pista" id="pista" hidden></div>
@@ -503,13 +503,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   // muros blancos y armadura de acero
   scene.add(caja(32.6, 6, 0.3, blanco, 0, 3, -8.15));
   scene.add(caja(0.3, 6, 16.3, blanco, -16.15, 3, 0));
-  // muro derecho con la puerta de vidrio que sale a la terraza
-  scene.add(caja(0.3, 6, 13.1, blanco, 16.15, 3, -1.6));
-  scene.add(caja(0.3, 6, 1.5, blanco, 16.15, 3, 7.4));
-  scene.add(caja(0.3, 3.4, 1.7, blanco, 16.15, 4.3, 5.8));
-  for (const z of [4.95, 6.65]) scene.add(caja(0.12, 2.6, 0.08, '#1f2226', 16.15, 1.3, z));
-  scene.add(caja(0.12, 0.08, 1.75, '#1f2226', 16.15, 2.6, 5.8));
-  { const v = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 2.5), vidrio); v.position.set(16.34, 1.25, 4.5); v.rotation.y = Math.PI / 2; scene.add(v); } // hoja corrediza abierta
+  scene.add(caja(0.3, 6, 16.3, blanco, 16.15, 3, 0)); // pared con pared con Humanidades
   scene.add(caja(32.6, 0.12, 0.06, '#2a2e33', 0, 0.06, -7.98));
   scene.add(caja(32.4, 0.18, 0.18, acero, 0, 5.95, -7.9));
   scene.add(caja(32.4, 0.18, 0.18, acero, 0, 5.2, -7.9));
@@ -617,7 +611,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       for (let i = 0; i < n; i++) pos.push([x, 5.7 - i * 0.3, -7.72, 0]);
     }
     for (const sx of [-1, 1]) for (let z = -7.4; z <= 7.4; z += 0.45) {
-      if (sx === 1 && z > 4.4 && z < 7.1) continue; // puerta a la terraza
       const n = 3 + Math.round(Math.abs(Math.sin(z * 1.7)) * 3);
       for (let i = 0; i < n; i++) pos.push([sx * 15.82, 5.7 - i * 0.3, z, Math.PI / 2]);
     }
@@ -654,7 +647,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
   // reloj y señal de salida en el muro derecho
   { const reloj = new THREE.Mesh(new THREE.CircleGeometry(0.32, 24), mat('#f4f5f6')); reloj.position.set(15.98, 3.0, 5.6); reloj.rotation.y = -Math.PI / 2; scene.add(reloj); }
-  scene.add(caja(0.03, 0.25, 0.55, '#1f9d55', 15.98, 2.6, 4.6));
+  scene.add(caja(0.55, 0.25, 0.03, '#1f9d55', 10.9, 3.15, 8.06)); // salida sobre la puerta
 
   // ---------- Escritorios y empleados ----------
   const nombres = ['Debi', 'Toño', 'Luis', 'Felipe', 'Brenda', 'Suemmy', 'El Nuevo', 'Eli', 'Gallegos']; // Isai y Diana están en Humanidades
@@ -763,156 +756,146 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     escritorios.push({ pantalla, emp: { nombre: nombres[k], x: ex, z: ez, ax: cx + sx * 2.1, az: cz + sz * 2.1, grupo: e, cuerpo, cabeza, burbuja: null, flojo: null, idx: -1, prox: 2 + Math.random() * 6 } });
   });
 
-  // ---------- Afuera: terraza con vista, cafetería y edificio de Humanidades ----------
-  const PUERTA_DER = { x: 16.15, z: 5.8 };
-  const TERRAZA = { x0: 16.3, x1: 21.5, z0: -10.2, z1: 10.0 };
-  const CAFE = { x0: 21.5, x1: 27.2, z0: 3.7, z1: 10.0 };
-  const HUM = { x0: 21.5, x1: 37.2, z0: -10.2, z1: 3.5 };
-  const SALA = { x0: 30.0, x1: 37.2, z0: -10.2, z1: -4.5 };
+  // ---------- Edificio: terraza al frente con dos puertas (izquierda: nave · derecha: Humanidades) ----------
+  const PUERTA_NAVE = { x: 10.9, z: 8.15 }, PUERTA_HUM = { x: 18.9, z: 8.15 };
+  const TERRAZA = { x0: -16.3, x1: 33.0, z0: 8.3, z1: 11.6 };
+  const HUM = { x0: 16.3, x1: 32.6, z0: -8.15, z1: 8.15 };
+  const SALA = { x0: 25.0, x1: 32.4, z0: -8.0, z1: -2.6 };
   // zonas por donde se camina al explorar; se enciman en las puertas para poder pasar
   const CAMINABLE = [
     { x0: -15.7, x1: 15.7, z0: -7.6, z1: 7.7 },     // nave
-    { x0: 14.5, x1: 17.6, z0: 4.95, z1: 6.65 },     // puerta nave → terraza
-    { x0: 16.6, x1: 21.2, z0: -9.7, z1: 9.6 },      // terraza
-    { x0: 20.0, x1: 23.2, z0: 6.0, z1: 7.7 },       // puerta de la cafetería
-    { x0: 21.9, x1: 26.9, z0: 4.0, z1: 9.7 },       // cafetería
-    { x0: 20.0, x1: 23.2, z0: -1.75, z1: 0.15 },    // puerta de Humanidades
-    { x0: 21.9, x1: 36.9, z0: -9.9, z1: 3.2 }       // Humanidades
+    { x0: 10.0, x1: 11.8, z0: 6.6, z1: 9.6 },       // puerta izquierda → nave
+    { x0: -15.8, x1: 32.6, z0: 8.6, z1: 11.2 },     // terraza
+    { x0: 18.0, x1: 19.8, z0: 6.6, z1: 9.6 },       // puerta derecha → Humanidades
+    { x0: 16.6, x1: 32.2, z0: -7.85, z1: 7.7 }      // Humanidades
   ];
   const caminable = (x, z, r) => CAMINABLE.some(a => x - r >= a.x0 && x + r <= a.x1 && z - r >= a.z0 && z + r <= a.z1);
   function letreroPlano(txt, w, h, fondo, color, x, y, z, rotY) {
     const c = document.createElement('canvas'); c.width = 512; c.height = Math.round(512 * h / w);
-    const g = c.getContext('2d'); g.fillStyle = fondo; g.fillRect(0, 0, c.width, c.height);
+    const g = c.getContext('2d');
+    if (fondo) { g.fillStyle = fondo; g.fillRect(0, 0, c.width, c.height); }
     g.fillStyle = color; g.font = `800 ${Math.round(c.height * 0.5)}px Rubik, Arial, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
     g.fillText(txt, c.width / 2, c.height / 2 + 2);
     const t = new THREE.CanvasTexture(c); t.minFilter = THREE.LinearFilter;
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t }));
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, transparent: !fondo, depthWrite: !!fondo }));
     m.position.set(x, y, z); m.rotation.y = rotY || 0; scene.add(m); return m;
   }
-  function vistaSLP() {
-    const W = 1024, H = 440, c = document.createElement('canvas'); c.width = W; c.height = H;
-    const g = c.getContext('2d');
-    const cielo = g.createLinearGradient(0, 0, 0, H); cielo.addColorStop(0, '#5aa6e8'); cielo.addColorStop(1, '#e9e2cf');
-    g.fillStyle = cielo; g.fillRect(0, 0, W, H);
-    g.fillStyle = 'rgba(255,255,255,.85)';
-    [[160, 60], [560, 40], [880, 75]].forEach(([x, y]) => { g.beginPath(); g.ellipse(x, y, 80, 20, 0, 0, 7); g.ellipse(x + 50, y - 14, 50, 20, 0, 0, 7); g.fill(); });
-    g.fillStyle = '#8d7a8f'; g.beginPath(); g.moveTo(0, 260);
-    for (let x = 0; x <= W; x += 48) g.lineTo(x, 190 + Math.sin(x * 0.011) * 40 + Math.sin(x * 0.037) * 14);
-    g.lineTo(W, H); g.lineTo(0, H); g.fill();
-    g.fillStyle = '#a3909f'; g.beginPath(); g.moveTo(0, 300);
-    for (let x = 0; x <= W; x += 40) g.lineTo(x, 255 + Math.sin(x * 0.017 + 1) * 22);
-    g.lineTo(W, H); g.lineTo(0, H); g.fill();
-    for (let i = 0; i < 18; i++) {
-      const x = i * 58 + (i % 3) * 9, h = 40 + ((i * 37) % 70);
-      g.fillStyle = i % 2 ? '#b9a99a' : '#c9b9a8'; g.fillRect(x, H - 80 - h, 50, h + 80);
-      g.fillStyle = '#7f95a8'; for (let y = H - 70 - h; y < H - 60; y += 16) for (let k = 0; k < 3; k++) g.fillRect(x + 6 + k * 15, y, 8, 8);
+  // vidrio de fachada muy claro para no tapar la vista de la cámara
+  const vidrioFachada = new THREE.MeshPhongMaterial({ color: '#bfe6ee', transparent: true, opacity: 0.12, shininess: 90, specular: 0xffffff, depthWrite: false, side: THREE.DoubleSide });
+  function fachada(x0, x1, puerta) {
+    const z = 8.15, alto = 2.9;
+    for (const [a, b] of [[x0, puerta - 0.9], [puerta + 0.9, x1]]) {
+      const v = new THREE.Mesh(new THREE.PlaneGeometry(b - a, alto), vidrioFachada); v.position.set((a + b) / 2, alto / 2, z); scene.add(v);
+      const n = Math.max(1, Math.round((b - a) / 3));
+      for (let i = 0; i <= n; i++) scene.add(caja(0.07, alto, 0.07, '#1f2226', a + (b - a) * i / n, alto / 2, z));
     }
-    // torres de la Catedral en cantera rosa
-    const cx = 600, base = H - 70;
-    g.fillStyle = '#d89a7c'; g.fillRect(cx - 70, base - 90, 140, 90);
-    for (const tx of [cx - 90, cx + 90]) {
-      g.fillStyle = '#d89a7c'; g.fillRect(tx - 24, base - 150, 48, 150);
-      g.fillStyle = '#b87a60'; g.fillRect(tx - 18, base - 180, 36, 30);
-      g.fillStyle = '#e8c9a8'; g.beginPath(); g.arc(tx, base - 180, 14, Math.PI, 0); g.fill();
-      g.fillStyle = '#333'; g.fillRect(tx - 2, base - 206, 4, 14);
-    }
-    const t = new THREE.CanvasTexture(c); t.minFilter = THREE.LinearFilter; return t;
+    scene.add(caja(x1 - x0, 0.07, 0.07, '#1f2226', (x0 + x1) / 2, alto, z));
   }
   {
-    // suelo de afuera para que no se vea el vacío
-    const suelo = new THREE.Mesh(new THREE.PlaneGeometry(150, 110), mat('#3a3d42'));
-    suelo.rotation.x = -Math.PI / 2; suelo.position.set(12, -0.04, 0); suelo.receiveShadow = true; scene.add(suelo);
-    // terraza de duela
-    const c = document.createElement('canvas'); c.width = 64; c.height = 64; const g = c.getContext('2d');
-    g.fillStyle = '#8a6a4a'; g.fillRect(0, 0, 64, 64); g.fillStyle = '#6f5238'; for (let y = 0; y < 64; y += 16) g.fillRect(0, y, 64, 2);
-    const td = new THREE.CanvasTexture(c); td.wrapS = td.wrapT = THREE.RepeatWrapping; td.repeat.set(3, 12);
-    const deck = new THREE.Mesh(new THREE.PlaneGeometry(TERRAZA.x1 - TERRAZA.x0, TERRAZA.z1 - TERRAZA.z0), new THREE.MeshLambertMaterial({ map: td }));
-    deck.rotation.x = -Math.PI / 2; deck.position.set((TERRAZA.x0 + TERRAZA.x1) / 2, 0.005, (TERRAZA.z0 + TERRAZA.z1) / 2); deck.receiveShadow = true; scene.add(deck);
-    // barandal de vidrio al fondo (hacia la vista) y al frente
-    for (const z of [-10.05, 9.95]) {
-      const v = new THREE.Mesh(new THREE.PlaneGeometry(TERRAZA.x1 - TERRAZA.x0, 1.05), vidrio); v.position.set((TERRAZA.x0 + TERRAZA.x1) / 2, 0.55, z); scene.add(v);
-      scene.add(caja(TERRAZA.x1 - TERRAZA.x0, 0.06, 0.08, '#9aa1a8', (TERRAZA.x0 + TERRAZA.x1) / 2, 1.1, z));
-      for (let x = TERRAZA.x0 + 0.3; x < TERRAZA.x1; x += 1.3) scene.add(caja(0.06, 1.1, 0.06, '#9aa1a8', x, 0.55, z));
+    // edificio blanco con persianas debajo de la terraza
+    const base = caja(50, 4.5, 21.5, '#eceeef', 8.3, -2.27, 0.85); base.castShadow = false; scene.add(base);
+    const cp = document.createElement('canvas'); cp.width = 64; cp.height = 64; const gp = cp.getContext('2d');
+    gp.fillStyle = '#e4e6e8'; gp.fillRect(0, 0, 64, 64); gp.fillStyle = '#a9afb5'; for (let y = 0; y < 64; y += 8) gp.fillRect(0, y, 64, 3);
+    const tp = new THREE.CanvasTexture(cp); tp.wrapS = tp.wrapT = THREE.RepeatWrapping; tp.repeat.set(20, 4);
+    const persianas = new THREE.Mesh(new THREE.PlaneGeometry(46, 3.4), new THREE.MeshLambertMaterial({ map: tp }));
+    persianas.position.set(8.3, -2.1, 11.62); scene.add(persianas);
+    // estacionamiento abajo
+    const asfalto = new THREE.Mesh(new THREE.PlaneGeometry(170, 120), mat('#3a3d42'));
+    asfalto.rotation.x = -Math.PI / 2; asfalto.position.set(8, -4.52, 10); scene.add(asfalto);
+    const banqueta = new THREE.Mesh(new THREE.PlaneGeometry(52, 2.2), mat('#b9b2a6'));
+    banqueta.rotation.x = -Math.PI / 2; banqueta.position.set(8.3, -4.5, 12.7); scene.add(banqueta);
+    for (let x = -14; x <= 32; x += 3.2) { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 5), new THREE.MeshBasicMaterial({ color: '#e9ecef' })); l.rotation.x = -Math.PI / 2; l.position.set(x, -4.49, 16.4); scene.add(l); }
+    function carro(x, color) {
+      const g = new THREE.Group(); g.position.set(x, -4.5, 16.4); scene.add(g);
+      g.add(caja(1.8, 0.6, 4.0, color, 0, 0.6, 0));
+      g.add(caja(1.6, 0.55, 2.1, color, 0, 1.15, 0.2));
+      g.add(caja(1.62, 0.4, 0.05, '#20252b', 0, 1.15, -0.86));
+      for (const [wx, wz] of [[-0.9, -1.3], [0.9, -1.3], [-0.9, 1.3], [0.9, 1.3]]) { const r = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.25, 14), mat('#151515')); r.rotation.z = Math.PI / 2; r.position.set(wx, 0.35, wz); g.add(r); }
     }
-    for (const [x, z] of [[17.0, -8.9], [20.7, -8.9], [17.0, 2.0]]) { scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.28, 0.6, 14), mat('#6b5a4a')).translateX(x).translateY(0.3).translateZ(z)); scene.add(esfera(0.55, '#2f8f46', x, 1.0, z)); }
-    // vista de San Luis desde la terraza
-    const vista = new THREE.Mesh(new THREE.PlaneGeometry(52, 22), new THREE.MeshBasicMaterial({ map: vistaSLP() }));
-    vista.position.set(20, 7.5, -19); scene.add(vista);
-
-    // muros bajos de un edificio con hueco de puerta en la fachada (lado oeste)
-    function edificio(A, puerta, colorMuro, alto) {
-      const lx = A.x1 - A.x0, lz = A.z1 - A.z0, mx = (A.x0 + A.x1) / 2, mz = (A.z0 + A.z1) / 2;
-      scene.add(caja(lx, alto, 0.2, colorMuro, mx, alto / 2, A.z0));
-      scene.add(caja(lx, alto, 0.2, colorMuro, mx, alto / 2, A.z1));
-      scene.add(caja(0.2, alto, lz, colorMuro, A.x1, alto / 2, mz));
-      scene.add(caja(0.2, alto, puerta[0] - A.z0, colorMuro, A.x0, alto / 2, (A.z0 + puerta[0]) / 2));
-      scene.add(caja(0.2, alto, A.z1 - puerta[1], colorMuro, A.x0, alto / 2, (puerta[1] + A.z1) / 2));
-      scene.add(caja(0.2, alto - 2.6, puerta[1] - puerta[0], colorMuro, A.x0, 2.6 + (alto - 2.6) / 2, (puerta[0] + puerta[1]) / 2));
+    carro(-6.2, '#f4f5f6'); carro(-3.0, '#e9ecef'); carro(0.2, '#f4f5f6'); carro(3.4, '#b9bec4'); carro(13.0, '#2b2f33'); carro(22.6, '#c62828');
+    // terraza: piso, barandal y palmeras en maceta
+    const piso = new THREE.Mesh(new THREE.PlaneGeometry(TERRAZA.x1 - TERRAZA.x0, TERRAZA.z1 - TERRAZA.z0), mat('#cfc8bd'));
+    piso.rotation.x = -Math.PI / 2; piso.position.set((TERRAZA.x0 + TERRAZA.x1) / 2, 0.006, (TERRAZA.z0 + TERRAZA.z1) / 2); piso.receiveShadow = true; scene.add(piso);
+    const z = TERRAZA.z1 - 0.05;
+    { const v = new THREE.Mesh(new THREE.PlaneGeometry(TERRAZA.x1 - TERRAZA.x0, 1.05), vidrio); v.position.set((TERRAZA.x0 + TERRAZA.x1) / 2, 0.55, z); scene.add(v); }
+    scene.add(caja(TERRAZA.x1 - TERRAZA.x0, 0.06, 0.08, '#2b2f33', (TERRAZA.x0 + TERRAZA.x1) / 2, 1.1, z));
+    for (let x = TERRAZA.x0 + 0.2; x < TERRAZA.x1; x += 1.6) scene.add(caja(0.06, 1.1, 0.06, '#2b2f33', x, 0.55, z));
+    for (const x of [TERRAZA.x0, TERRAZA.x1]) scene.add(caja(0.06, 1.1, TERRAZA.z1 - TERRAZA.z0, '#2b2f33', x, 0.55, (TERRAZA.z0 + TERRAZA.z1) / 2));
+    function palma(x) {
+      const pz = 10.95;
+      scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.3, 0.6, 14), mat('#2b2f33')).translateX(x).translateY(0.3).translateZ(pz));
+      scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.1, 1.3, 8), mat('#7a5a3a')).translateX(x).translateY(1.25).translateZ(pz));
+      for (let i = 0; i < 7; i++) { const h = caja(0.9, 0.03, 0.18, '#3f8f46', x, 1.9, pz); h.rotation.set(0, i * 0.9, -0.5); h.translateX(0.4); scene.add(h); }
+      addObs(x - 0.4, x + 0.4, pz - 0.4, pz + 0.4);
     }
-
-    // CAFETERÍA (enfrente de la puerta de la nave)
-    edificio(CAFE, [6.0, 7.7], '#efe7dc', 3.4);
-    const pisoCafe = new THREE.Mesh(new THREE.PlaneGeometry(CAFE.x1 - CAFE.x0, CAFE.z1 - CAFE.z0), mat('#6b4a32'));
-    pisoCafe.rotation.x = -Math.PI / 2; pisoCafe.position.set((CAFE.x0 + CAFE.x1) / 2, 0.01, (CAFE.z0 + CAFE.z1) / 2); scene.add(pisoCafe);
-    const toldo = caja(1.1, 0.08, CAFE.z1 - CAFE.z0, '#1e6b45', CAFE.x0 - 0.5, 2.9, (CAFE.z0 + CAFE.z1) / 2); toldo.rotation.z = -0.25; scene.add(toldo);
-    letreroPlano('CAFETERÍA', 3.2, 0.6, '#1e6b45', '#ffffff', CAFE.x0 - 0.12, 3.15, (CAFE.z0 + CAFE.z1) / 2, -Math.PI / 2);
-    for (const [z0, z1] of [[3.9, 5.9], [7.8, 9.8]]) { const v = new THREE.Mesh(new THREE.PlaneGeometry(z1 - z0, 1.6), vidrio); v.position.set(CAFE.x0 - 0.12, 1.4, (z0 + z1) / 2); v.rotation.y = Math.PI / 2; scene.add(v); }
-    scene.add(caja(0.7, 1.05, 4.0, '#3b2a1e', 25.95, 0.52, 6.6));
-    scene.add(caja(0.8, 0.05, 4.1, '#d9cbb5', 25.95, 1.07, 6.6));
-    scene.add(caja(0.4, 0.45, 0.5, '#b9bec4', 25.95, 1.32, 5.4)); // cafetera de espresso
-    for (let i = 0; i < 3; i++) scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.14, 10), mat('#ffffff')).translateX(25.85).translateY(1.17).translateZ(6.6 + i * 0.25));
-    letreroPlano('MENÚ · AMERICANO · LATTE · FRAPPÉ', 3.4, 0.5, '#1b1c1f', '#e9ecef', 27.05, 2.2, 6.6, -Math.PI / 2);
-    addObs(25.6, 26.3, 4.6, 8.6);
-    for (const [x, z] of [[23.2, 8.6], [23.2, 4.9]]) {
-      scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.05, 18), mat('#d9cbb5')).translateX(x).translateY(0.75).translateZ(z));
-      scene.add(caja(0.06, 0.75, 0.06, '#2b2f33', x, 0.37, z));
-      for (const dx of [-0.6, 0.6]) scene.add(caja(0.4, 0.45, 0.4, '#1e6b45', x + dx, 0.23, z));
-      addObs(x - 1.0, x + 1.0, z - 0.45, z + 0.45);
+    for (const x of [-13, -7, -1, 5, 14, 23, 29]) palma(x);
+    // fachadas de vidrio con sus puertas y letreros
+    fachada(-16.0, 16.15, PUERTA_NAVE.x);
+    fachada(16.15, 32.6, PUERTA_HUM.x);
+    letreroPlano('el poder de INTERNET', 4.2, 0.6, null, '#ffffff', 5.0, 2.2, 8.2);
+    { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.75), logoMat); l.position.set(12.3, 1.9, 8.2); scene.add(l); }
+    letreroPlano('HUMANIDADES', 2.8, 0.5, null, '#ffffff', 22.5, 2.3, 8.2);
+    // torre de antenas en el techo
+    {
+      const g = new THREE.Group(); g.position.set(12.6, 0, -9.3); scene.add(g);
+      for (let tramoT = 0; tramoT < 6; tramoT++) {
+        const col = tramoT % 2 ? '#f4f5f6' : '#c62828', y0 = tramoT * 2.4, w = 0.9 - tramoT * 0.1;
+        for (const [px, pz] of [[-w, -w], [w, -w], [-w, w], [w, w]]) g.add(caja(0.08, 2.4, 0.08, col, px * 0.6, y0 + 1.2, pz * 0.6));
+        const d = caja(0.05, 2.6, 0.05, '#9aa1a8', 0, y0 + 1.2, w * 0.6); d.rotation.z = 0.45; g.add(d);
+        const d2 = caja(0.05, 2.6, 0.05, '#9aa1a8', w * 0.6, y0 + 1.2, 0); d2.rotation.x = 0.45; g.add(d2);
+      }
+      for (let i = 0; i < 3; i++) { const sct = caja(0.22, 1.0, 0.08, '#f4f5f6', Math.sin(i * 2.09) * 0.35, 13.6, Math.cos(i * 2.09) * 0.35); sct.rotation.y = i * 2.09; g.add(sct); }
+      const plato = new THREE.Mesh(new THREE.SphereGeometry(0.5, 20, 8, 0, Math.PI * 2, 0, Math.PI * 0.3), new THREE.MeshLambertMaterial({ color: '#f2f3f4', side: THREE.DoubleSide }));
+      plato.rotation.x = Math.PI / 2; plato.position.set(0, 12.2, 0.7); g.add(plato);
+      const foco = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 6), new THREE.MeshBasicMaterial({ color: '#ff2020' })); foco.position.y = 14.5; g.add(foco);
     }
+  }
 
-    // HUMANIDADES (atención a clientes, contador, facturación, CEO y sala de juntas)
-    edificio(HUM, [-1.75, 0.15], '#e8eaec', 3.6);
-    const pisoHum = new THREE.Mesh(new THREE.PlaneGeometry(HUM.x1 - HUM.x0, HUM.z1 - HUM.z0), mat('#c9ccd0'));
-    pisoHum.rotation.x = -Math.PI / 2; pisoHum.position.set((HUM.x0 + HUM.x1) / 2, 0.01, (HUM.z0 + HUM.z1) / 2); pisoHum.receiveShadow = true; scene.add(pisoHum);
-    letreroPlano('HUMANIDADES', 3.0, 0.5, '#0b0d10', '#f2b632', HUM.x0 - 0.12, 3.0, -0.8, -Math.PI / 2);
-    { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), logoMat); l.position.set(HUM.x0 - 0.12, 2.0, 1.5); l.rotation.y = -Math.PI / 2; scene.add(l); }
-    for (const [z0, z1] of [[-9.8, -2.2], [0.6, 3.2]]) { const v = new THREE.Mesh(new THREE.PlaneGeometry(z1 - z0, 1.4), vidrio); v.position.set(HUM.x0 - 0.12, 1.5, (z0 + z1) / 2); v.rotation.y = Math.PI / 2; scene.add(v); }
-    // atención a clientes: mostrador y sala de espera
-    scene.add(caja(3.0, 1.05, 0.7, '#e8eaec', 25.0, 0.52, -3.2));
-    scene.add(caja(3.1, 0.05, 0.8, '#2b2f33', 25.0, 1.07, -3.2));
-    scene.add(caja(0.3, 0.08, 0.22, '#1b1c1f', 24.0, 1.13, -3.3)); // teléfono
-    addObs(23.45, 26.55, -3.6, -2.8);
-    for (const x of [23.6, 24.7, 25.8]) { scene.add(caja(0.6, 0.45, 0.55, '#3a5a8a', x, 0.23, 2.75)); scene.add(caja(0.6, 0.55, 0.1, '#3a5a8a', x, 0.7, 3.0)); }
-    addObs(23.2, 26.2, 2.4, 3.2);
+  // ---------- HUMANIDADES (a la derecha de la nave, pared con pared) ----------
+  {
+    scene.add(caja(HUM.x1 - HUM.x0, 4.5, 0.2, '#e8eaec', (HUM.x0 + HUM.x1) / 2, 2.25, HUM.z0));
+    scene.add(caja(0.2, 4.5, HUM.z1 - HUM.z0, '#e8eaec', HUM.x1 + 0.1, 2.25, 0));
+    const piso = new THREE.Mesh(new THREE.PlaneGeometry(HUM.x1 - HUM.x0, HUM.z1 - HUM.z0), mat('#c9ccd0'));
+    piso.rotation.x = -Math.PI / 2; piso.position.set((HUM.x0 + HUM.x1) / 2, 0.01, 0); piso.receiveShadow = true; scene.add(piso);
+    // atención a clientes: mostrador junto a la puerta y sala de espera
+    scene.add(caja(3.0, 1.05, 0.7, '#e8eaec', 21.5, 0.52, 5.0));
+    scene.add(caja(3.1, 0.05, 0.8, '#2b2f33', 21.5, 1.07, 5.0));
+    scene.add(caja(0.3, 0.08, 0.22, '#1b1c1f', 20.6, 1.13, 4.9));
+    addObs(19.95, 23.05, 4.6, 5.4);
+    const etAt = spriteTexto('ATENCIÓN A CLIENTES', 0.32, { color: '#f2b632', bg: 'rgba(0,0,0,.6)', size: 40 }); etAt.position.set(21.5, 2.9, 4.6); scene.add(etAt);
+    for (const x of [24.4, 25.5, 26.6]) { scene.add(caja(0.6, 0.45, 0.55, '#3a5a8a', x, 0.23, 7.15)); scene.add(caja(0.6, 0.55, 0.1, '#3a5a8a', x, 0.7, 6.9)); }
+    addObs(24.0, 27.0, 6.8, 7.55);
     // escritorio del CEO, junto a la sala de juntas
-    scene.add(caja(2.8, 0.1, 1.2, '#3b2a1e', 27.7, 0.78, -8.4));
-    scene.add(caja(2.8, 0.7, 0.06, '#2e2117', 27.7, 0.4, -7.83));
-    for (const x of [26.35, 29.05]) scene.add(caja(0.08, 0.75, 1.15, '#2e2117', x, 0.38, -8.4));
-    scene.add(caja(1.2, 0.72, 0.06, '#1a1d20', 27.7, 1.25, -8.75));
-    { const p = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.62), logoMat); p.scale.x = 0.56; p.position.set(27.7, 1.25, -8.71); scene.add(p); }
-    scene.add(caja(0.8, 1.3, 0.7, '#111214', 27.7, 0.65, -9.75)); // sillón
-    letreroPlano('CEO', 0.5, 0.16, '#1b1c1f', '#ffd23f', 27.7, 0.92, -7.79);
-    { const l = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.3), logoMat); l.position.set(27.7, 2.3, -10.08); scene.add(l); }
-    addObs(26.3, 29.1, -9.0, -7.8);
-    // sala de juntas de vidrio
+    scene.add(caja(2.8, 0.1, 1.2, '#3b2a1e', 21.8, 0.78, -6.4));
+    scene.add(caja(2.8, 0.7, 0.06, '#2e2117', 21.8, 0.4, -5.83));
+    for (const x of [20.45, 23.15]) scene.add(caja(0.08, 0.75, 1.15, '#2e2117', x, 0.38, -6.4));
+    scene.add(caja(1.2, 0.72, 0.06, '#1a1d20', 21.8, 1.25, -6.75));
+    { const p = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), logoMat); p.position.set(21.8, 1.25, -6.71); scene.add(p); }
+    scene.add(caja(0.8, 1.3, 0.7, '#111214', 21.8, 0.65, -7.65));
+    letreroPlano('CEO', 0.5, 0.16, '#1b1c1f', '#ffd23f', 21.8, 0.92, -5.79);
+    { const l = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.3), logoMat); l.position.set(21.8, 2.4, -8.03); scene.add(l); }
+    addObs(20.4, 23.2, -7.0, -5.8);
+    // sala de juntas de vidrio (puerta del lado de la entrada)
     const panel = (w, x, z, rot) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, 2.8), vidrio); m.position.set(x, 1.4, z); m.rotation.y = rot; scene.add(m); };
-    panel(-6.4 - SALA.z0, SALA.x0, (SALA.z0 - 6.4) / 2, Math.PI / 2);
-    panel(SALA.z1 + 5.0, SALA.x0, (-5.0 + SALA.z1) / 2, Math.PI / 2);
-    panel(SALA.x1 - SALA.x0, (SALA.x0 + SALA.x1) / 2, SALA.z1, 0);
+    panel(SALA.z1 - SALA.z0, SALA.x0, (SALA.z0 + SALA.z1) / 2, Math.PI / 2);
+    panel(SALA.x1 - 27.0, (27.0 + SALA.x1) / 2, SALA.z1, 0);
     scene.add(caja(0.08, 0.08, SALA.z1 - SALA.z0, '#1f2226', SALA.x0, 2.8, (SALA.z0 + SALA.z1) / 2));
     scene.add(caja(SALA.x1 - SALA.x0, 0.08, 0.08, '#1f2226', (SALA.x0 + SALA.x1) / 2, 2.8, SALA.z1));
-    addObs(29.95, 30.05, SALA.z0, -6.4); addObs(29.95, 30.05, -5.0, SALA.z1); addObs(SALA.x0, SALA.x1, SALA.z1 - 0.05, SALA.z1 + 0.05);
-    scene.add(caja(4.2, 0.08, 1.4, '#3b2a1e', 33.6, 0.76, -7.3));
-    for (const x of [32.0, 35.2]) scene.add(caja(0.12, 0.72, 0.9, '#2e2117', x, 0.36, -7.3));
-    for (let i = 0; i < 4; i++) for (const z of [-8.3, -6.3]) scene.add(caja(0.5, 0.9, 0.5, '#1b1c1f', 32.1 + i * 1.0, 0.45, z));
-    addObs(31.2, 36.0, -8.6, -6.0);
-    scene.add(caja(0.06, 1.0, 1.7, '#0b0d10', 37.05, 1.7, -7.3));
-    { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), logoMat); l.position.set(37.0, 1.7, -7.3); l.rotation.y = -Math.PI / 2; scene.add(l); }
+    for (const x of [27.0, SALA.x0]) scene.add(caja(0.08, 2.8, 0.08, '#1f2226', x, 1.4, SALA.z1));
+    addObs(SALA.x0 - 0.05, SALA.x0 + 0.05, SALA.z0, SALA.z1); addObs(27.0, SALA.x1, SALA.z1 - 0.05, SALA.z1 + 0.05);
+    const etSala = spriteTexto('SALA DE JUNTAS', 0.32, { color: '#ffffff', bg: 'rgba(0,0,0,.6)', size: 40 }); etSala.position.set(26.0, 3.1, SALA.z1); scene.add(etSala);
+    scene.add(caja(4.0, 0.08, 1.4, '#3b2a1e', 29.0, 0.76, -5.3));
+    for (const x of [27.5, 30.5]) scene.add(caja(0.12, 0.72, 0.9, '#2e2117', x, 0.36, -5.3));
+    for (let i = 0; i < 4; i++) for (const zz of [-6.3, -4.3]) scene.add(caja(0.5, 0.9, 0.5, '#1b1c1f', 27.5 + i * 1.0, 0.45, zz));
+    addObs(26.9, 31.1, -6.6, -4.0);
+    scene.add(caja(0.06, 1.0, 1.7, '#0b0d10', 32.5, 1.7, -5.3));
+    { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), logoMat); l.position.set(32.45, 1.7, -5.3); l.rotation.y = -Math.PI / 2; scene.add(l); }
   }
   // servidor grande con ventilación, en la esquina de la sala de juntas
   const ventiladores = [], ledsServidor = [];
+  const SERVIDOR = { x: 31.75, z: -7.35 };
   {
-    const sx = 36.2, sz = -9.3;
+    const sx = SERVIDOR.x, sz = SERVIDOR.z;
     scene.add(caja(1.3, 2.5, 1.1, '#16181b', sx, 1.25, sz));
     for (let i = 0; i < 10; i++) scene.add(caja(0.02, 0.07, 0.9, '#2b2f33', sx - 0.66, 0.35 + i * 0.2, sz));
     for (let i = 0; i < 6; i++) {
@@ -926,8 +909,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       for (let k = 0; k < 3; k++) { const a = caja(0.38, 0.015, 0.08, '#cfd3d7', 0, 0, 0); a.rotation.y = k * 2.094; aspas.add(a); }
       ventiladores.push(aspas);
     }
-    scene.add(caja(0.7, 1.0, 0.7, '#b9bec4', sx, 3.1, sz)); // ducto de ventilación
-    addObs(sx - 0.7, 36.9, sz - 0.6, sz + 0.6);
+    scene.add(caja(0.7, 1.4, 0.7, '#b9bec4', sx, 3.25, sz)); // ducto de ventilación
+    addObs(sx - 0.7, 32.4, sz - 0.6, sz + 0.6);
   }
   // puestos de Humanidades: Isai (contador) y facturación
   function sentadoDeco(cx, cz, giro, nombre, extra) {
@@ -955,8 +938,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     addObs(ex - 0.42, ex + 0.42, ez - 0.42, ez + 0.42);
     return { nombre, x: ex, z: ez, ax: cx + sx * 2.1, az: cz + sz * 2.1, grupo: e };
   }
-  const isaiNpc = sentadoDeco(28.5, 1.6, Math.PI, 'Isai', d => { d.add(caja(0.2, 0.03, 0.26, '#2b2f33', -0.7, 0.8, 0.22)); d.add(caja(0.16, 0.012, 0.06, '#9fe0a8', -0.7, 0.82, 0.14)); });
-  const facturaNpc = sentadoDeco(32.6, 1.6, Math.PI, 'Facturación', d => { d.add(caja(0.5, 0.3, 0.4, '#e8eaec', -0.75, 0.93, 0.1)); for (let i = 0; i < 3; i++) d.add(caja(0.3, 0.02, 0.4, '#ffffff', 1.55, 0.8 + i * 0.02, 0.9)); });
+  const isaiNpc = sentadoDeco(26.0, 1.4, Math.PI, 'Isai', d => { d.add(caja(0.2, 0.03, 0.26, '#2b2f33', -0.7, 0.8, 0.22)); d.add(caja(0.16, 0.012, 0.06, '#9fe0a8', -0.7, 0.82, 0.14)); });
+  const facturaNpc = sentadoDeco(30.4, 1.4, Math.PI, 'Facturación', d => { d.add(caja(0.5, 0.3, 0.4, '#e8eaec', -0.75, 0.93, 0.1)); for (let i = 0; i < 3; i++) d.add(caja(0.3, 0.02, 0.4, '#ffffff', 1.55, 0.8 + i * 0.02, 0.9)); });
 
   // NOC (fondo derecha): piso técnico, 4 racks, video wall con cámaras en vivo y gráficas
   const NOC = { x0: 10.6, x1: 15.7, z0: -8, z1: -4.6 };
@@ -1234,13 +1217,12 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const et = spriteTexto(nombre, 0.38, { color: '#fff', bg: 'rgba(0,0,0,.55)', fam: 'Rubik, sans-serif', peso: 700, size: 40, pad: 16 });
     et.position.y = 2.3; modelo.g.add(et); return modelo;
   }
-  const dianaM = dePie(crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { chamarra: true, acento: '#3a3f46', sinAro: true, peloLargo: '#2a1d14' }), 'Diana', 25.0, -3.95, 0);
-  dePie(crearJefe('#4f7fc9', '#4f7fc9', { casual: true, router: true }), 'Cliente', 25.0, -2.15, Math.PI);
-  dePie(crearJefe('#1e6b45', '#1e6b45', { casual: true }), 'Barista', 26.6, 6.6, -Math.PI / 2);
-  // Isai y Diana también llegan a la premiación (entran por la puerta de la terraza)
+  const dianaM = dePie(crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { chamarra: true, acento: '#3a3f46', sinAro: true, peloLargo: '#2a1d14' }), 'Diana', 21.5, 4.25, 0);
+  dePie(crearJefe('#4f7fc9', '#4f7fc9', { casual: true, router: true }), 'Cliente', 21.5, 5.95, Math.PI);
+  // Isai y Diana también llegan a la premiación (entran por la puerta de la nave)
   const humanidadesFestejo = [
-    { nombre: 'Isai', ax: 15.0, az: 5.8, grupo: isaiNpc.grupo },
-    { nombre: 'Diana', ax: 15.0, az: 5.8, grupo: dianaM.g }
+    { nombre: 'Isai', ax: PUERTA_NAVE.x, az: 6.9, grupo: isaiNpc.grupo },
+    { nombre: 'Diana', ax: PUERTA_NAVE.x, az: 6.9, grupo: dianaM.g }
   ];
 
   // ---------- Estado ----------
@@ -1531,8 +1513,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   // ---------- Jefes ----------
   function aparecer(e) {
     e.activo = true; e.saliendo = false; e.resta = e.dura; e.pausa = 0;
-    e.x = PUERTA_DER.x + 1.6; e.z = PUERTA_DER.z; e.dir = -Math.PI / 2; e.entrando = true; e.m.g.visible = true;
-    flotar(13.6, 3.8, PUERTA_DER.z, e.aviso, e.colorAviso, true);
+    e.x = PUERTA_NAVE.x; e.z = PUERTA_NAVE.z + 1.4; e.dir = Math.PI; e.entrando = true; e.m.g.visible = true;
+    flotar(PUERTA_NAVE.x, 3.8, 6.6, e.aviso, e.colorAviso, true);
     // el cliente llega porque se quedó sin internet
     if (e === cliente && internet) { internet = false; flotar(12.6, 3.6, -5.2, '¡SE CAYÓ LA RED!', '#ff3b3b', true); }
     const f = e.grave ? [147, 110] : [330, 247];
@@ -1570,16 +1552,16 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       }
       e.resta -= dt;
       if (e.resta <= 0 && !e.saliendo) salir(e);
-      const enPuerta = Math.abs(e.z - PUERTA_DER.z) < 0.9 && e.x > PUERTA_DER.x - 1.0;
+      const enPuerta = Math.abs(e.x - PUERTA_NAVE.x) < 0.9 && e.z > PUERTA_NAVE.z - 1.0;
       if (e.saliendo) {
-        // regresa a la puerta del muro derecho y sale a la terraza
-        navegar(e, enPuerta ? PUERTA_DER.x + 2.2 : PUERTA_DER.x - 1.3, PUERTA_DER.z, dt, 1, e.vel * 1.3, true);
-        if (e.x > PUERTA_DER.x + 1.8) { e.activo = false; e.m.g.visible = false; e.prox = azar(e.cada); }
+        // regresa a la puerta y sale a la terraza
+        navegar(e, PUERTA_NAVE.x, enPuerta ? PUERTA_NAVE.z + 2.2 : PUERTA_NAVE.z - 1.3, dt, 1, e.vel * 1.3, true);
+        if (e.z > PUERTA_NAVE.z + 1.8) { e.activo = false; e.m.g.visible = false; e.prox = azar(e.cada); }
         continue;
       }
       if (e.entrando) {
-        navegar(e, PUERTA_DER.x - 1.4, PUERTA_DER.z, dt, 1, e.vel, true);
-        if (e.x < PUERTA_DER.x - 1.2) e.entrando = false;
+        navegar(e, PUERTA_NAVE.x, PUERTA_NAVE.z - 1.4, dt, 1, e.vel, true);
+        if (e.z < PUERTA_NAVE.z - 1.2) e.entrando = false;
         continue;
       }
       if (e.pausa > 0) { e.pausa -= dt; continue; }
@@ -1944,9 +1926,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     vistaPremio = Math.min(1, T / 1.6);
     for (const e of [ceron, deysi]) e.movio = false;
     if (T < 2.2) {
-      // entran juntos cargando el trofeo
-      for (const e of [ceron, deysi]) { e.x = lado(e) * 0.9; e.z = 8.8 - 3.1 * (T / 2.2); e.dir = Math.PI; e.movio = true; e.paso += dt * 9; }
-      trofeo.position.set(0, 1.35, ceron.z);
+      // entran juntos por la puerta de la nave cargando el trofeo
+      const k = T / 2.2;
+      for (const e of [ceron, deysi]) {
+        const x0 = PUERTA_NAVE.x + lado(e) * 0.45, z0 = PUERTA_NAVE.z + 0.6, x1 = lado(e) * 0.9, z1 = 5.7;
+        e.x = x0 + (x1 - x0) * k; e.z = z0 + (z1 - z0) * k; e.dir = Math.atan2(x1 - x0, z1 - z0); e.movio = true; e.paso += dt * 9;
+      }
+      trofeo.position.set((ceron.x + deysi.x) / 2, 1.35, ceron.z);
     } else if (T < 2.9) {
       // se lo entregan al ganador
       const k = suave((T - 2.2) / 0.7);
@@ -2015,7 +2001,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     'Gallegos': ['¿Qué onda? Aquí echándole ganas.', 'Si te quieres llevar el empleado del mes, despierta a la banda y levanta la red.']
   };
   const ROLES_EMP = { 'Isai': 'CONTADOR', 'Diana': 'ATENCIÓN A CLIENTES' };
-  const POS_EXPLORA = { ceron: [27.7, -9.05], deysi: [4.6, 4.4], rata: [-11.6, -6.95] };
+  const POS_EXPLORA = { ceron: [21.8, -7.1], deysi: [4.6, 4.4], rata: [-11.6, -6.95] };
   const ZONA_ALMACEN = { x0: -15.7, x1: -7.0, z0: -8, z1: -4.85 };
   const interactivos = [
     ...escritorios.map(e => ({ nombre: e.emp.nombre, titulo: ROLES_EMP[e.emp.nombre] ? `${e.emp.nombre.toUpperCase()} · ${ROLES_EMP[e.emp.nombre]}` : null, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
@@ -2024,11 +2010,9 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     { nombre: 'Isai', titulo: 'ISAI · CONTADOR', x: isaiNpc.x, z: isaiNpc.z, r: 1.9, lineas: LINEAS_EMP['Isai'] },
     { nombre: 'Facturación', titulo: 'FACTURACIÓN', x: facturaNpc.x, z: facturaNpc.z, r: 1.9,
       lineas: ['Aquí sale cada factura de poderNET.', 'Si un cliente pide su factura, que me manden su RFC completo, por favor.', 'Isai y yo cuadramos los pagos al cierre de mes.'] },
-    { nombre: 'Diana', titulo: 'DIANA · ATENCIÓN A CLIENTES', x: 25.0, z: -3.95, r: 2.3, lineas: LINEAS_EMP['Diana'] },
-    { nombre: 'el cliente', titulo: 'CLIENTE', x: 25.0, z: -2.15, r: 1.6,
+    { nombre: 'Diana', titulo: 'DIANA · ATENCIÓN A CLIENTES', x: 21.5, z: 4.25, r: 2.3, lineas: LINEAS_EMP['Diana'] },
+    { nombre: 'el cliente', titulo: 'CLIENTE', x: 21.5, z: 5.95, r: 1.6,
       lineas: ['Vengo a pagar mi mensualidad... y a preguntar por qué se me fue el internet el martes.', 'La señorita Diana ya me está atendiendo, gracias.'] },
-    { nombre: 'el barista', titulo: 'CAFETERÍA', x: 26.6, z: 6.6, r: 2.0,
-      lineas: ['¿Lo de siempre? Un americano para aguantar el turno.', 'Los de poderNET vienen diario. Dicen que el café los hace correr más rápido.'] },
     { nombre: 'Deysimar', titulo: 'DEYSIMAR · GERENTE', ref: deysi, r: 1.9, color: '#e7c6ff',
       lineas: ['Hola, soy Deysimar, la gerente.', 'Quiero los reportes a tiempo y la red arriba todo el día.', 'El que junte más puntos se lleva el trofeo de empleado del mes.'] },
     { nombre: 'la rata', titulo: 'RATA COME-CABLES', ref: rata, r: 1.5, color: '#d0d0d0', cosa: true,
@@ -2041,11 +2025,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       lineas: ['Si se va la luz, la planta mantiene prendido el NOC. Los clientes ni se enteran.'] },
     { nombre: 'los garrafones', titulo: 'REFRI Y GARRAFONES', x: 13.9, z: 7.3, r: 1.7, cosa: true,
       lineas: ['Refri de acero y garrafones de agua. Hidratarse también es parte de la chamba.'] },
-    { nombre: 'la vista', titulo: 'TERRAZA', x: 19.0, z: -9.3, r: 2.2, cosa: true,
-      lineas: ['Desde la terraza se ve San Luis: la Sierra de San Miguelito y las torres de la Catedral.', 'Buen lugar para tomarse el café antes de entrar a trabajar.'] },
-    { nombre: 'la sala de juntas', titulo: 'SALA DE JUNTAS', x: 31.0, z: -5.7, r: 1.7, cosa: true,
+    { nombre: 'la vista', titulo: 'TERRAZA', x: 2.0, z: 11.0, r: 3.0, cosa: true,
+      lineas: ['Desde la terraza se ve el estacionamiento y, del otro lado, el Starbucks.', 'La puerta de la izquierda es la nave, con el NOC y el almacén. La de la derecha es Humanidades.'] },
+    { nombre: 'la sala de juntas', titulo: 'SALA DE JUNTAS', x: 26.0, z: -3.1, r: 1.7, cosa: true,
       lineas: ['Aquí se hacen las juntas con Cerón y Deysimar.', 'Mesa larga, pantalla con el logo y, en la esquina, el servidor grande.'] },
-    { nombre: 'el servidor', titulo: 'SERVIDOR PRINCIPAL', x: 35.4, z: -9.3, r: 1.6, cosa: true,
+    { nombre: 'el servidor', titulo: 'SERVIDOR PRINCIPAL', x: SERVIDOR.x, z: SERVIDOR.z, r: 1.7, cosa: true,
       lineas: ['El servidor principal de poderNET. Por eso tiene tanta ventilación: si se calienta, se cae todo.', 'Los ventiladores no paran ni un segundo. Mejor no le muevas.'] }
   ];
   const posDe = n => n.ref || n;
@@ -2053,7 +2037,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   let cercano = null, ultimaPista = null, zonaActual = '';
   const camExp = new THREE.Vector3(), miraExp = new THREE.Vector3();
   const TXT_MENU = { titulo: $('ovTitulo').textContent, texto: $('ovTexto').textContent };
-  if (esTouch) $('exploraAyuda').textContent = 'Toca el piso para caminar · Platica con la banda · Sal a la terraza por la puerta de la derecha';
+  if (esTouch) $('exploraAyuda').textContent = 'Toca el piso para caminar · Platica con la banda · Sal a la terraza y entra a Humanidades por la puerta derecha';
 
   function entrarExplorar() {
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
@@ -2153,7 +2137,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
     // letrero al entrar al almacén o al NOC
     const zona = dentro(ZONA_ALMACEN, p1.x, p1.z) ? 'ALMACÉN' : dentro(NOC, p1.x, p1.z) ? 'NOC' : dentro(SALA, p1.x, p1.z) ? 'SALA DE JUNTAS'
-      : dentro(HUM, p1.x, p1.z) ? 'HUMANIDADES' : dentro(CAFE, p1.x, p1.z) ? 'CAFETERÍA' : dentro(TERRAZA, p1.x, p1.z) ? 'TERRAZA' : '';
+      : dentro(HUM, p1.x, p1.z) ? 'HUMANIDADES' : dentro(TERRAZA, p1.x, p1.z) ? 'TERRAZA' : '';
     if (zona !== zonaActual) { zonaActual = zona; if (zona) { flotar(p1.x, 3.2, p1.z, zona, '#f2b632', true); beep(600, .06, 'triangle', .04); } }
 
     // los jefes te siguen con la mirada cuando andas cerca
@@ -2249,7 +2233,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     // cámara: sigue al jugador al explorar, vaivén en el menú, temblor cuando te regañan
     if (estado === 'explorar') {
       // sin pasarse del frente de la nave, para que no se vea el vacío fuera del piso
-      const k = 1 - Math.exp(-dt * 4), mz = Math.min(p1.z, 6.5);
+      const k = 1 - Math.exp(-dt * 4), mz = Math.min(p1.z, 9.5);
       camExp.x += (p1.x - camExp.x) * k; camExp.y += (11.5 - camExp.y) * k; camExp.z += (mz + 10 - camExp.z) * k;
       miraExp.x += (p1.x - miraExp.x) * k; miraExp.y += (0.8 - miraExp.y) * k; miraExp.z += (mz - miraExp.z) * k;
       camera.position.copy(camExp); camera.lookAt(miraExp);
