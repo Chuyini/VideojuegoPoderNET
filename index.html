@@ -1090,8 +1090,10 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     addObs(ex - 0.42, ex + 0.42, ez - 0.42, ez + 0.42);
     return { nombre, x: ex, z: ez, ax: cx + sx * 2.1, az: cz + sz * 2.1, grupo: e };
   }
-  const dianaNpc = sentadoDeco(21.5, 5.0, Math.PI, 'Diana', d => { d.add(caja(0.3, 0.08, 0.22, '#1b1c1f', -0.75, 0.84, 0.1)); d.add(caja(0.08, 0.06, 0.24, '#2b2f33', -0.9, 0.9, 0.1)); });
-  const isaiNpc = sentadoDeco(26.0, 1.4, Math.PI, 'Isai', d => { d.add(caja(0.2, 0.03, 0.26, '#2b2f33', -0.7, 0.8, 0.22)); d.add(caja(0.16, 0.012, 0.06, '#9fe0a8', -0.7, 0.82, 0.14)); });
+  const dianaNpc = sentadoDeco(18.15, 2.8, -Math.PI / 2, 'Diana',  // junto a Deysimar, de espaldas a la pared
+    d => { d.add(caja(0.3, 0.08, 0.22, '#1b1c1f', -0.75, 0.84, 0.1)); d.add(caja(0.08, 0.06, 0.24, '#2b2f33', -0.9, 0.9, 0.1)); });
+  // Isai y Caro en el muro derecho, de espaldas a la pared (igual que Deysimar)
+  const isaiNpc = sentadoDeco(30.75, -1.0, Math.PI / 2, 'Isai', d => { d.add(caja(0.2, 0.03, 0.26, '#2b2f33', -0.7, 0.8, 0.22)); d.add(caja(0.16, 0.012, 0.06, '#9fe0a8', -0.7, 0.82, 0.14)); });
   // checador de entrada: lector de huella en la pared, al entrar por la puerta derecha
   const CHECADOR = { x: 16.42, z: 6.8 };
   {
@@ -1115,7 +1117,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     d.add(new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.2, 10), mat('#ffffff')).translateX(-0.85).translateY(0.88).translateZ(0.05));
     d.add(esfera(0.17, '#d86a9a', -0.85, 1.07, 0.05)); // flores
   }
-  const facturaNpc = sentadoDeco(30.4, 1.4, Math.PI, 'Caro', d => { d.add(caja(0.5, 0.3, 0.4, '#e8eaec', -0.75, 0.93, 0.1)); for (let i = 0; i < 3; i++) d.add(caja(0.3, 0.02, 0.4, '#ffffff', 1.55, 0.8 + i * 0.02, 0.9)); });
+  const facturaNpc = sentadoDeco(30.75, 3.2, Math.PI / 2, 'Caro', d => { d.add(caja(0.5, 0.3, 0.4, '#e8eaec', -0.75, 0.93, 0.1)); for (let i = 0; i < 3; i++) d.add(caja(0.3, 0.02, 0.4, '#ffffff', 1.55, 0.8 + i * 0.02, 0.9)); });
 
   // NOC (fondo derecha): piso técnico, 4 racks, video wall con cámaras en vivo y gráficas
   const NOC = { x0: 10.6, x1: 15.7, z0: -8, z1: -4.6 };
@@ -1441,7 +1443,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     et.position.y = 2.3; modelo.g.add(et); return modelo;
   }
   dePie(crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { chamarra: true, acento: '#3a3f46', sinAro: true }), 'Almacenista', -11.2, -6.9, 0);
-  dePie(crearJefe('#4f7fc9', '#4f7fc9', { casual: true, router: true }), 'Cliente', 21.5, 6.5, Math.PI);
+  dePie(crearJefe('#4f7fc9', '#4f7fc9', { casual: true, router: true }), 'Cliente', 19.6, 3.6, Math.atan2(17.0 - 19.6, 2.8 - 3.6));
   // la señora de la limpieza: trapea la terraza de punta a punta, con su letrero de piso mojado
   const limpieza = (() => {
     const m = crearJefe('#7fb3d5', '#7fb3d5', { casual: true, peloLargo: '#3a2a1e', falda: '#2f4a68' });
@@ -2312,11 +2314,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       lineas: ['Te serviste un café bien cargado. ☕', 'Con la cafeína caminas más rápido un rato.'] },
     { nombre: 'los socios', titulo: 'SOCIOS', x: 17.45, z: -4.85, r: 2.0,
       lineas: ['Venimos a ver cómo va la expansión de poderNET en San Luis.', 'Cerón nos está platicando de las torres nuevas y de la red.', 'Nos dijeron que la red nunca se cae... a ver si es cierto.'] },
-    { nombre: 'Isai', titulo: 'ISAI · CONTADOR', x: isaiNpc.x, z: isaiNpc.z, r: 1.9, lineas: LINEAS_EMP['Isai'] },
-    { nombre: 'Caro', titulo: 'CARO · FACTURACIÓN', x: facturaNpc.x, z: facturaNpc.z, r: 1.9,
+    { nombre: 'Isai', titulo: 'ISAI · CONTADOR', x: isaiNpc.x, z: isaiNpc.z, r: 2.4, lineas: LINEAS_EMP['Isai'] },
+    { nombre: 'Caro', titulo: 'CARO · FACTURACIÓN', x: facturaNpc.x, z: facturaNpc.z, r: 2.4,
       lineas: ['Ando sacando las facturas del mes. ¿Necesitas una?', 'Si un cliente pide factura, que me manden su RFC completo, porfa.', 'Isai y yo cuadramos los pagos al cierre de mes.'] },
-    { nombre: 'Diana', titulo: 'DIANA · ATENCIÓN A CLIENTES', x: dianaNpc.x, z: dianaNpc.z, r: 2.3, lineas: LINEAS_EMP['Diana'] },
-    { nombre: 'el cliente', titulo: 'CLIENTE', x: 21.5, z: 6.5, r: 1.6,
+    { nombre: 'Diana', titulo: 'DIANA · ATENCIÓN A CLIENTES', x: dianaNpc.x, z: dianaNpc.z, r: 3.0, lineas: LINEAS_EMP['Diana'] },
+    { nombre: 'el cliente', titulo: 'CLIENTE', x: 19.6, z: 3.6, r: 1.2,
       lineas: ['Vengo a pagar mi mensualidad... y a preguntar por qué se me fue el internet el martes.', 'La señorita Diana ya me está atendiendo, gracias.'] },
     { nombre: 'Deysimar', titulo: 'DEYSIMAR · GERENTE', ref: deysi, r: 2.7, color: '#e7c6ff',
       lineas: ['¿Ya tienes listo lo de hoy? Lo necesito antes de la junta.', 'Échale un ojo a los tickets, que hay varios abiertos.', 'Y el que cierre más pendientes este mes se lleva el trofeo.'] },
