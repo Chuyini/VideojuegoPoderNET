@@ -151,7 +151,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       <div class="caja p2"><span class="nom" id="h2n">EL RETADOR</span><span class="pts" id="h2p">0000</span><div class="grito"><i id="h2g"></i></div><span class="extra" id="h2x"></span></div>
     </div>
     <div class="explora" id="explora" hidden>
-      <div class="caja"><span class="nom">EXPLORA LA OFICINA</span><small id="exploraAyuda">WASD o flechas para caminar · E para platicar · Sal a la terraza y entra a Humanidades por la puerta derecha</small></div>
+      <div class="caja"><span class="nom">EXPLORA LA OFICINA</span><small id="exploraAyuda">WASD o flechas para caminar · E para platicar · Sal a la terraza: la puerta derecha lleva a la oficina de al lado</small></div>
       <button id="btnTrabajar">Empezar a trabajar</button>
     </div>
     <div class="pista" id="pista" hidden></div>
@@ -2163,7 +2163,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     { nombre: 'Cerón', titulo: 'CERÓN · CEO', ref: ceron, r: 3.3, color: '#ffd23f',
       lineas: ['¿Qué pasó? Estoy explicándoles la red a los socios, dame chance.', 'Mira el pizarrón: la fibra sale del NOC, de ahí a las torres y de las torres a la casa del cliente.', 'Nomás que no se caiga la red mientras están aquí, ¿eh?'] },
     { nombre: 'tu escritorio', titulo: 'TU ESCRITORIO', pista: 'Ver tu escritorio', x: MI_LUGAR.x, z: MI_LUGAR.z + 1.15, r: 1.8, cosa: true,
-      lineas: ['Tu lugar: dos monitores con el tráfico y los sensores de la red en vivo.', 'El café ya se enfrió... la cafetera de Humanidades queda a unos pasos.', 'Cuando quieras arrancar el turno, dale a Empezar a trabajar.'] },
+      lineas: ['Tu lugar: dos monitores con el tráfico y los sensores de la red en vivo.', 'El café ya se enfrió... la cafetera de la oficina de al lado queda a unos pasos.', 'Cuando quieras arrancar el turno, dale a Empezar a trabajar.'] },
     { nombre: 'la señora de la limpieza', titulo: 'LIMPIEZA', ref: limpieza, r: 1.8,
       lineas: ['¡Cuidado, joven, está mojado!', 'Ahorita termino la terraza y le paso el trapeador a la oficina.', 'Y díganle a los del almacén que no anden dejando cajas en el pasillo.'] },
     { nombre: 'el almacenista', titulo: 'ALMACENISTA', x: -11.2, z: -6.9, r: 2.0,
@@ -2191,7 +2191,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     { nombre: 'los garrafones', titulo: 'REFRI Y GARRAFONES', x: -13.9, z: 7.3, r: 1.7, cosa: true,
       lineas: ['Refri de acero y garrafones de agua. Hidratarse también es parte de la chamba.'] },
     { nombre: 'la vista', titulo: 'TERRAZA', x: 2.0, z: 11.0, r: 3.0, cosa: true,
-      lineas: ['Desde la terraza se ve el estacionamiento y, del otro lado, el Starbucks.', 'La puerta de la izquierda es la nave, con el NOC y el almacén. La de la derecha es Humanidades.'] },
+      lineas: ['Desde la terraza se ve el estacionamiento y, del otro lado, el Starbucks.', 'La puerta de la izquierda es la nave, con el NOC y el almacén. La de la derecha es la oficina de al lado, con Diana, Isai, Cerón y la sala de juntas.'] },
     { nombre: 'el escritorio de Cerón', titulo: 'ESCRITORIO DEL CEO', x: 28.1, z: -3.0, r: 1.7, cosa: true,
       lineas: ['El escritorio de Cerón: L de vidrio, contratos y su monitor.', 'Ahorita no está: anda en la sala de juntas con los socios.'] },
     { nombre: 'la sala de juntas', titulo: 'SALA DE JUNTAS', x: 23.2, z: -2.2, r: 1.7, cosa: true,
@@ -2209,7 +2209,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   let cercano = null, ultimaPista = null, zonaActual = '';
   const camExp = new THREE.Vector3(), miraExp = new THREE.Vector3();
   const TXT_MENU = { titulo: $('ovTitulo').textContent, texto: $('ovTexto').textContent };
-  if (esTouch) $('exploraAyuda').textContent = 'Toca el piso para caminar · Platica con la banda · Sal a la terraza y entra a Humanidades por la puerta derecha';
+  if (esTouch) $('exploraAyuda').textContent = 'Toca el piso para caminar · Platica con la banda · Sal a la terraza: la puerta derecha lleva a la oficina de al lado';
 
   function entrarExplorar() {
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
@@ -2405,7 +2405,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const FRASES_ACERCARSE = [
     ['Oye, ¿tienes un minuto? Se me trabó la UISP otra vez.', '¿Me echas la mano cuando puedas? Ahorita te busco.'],
     ['¿Ya viste que se cayó la torre de Soledad en la mañana?', 'Ya quedó, pero hubo que reiniciar el enlace dos veces.'],
-    ['¿Vas a ir por café a Humanidades? Tráeme uno, porfa.', 'Americano, sin azúcar. Te debo una.'],
+    ['¿Vas a ir por café a la oficina de al lado? Tráeme uno, porfa.', 'Americano, sin azúcar. Te debo una.'],
     ['Oye, Cerón anda preguntando por el reporte de la red.', 'Yo nomás te aviso, ¿eh?'],
     ['¿Me ayudas con un router que no levanta? Ya le moví de todo.', 'Ahorita que te desocupes, va.'],
     ['¿Ya comiste? Vamos a ir por tacos al rato.', 'Ahí avisas si te apuntas.']
@@ -2465,7 +2465,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
     // letrero al entrar al almacén o al NOC
     const zona = dentro(ZONA_ALMACEN, p1.x, p1.z) ? 'ALMACÉN' : dentro(NOC, p1.x, p1.z) ? 'NOC' : dentro(SALA, p1.x, p1.z) ? 'SALA DE JUNTAS'
-      : dentro(HUM, p1.x, p1.z) ? 'HUMANIDADES' : dentro(TERRAZA, p1.x, p1.z) ? 'TERRAZA' : '';
+      : dentro(TERRAZA, p1.x, p1.z) ? 'TERRAZA' : '';
     if (zona !== zonaActual) { zonaActual = zona; if (zona) { flotar(p1.x, 3.2, p1.z, zona, '#f2b632', true); beep(600, .06, 'triangle', .04); } }
 
     // los jefes te siguen con la mirada cuando andas cerca
