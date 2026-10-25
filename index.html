@@ -968,7 +968,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const piso = new THREE.Mesh(new THREE.PlaneGeometry(HUM.x1 - HUM.x0, HUM.z1 - HUM.z0), new THREE.MeshPhongMaterial({ map: tpi, shininess: 110, specular: 0x666666 }));
     piso.rotation.x = -Math.PI / 2; piso.position.set((HUM.x0 + HUM.x1) / 2, 0.01, 0); piso.receiveShadow = true; scene.add(piso);
     // atención a clientes: Diana tiene su escritorio en L (se arma más abajo) y hay sala de espera
-    const etAt = spriteTexto('ATENCIÓN A CLIENTES', 0.32, { color: '#f2b632', bg: 'rgba(0,0,0,.6)', size: 40 }); etAt.position.set(21.5, 2.9, 5.0); scene.add(etAt);
     for (const x of [24.4, 25.5, 26.6]) { scene.add(caja(0.6, 0.45, 0.55, '#3a5a8a', x, 0.23, 7.15)); scene.add(caja(0.6, 0.55, 0.1, '#3a5a8a', x, 0.7, 6.9)); }
     addObs(24.0, 27.0, 6.8, 7.55);
     // escritorio del CEO (lado derecho, junto a la sala de juntas): L de vidrio, el ala del lado de Cerón
@@ -1116,7 +1115,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     d.add(new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.2, 10), mat('#ffffff')).translateX(-0.85).translateY(0.88).translateZ(0.05));
     d.add(esfera(0.17, '#d86a9a', -0.85, 1.07, 0.05)); // flores
   }
-  const facturaNpc = sentadoDeco(30.4, 1.4, Math.PI, 'Facturación', d => { d.add(caja(0.5, 0.3, 0.4, '#e8eaec', -0.75, 0.93, 0.1)); for (let i = 0; i < 3; i++) d.add(caja(0.3, 0.02, 0.4, '#ffffff', 1.55, 0.8 + i * 0.02, 0.9)); });
+  const facturaNpc = sentadoDeco(30.4, 1.4, Math.PI, 'Caro', d => { d.add(caja(0.5, 0.3, 0.4, '#e8eaec', -0.75, 0.93, 0.1)); for (let i = 0; i < 3; i++) d.add(caja(0.3, 0.02, 0.4, '#ffffff', 1.55, 0.8 + i * 0.02, 0.9)); });
 
   // NOC (fondo derecha): piso técnico, 4 racks, video wall con cámaras en vivo y gráficas
   const NOC = { x0: 10.6, x1: 15.7, z0: -8, z1: -4.6 };
@@ -1479,7 +1478,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   // Isai y Diana también llegan a la premiación (entran por la puerta de la nave)
   const humanidadesFestejo = [
     { nombre: 'Isai', ax: PUERTA_NAVE.x, az: 6.9, grupo: isaiNpc.grupo },
-    { nombre: 'Diana', ax: PUERTA_NAVE.x, az: 6.9, grupo: dianaNpc.grupo }
+    { nombre: 'Diana', ax: PUERTA_NAVE.x, az: 6.9, grupo: dianaNpc.grupo },
+    { nombre: 'Caro', ax: PUERTA_NAVE.x, az: 6.9, grupo: facturaNpc.grupo }
   ];
 
   // ---------- Estado ----------
@@ -2172,7 +2172,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   // Todos se levantan y rodean al ganador: fila atrás y a los lados
   const POS_FESTEJO = [[-4.9, 3.15], [-3.5, 3.15], [-2.1, 3.15], [-0.7, 3.15], [0.7, 3.15], [2.1, 3.15], [3.5, 3.15], [4.9, 3.15],
-                       [-3.2, 4.9], [-4.6, 4.9], [4.6, 4.9]];
+                       [-3.2, 4.9], [-4.6, 4.9], [4.6, 4.9], [-6.0, 4.9]];
   const parados = [...escritorios.map(e => e.emp), ...humanidadesFestejo].map((emp, i) => {
     const m = crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { chamarra: true, acento: '#3a3f46', sinAro: true, oculto: true });
     const et = spriteTexto(emp.nombre, 0.3, { color: '#fff', bg: 'rgba(0,0,0,.55)', fam: 'Rubik, sans-serif', peso: 700, size: 40, pad: 16 });
@@ -2313,7 +2313,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     { nombre: 'los socios', titulo: 'SOCIOS', x: 17.45, z: -4.85, r: 2.0,
       lineas: ['Venimos a ver cómo va la expansión de poderNET en San Luis.', 'Cerón nos está platicando de las torres nuevas y del NOC.', 'Nos dijeron que la red nunca se cae... a ver si es cierto.'] },
     { nombre: 'Isai', titulo: 'ISAI · CONTADOR', x: isaiNpc.x, z: isaiNpc.z, r: 1.9, lineas: LINEAS_EMP['Isai'] },
-    { nombre: 'Facturación', titulo: 'FACTURACIÓN', x: facturaNpc.x, z: facturaNpc.z, r: 1.9,
+    { nombre: 'Caro', titulo: 'CARO · FACTURACIÓN', x: facturaNpc.x, z: facturaNpc.z, r: 1.9,
       lineas: ['Ando sacando las facturas del mes. ¿Necesitas una?', 'Si un cliente pide factura, que me manden su RFC completo, porfa.', 'Isai y yo cuadramos los pagos al cierre de mes.'] },
     { nombre: 'Diana', titulo: 'DIANA · ATENCIÓN A CLIENTES', x: dianaNpc.x, z: dianaNpc.z, r: 2.3, lineas: LINEAS_EMP['Diana'] },
     { nombre: 'el cliente', titulo: 'CLIENTE', x: 21.5, z: 6.5, r: 1.6,

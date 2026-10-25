@@ -10,7 +10,7 @@ Al abrirlo llegas a la oficina y puedes darte una vuelta antes de empezar: camin
 
 ## La oficina
 
-Es como el edificio de verdad: en la terraza del segundo piso hay dos puertas. La de la izquierda es la nave, con el NOC, el almacén y la banda. La de la derecha es la oficina de al lado, con Diana atendiendo clientes, Isai, facturación, el checador, la cafetera, el escritorio de Cerón y la sala de juntas, donde él les explica la red a unos socios con su pizarrón.
+Es como el edificio de verdad: en la terraza del segundo piso hay dos puertas. La de la izquierda es la nave, con el NOC, el almacén y la banda. La de la derecha es la oficina de al lado, con Diana atendiendo clientes, Isai, Caro en facturación, el checador, la cafetera, el escritorio de Cerón y la sala de juntas, donde él les explica la red a unos socios con su pizarrón.
 
 Mientras andas por ahí la gente no se está quieta: van por requisiciones con el almacenista, por agua, a checar, a revisar el NOC, a chismear o a la terraza, y de repente alguien se te acerca a platicar. En la terraza la señora de la limpieza va trapeando. Y si quieres, te sientas en tu escritorio.
 
