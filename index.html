@@ -550,6 +550,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       scene.add(caja(0.6, h, 0.45, colCajas[(i * 3 + n) % colCajas.length], -15.1 + i * 0.8, 0.38 + n * 0.7 + h / 2, -7.65));
     }
     addObs(A.x0, -7.1, A.z0, -7.3);
+    // mostrador del almacenista, donde se entregan las requisiciones
+    scene.add(caja(1.4, 1.0, 0.4, '#7d848b', -11.2, 0.5, -6.25));
+    scene.add(caja(1.5, 0.04, 0.5, '#e8eaec', -11.2, 1.02, -6.25));
+    for (let i = 0; i < 3; i++) scene.add(caja(0.22, 0.02, 0.3, '#ffffff', -11.5 + i * 0.05, 1.05 + i * 0.015, -6.2)); // hojas de requisición
+    addObs(-11.9, -10.5, -6.45, -6.05);
 
     // antena de plato en tripié
     const blancoDoble = new THREE.MeshLambertMaterial({ color: '#f2f3f4', side: THREE.DoubleSide });
@@ -814,7 +819,16 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
     carro(-6.2, '#f4f5f6'); carro(-3.0, '#e9ecef'); carro(0.2, '#f4f5f6'); carro(3.4, '#b9bec4'); carro(13.0, '#2b2f33'); carro(22.6, '#c62828');
     // terraza: piso, barandal y palmeras en maceta
-    const piso = new THREE.Mesh(new THREE.PlaneGeometry(TERRAZA.x1 - TERRAZA.x0, TERRAZA.z1 - TERRAZA.z0), mat('#cfc8bd'));
+    const ct = document.createElement('canvas'); ct.width = ct.height = 128; const gt = ct.getContext('2d');
+    const tonos = ['#8f877b', '#9b9284', '#857d72', '#a0978a'];
+    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
+      gt.fillStyle = tonos[(i * 2 + j) % 4]; gt.fillRect(i * 64, j * 64, 64, 64);
+      for (let k = 0; k < 40; k++) { gt.fillStyle = Math.random() < 0.5 ? 'rgba(0,0,0,.06)' : 'rgba(255,255,255,.05)'; gt.fillRect(i * 64 + Math.random() * 62, j * 64 + Math.random() * 62, 2, 2); }
+    }
+    gt.strokeStyle = '#5f5951'; gt.lineWidth = 3;
+    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) gt.strokeRect(i * 64, j * 64, 64, 64);
+    const tt = new THREE.CanvasTexture(ct); tt.wrapS = tt.wrapT = THREE.RepeatWrapping; tt.repeat.set(30, 2);
+    const piso = new THREE.Mesh(new THREE.PlaneGeometry(TERRAZA.x1 - TERRAZA.x0, TERRAZA.z1 - TERRAZA.z0), new THREE.MeshLambertMaterial({ map: tt }));
     piso.rotation.x = -Math.PI / 2; piso.position.set((TERRAZA.x0 + TERRAZA.x1) / 2, 0.006, (TERRAZA.z0 + TERRAZA.z1) / 2); piso.receiveShadow = true; scene.add(piso);
     const z = TERRAZA.z1 - 0.05;
     { const v = new THREE.Mesh(new THREE.PlaneGeometry(TERRAZA.x1 - TERRAZA.x0, 1.05), vidrio); v.position.set((TERRAZA.x0 + TERRAZA.x1) / 2, 0.55, z); scene.add(v); }
@@ -1251,6 +1265,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const et = spriteTexto(nombre, 0.38, { color: '#fff', bg: 'rgba(0,0,0,.55)', fam: 'Rubik, sans-serif', peso: 700, size: 40, pad: 16 });
     et.position.y = 2.3; modelo.g.add(et); return modelo;
   }
+  dePie(crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { chamarra: true, acento: '#3a3f46', sinAro: true }), 'Almacenista', -11.2, -6.9, 0);
   const dianaM = dePie(crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { chamarra: true, acento: '#3a3f46', sinAro: true, peloLargo: '#2a1d14' }), 'Diana', 21.5, 4.25, 0);
   dePie(crearJefe('#4f7fc9', '#4f7fc9', { casual: true, router: true }), 'Cliente', 21.5, 5.95, Math.PI);
   // socios platicando con Cerón frente a su escritorio
@@ -2043,12 +2058,14 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     'Gallegos': ['¿Qué onda? Aquí echándole ganas.', 'Si te quieres llevar el empleado del mes, despierta a la banda y levanta la red.']
   };
   const ROLES_EMP = { 'Isai': 'CONTADOR', 'Diana': 'ATENCIÓN A CLIENTES' };
-  const POS_EXPLORA = { ceron: [21.8, -6.0], deysi: [4.6, 4.4], rata: [-11.6, -6.95] };
+  const POS_EXPLORA = { ceron: [21.8, -6.0], deysi: [4.6, 4.4], rata: [-14.3, -7.0] };
   const ZONA_ALMACEN = { x0: -15.7, x1: -7.0, z0: -8, z1: -4.85 };
   const interactivos = [
-    ...escritorios.map(e => ({ nombre: e.emp.nombre, titulo: ROLES_EMP[e.emp.nombre] ? `${e.emp.nombre.toUpperCase()} · ${ROLES_EMP[e.emp.nombre]}` : null, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
+    ...escritorios.map(e => ({ emp: e.emp, nombre: e.emp.nombre, titulo: ROLES_EMP[e.emp.nombre] ? `${e.emp.nombre.toUpperCase()} · ${ROLES_EMP[e.emp.nombre]}` : null, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
     { nombre: 'Cerón', titulo: 'CERÓN · CEO', ref: ceron, r: 3.3, color: '#ffd23f',
       lineas: ['Soy Cerón, el CEO de poderNET. Este es mi escritorio, junto a la sala de juntas.', 'Ahorita estoy con unos socios, platicando de la expansión de poderNET.', 'Aquí se viene a trabajar. Cuando empiece el turno me voy a la nave a vigilar.', 'Al que agarre echando hueva, lo regaño. Y a mí no me gritas.'] },
+    { nombre: 'el almacenista', titulo: 'ALMACENISTA', x: -11.2, z: -6.9, r: 2.0,
+      lineas: ['Aquí se piden las requisiciones: antenas, cable, routers, lo que necesiten.', 'Firma la hoja y te entrego tu equipo. Sin requisición no sale nada del almacén.', 'Y cuidado con la rata, que ya se comió dos bobinas de cable.'] },
     { nombre: 'la cafetera', titulo: 'CAFETERA', pista: 'Servirte un café', x: 32.15, z: 6.5, r: 1.7, cosa: true, accion: servirCafe,
       lineas: ['Te serviste un café bien cargado. ☕', 'Con la cafeína caminas más rápido un rato.'] },
     { nombre: 'los socios', titulo: 'SOCIOS', x: 21.8, z: -2.75, r: 2.0,
@@ -2078,7 +2095,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     { nombre: 'el servidor', titulo: 'SERVIDOR PRINCIPAL', x: SERVIDOR.x, z: SERVIDOR.z, r: 1.7, cosa: true,
       lineas: ['El servidor principal de poderNET. Por eso tiene tanta ventilación: si se calienta, se cae todo.', 'Los ventiladores no paran ni un segundo. Mejor no le muevas.'] }
   ];
-  const posDe = n => n.ref || n;
+  const posDe = n => n.ref || (n.emp && n.emp.paseo) || n;
   function servirCafe() {
     p1.boost = 12;
     flotar(p1.x, 2.9, p1.z, '¡CAFEÍNA!', '#c98b4a');
@@ -2109,6 +2126,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
 
   function salirExplorar() {
+    terminarPaseos();
     cerrarDialogo();
     $('explora').hidden = true; $('pista').hidden = true; $('hablarTouch').hidden = true;
     ceron.m.g.visible = deysi.m.g.visible = false;
@@ -2161,7 +2179,111 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
 
   const dentro = (z, x, y) => x > z.x0 && x < z.x1 && y > z.z0 && y < z.z1;
+  // A dónde se levanta la banda mientras exploras
+  const DESTINOS = [
+    { ico: '📋', txt: 'requisición', x: -10.9, z: -5.45, mira: [-11.2, -6.9], peso: 3 },
+    { ico: '💧', txt: 'por agua', x: 13.9, z: 6.25, mira: [13.9, 7.3], peso: 2 },
+    { ico: '🖥️', txt: 'revisando el NOC', x: 12.6, z: -5.7, mira: [12.6, -7.4], peso: 2 },
+    { ico: '💬', txt: 'chismeando', chisme: true, peso: 2 },
+    { ico: '🌤️', txt: 'tomando aire', terraza: true, peso: 1 }
+  ];
+  // ruta por la oficina en una cuadrícula de 40 cm (rodea escritorios y entra por las puertas)
+  const cacheLibre = new Map();
+  function libreMalla(i, j) {
+    const k = i * 4096 + j; let v = cacheLibre.get(k);
+    if (v === undefined) { v = !choca(i * 0.4, j * 0.4, 0.4); cacheLibre.set(k, v); }
+    return v;
+  }
+  function rutaMalla(x0, z0, x1, z1) {
+    const S = 0.4, si = Math.round(x0 / S), sj = Math.round(z0 / S), gi = Math.round(x1 / S), gj = Math.round(z1 / S);
+    const clave = (i, j) => i * 4096 + j, prev = new Map([[clave(si, sj), null]]), cola = [[si, sj]];
+    let fin = null;
+    for (let h = 0; h < cola.length && h < 30000; h++) {
+      const [i, j] = cola[h];
+      if (Math.abs(i - gi) <= 1 && Math.abs(j - gj) <= 1) { fin = [i, j]; break; }
+      for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+        const ni = i + di, nj = j + dj, k = clave(ni, nj);
+        if (prev.has(k) || !libreMalla(ni, nj)) continue;
+        if (di && dj && (!libreMalla(i + di, j) || !libreMalla(i, j + dj))) continue; // sin cortar esquinas
+        prev.set(k, [i, j]); cola.push([ni, nj]);
+      }
+    }
+    if (!fin) return null;
+    const celdas = [];
+    for (let c = fin; c; c = prev.get(clave(c[0], c[1]))) celdas.push([c[0] * S, c[1] * S]);
+    celdas.reverse(); celdas.shift();
+    const ruta = [];
+    for (let n = 0; n < celdas.length; n++) {
+      const a = ruta[ruta.length - 1] || [x0, z0], b = celdas[n], c = celdas[n + 1];
+      if (c && Math.abs((b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0])) < 1e-6) continue; // en línea recta
+      ruta.push(b);
+    }
+    ruta.push([x1, z1]);
+    return ruta;
+  }
+  let proxPaseo = 2;
+  const caminando = () => parados.filter(p => p.paseo);
+  function burbujaPaseo(p, d) {
+    if (p.globo) { p.m.g.remove(p.globo); p.globo.material.map.dispose(); p.globo.material.dispose(); }
+    p.globo = spriteTexto(`${d.ico} ${d.txt}`, 0.34, { color: '#1b1c1f', bg: 'rgba(255,255,255,.92)', fam: EMOJI, size: 40, pad: 14 });
+    p.globo.position.y = 2.65; p.m.g.add(p.globo);
+  }
+  function quitarGlobo(p) { if (p.globo) { p.m.g.remove(p.globo); p.globo.material.map.dispose(); p.globo.material.dispose(); p.globo = null; } }
+  function sentar(p) {
+    quitarGlobo(p);
+    p.paseo = null; p.emp.paseo = null; p.m.g.visible = false; p.emp.grupo.visible = true; p.aplaude = false; p.movio = false;
+  }
+  function iniciarPaseo() {
+    const libres = parados.slice(0, escritorios.length).filter(p => !p.paseo && !(dlg.abierto && dlg.n && dlg.n.emp === p.emp));
+    if (!libres.length) return;
+    const p = libres[Math.floor(Math.random() * libres.length)];
+    const total = DESTINOS.reduce((a, d) => a + d.peso, 0);
+    let r = Math.random() * total, d = DESTINOS[0];
+    for (const x of DESTINOS) { r -= x.peso; if (r <= 0) { d = x; break; } }
+    d = { ...d };
+    if (d.chisme) { // va al lugar de otro compañero
+      const otros = escritorios.filter(e => e.emp !== p.emp);
+      const o = otros[Math.floor(Math.random() * otros.length)].emp;
+      d.x = o.ax + 0.5; d.z = o.az + 0.2; d.mira = [o.x, o.z]; d.txt = `chismeando con ${o.nombre}`;
+    }
+    if (d.terraza) { d.x = 6 + Math.random() * 8; d.z = 10.4; d.mira = [d.x, 13]; }
+    const ruta = rutaMalla(p.emp.ax, p.emp.az, d.x, d.z);
+    if (!ruta) return;
+    Object.assign(p, { x: p.emp.ax, z: p.emp.az, paseo: d, fase: 'ida', ruta, paso: 0, i: 0, espera: 0, t: 0 });
+    Object.assign(p.nav, { atorado: 0, desvio: 0, ux: p.x, uz: p.z });
+    p.emp.paseo = p; p.emp.grupo.visible = false; p.m.g.visible = true;
+    p.dir = Math.atan2(p.ruta[0][0] - p.x, p.ruta[0][1] - p.z);
+    burbujaPaseo(p, d);
+  }
+  function actualizarPaseos(dt) {
+    proxPaseo -= dt;
+    if (proxPaseo <= 0) { if (caminando().length < 3) iniciarPaseo(); proxPaseo = 2.5 + Math.random() * 3.5; }
+    for (const p of caminando()) {
+      p.movio = false; p.t += dt;
+      if (p.t > 45) { sentar(p); continue; } // por si alguien se atora
+      if (dlg.abierto && dlg.n && dlg.n.emp === p.emp) { p.dir = Math.atan2(p1.x - p.x, p1.z - p.z); continue; } // se detiene a platicar contigo
+      const d = p.paseo;
+      if (p.fase === 'espera') {
+        p.espera -= dt; p.aplaude = false;
+        if (d.mira) p.dir = Math.atan2(d.mira[0] - p.x, d.mira[1] - p.z);
+        if (p.espera <= 0) { p.fase = 'regreso'; p.ruta = rutaMalla(p.x, p.z, p.emp.ax, p.emp.az) || [[p.emp.ax, p.emp.az]]; p.i = 0; quitarGlobo(p); }
+        continue;
+      }
+      const [tx, tz] = p.ruta[p.i], ultimo = p.i === p.ruta.length - 1;
+      navegar(p, tx, tz, dt, 1, 2.8);
+      if (Math.hypot(tx - p.x, tz - p.z) < (ultimo ? 0.6 : 0.3)) {
+        p.i++;
+        if (p.i >= p.ruta.length) {
+          if (p.fase === 'ida') { p.fase = 'espera'; p.espera = 3 + Math.random() * 4; }
+          else sentar(p);
+        }
+      }
+    }
+  }
+  function terminarPaseos() { for (const p of parados) if (p.paseo) sentar(p); proxPaseo = 2; }
+
   function explorar(dt) {
+    actualizarPaseos(dt);
     p1.movio = false;
     p1.boost = Math.max(0, p1.boost - dt);
     if (!dlg.abierto) {
@@ -2221,7 +2343,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       m.bI.rotation.x = habla ? -0.35 + Math.sin(t * 4 + i) * 0.2 : 0;
     });
     ceron.habla = estado === 'explorar' && turno === 0;
-    for (const j of [p1, p2, ...enemigos.filter(e => e.activo), ...(cer.activo ? parados : []), ...(estado === 'explorar' ? [ceron, deysi] : [])]) {
+    for (const j of [p1, p2, ...enemigos.filter(e => e.activo), ...(cer.activo ? parados : []), ...(estado === 'explorar' ? [ceron, deysi, ...parados.filter(p => p.paseo)] : [])]) {
       const m = j.m;
       m.g.position.set(j.x, 0, j.z);
       let dif = j.dir - m.g.rotation.y; dif = Math.atan2(Math.sin(dif), Math.cos(dif));

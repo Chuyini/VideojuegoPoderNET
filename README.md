@@ -12,6 +12,8 @@ Al abrir el juego entras a la oficina en modo libre: caminas con WASD o flechas 
 
 La oficina es como el edificio real: en el segundo piso hay una **terraza** al frente, con barandal y palmeras, que da al estacionamiento (del otro lado está el Starbucks). Desde la terraza hay dos puertas: la **izquierda** entra a la nave (NOC, almacén y la banda) y la **derecha** a **Humanidades**, donde están atención a clientes (Diana), el contador (Isai), facturación, el escritorio de Cerón y la **sala de juntas** con el servidor principal y su ventilación. En el techo está la torre de antenas. En la partida, Cerón, Deysimar y el cliente entran a la nave por la puerta izquierda.
 
+Mientras exploras, la oficina está viva: la banda se levanta a pedir requisiciones con el almacenista, va por agua, revisa el NOC, se pone a platicar en el lugar de otro o sale a la terraza a tomar aire, y luego regresa a su lugar. En Humanidades hay una cafetera para servirte café, y Cerón platica con sus socios en su escritorio.
+
 Cuando estés listo, presiona **Empezar a trabajar** para elegir entre 2 jugadores o contra la CPU. Al terminar una partida puedes volver a explorar.
 
 ## Niveles
