@@ -1227,7 +1227,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
     d.add(caja(0.8, 0.04, 0.26, '#d8d8d8', 0, 0.8, 0.25));   // teclado
     d.add(caja(0.1, 0.04, 0.16, '#1b1c1f', 0.6, 0.8, 0.3));   // mouse
-    d.add(new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.055, 0.15, 10), mat('#1b1c1f')).translateX(-0.85).translateY(0.86).translateZ(0.15)); // taza
+    d.add(new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.055, 0.15, 10), mat('#1b1c1f')).translateX(-1.0).translateY(0.86).translateZ(0.38)); // taza
     { const a = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.025, 8, 16, Math.PI), mat('#2b2f33')); a.rotation.x = -Math.PI / 2; a.position.set(1.6, 0.8, 0.6); d.add(a); } // audífonos
     d.add(caja(0.3, 0.42, 0.04, '#0b0d10', 1.6, 0.98, -0.4));
     { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.26, 0.26), logoMat); l.position.set(1.6, 1.0, -0.375); d.add(l); } // portarretrato con el logo
@@ -1241,8 +1241,14 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     d.add(caja(0.7, 0.16, 0.06, '#1b1c1f', -0.6, 0.86, 0.52));
     letreroPlano('JESÚS', 0.64, 0.14, '#1b1c1f', '#ff5a4e', cx - 0.6, 0.86, cz + 0.555);
     { // caballo de ajedrez
-      const neg = new THREE.MeshPhongMaterial({ color: '#15171a', shininess: 80, specular: 0x555555 });
-      const cab = new THREE.Group(); cab.position.set(-0.55, 0.78, -0.12); cab.rotation.y = 0.6; cab.scale.setScalar(1.6); d.add(cab);
+      // blanco marfil sobre un tablerito, para que resalte en el escritorio de vidrio
+      const neg = new THREE.MeshPhongMaterial({ color: '#f3eee2', shininess: 90, specular: 0x888888 });
+      const ct = document.createElement('canvas'); ct.width = ct.height = 64; const gt = ct.getContext('2d');
+      for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) { gt.fillStyle = (i + j) % 2 ? '#3b2a1e' : '#d9c7a3'; gt.fillRect(i * 8, j * 8, 8, 8); }
+      const tex = new THREE.CanvasTexture(ct); tex.magFilter = THREE.NearestFilter;
+      const tablero = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.02, 0.42), [mat('#3b2a1e'), mat('#3b2a1e'), new THREE.MeshLambertMaterial({ map: tex }), mat('#3b2a1e'), mat('#3b2a1e'), mat('#3b2a1e')]);
+      tablero.position.set(-0.72, 0.79, 0.02); d.add(tablero);
+      const cab = new THREE.Group(); cab.position.set(-0.72, 0.8, 0.02); cab.rotation.y = 0.6; cab.scale.setScalar(2.3); d.add(cab);
       cab.add(new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.085, 0.035, 16), neg).translateY(0.018));
       cab.add(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.065, 0.05, 16), neg).translateY(0.06));
       const cuello = caja(0.07, 0.15, 0.09, neg, 0, 0.15, 0); cuello.rotation.x = 0.25; cab.add(cuello);
