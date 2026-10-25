@@ -496,8 +496,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(13, 7);
     const piso = new THREE.Mesh(new THREE.PlaneGeometry(32, 16), new THREE.MeshPhongMaterial({ map: t, shininess: 110, specular: 0x666666 }));
     piso.rotation.x = -Math.PI / 2; piso.receiveShadow = true; scene.add(piso);
-    const tapete = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.2), logoMat);
-    tapete.rotation.x = -Math.PI / 2; tapete.position.set(-0.5, 0.015, 5.3); scene.add(tapete);
     const tapeteNegro = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.3), mat('#2c3035'));
     tapeteNegro.rotation.x = -Math.PI / 2; tapeteNegro.position.set(-4.6, 0.012, -6.4); scene.add(tapeteNegro);
   }
@@ -707,15 +705,15 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   // [x, z, giro]: giro 0 = el empleado mira al fondo; ±π/2 = mira al muro. Cada escritorio es una L.
   const P2 = Math.PI / 2;
   const puestos = [
-    [-14.9, -2.6, P2], [-14.9, 1.0, P2],                     // muro izquierdo
-    [-4.6, -4.6, 0], [0.6, -4.6, 0], [5.6, -4.6, 0],          // fila del fondo
-    [14.9, -2.6, -P2], [14.9, 2.4, -P2],                       // muro derecho
+    [-13.25, -2.6, -P2, [-14.4, -3.6]], [-13.25, 1.7, -P2, [-14.4, 0.7]],   // muro izquierdo: de espaldas a la pared
+    [-4.6, -4.6, Math.PI], [0.6, -4.6, Math.PI], [5.6, -4.6, Math.PI], // fila del fondo: viendo hacia la oficina
+    [13.25, -2.4, P2, [14.4, -1.4]], [13.25, 1.8, P2, [14.4, 2.8]],         // muro derecho: de espaldas a la pared
     [-2.5, 0.6, 0], [3.0, 0.6, 0]                              // fila del centro
   ];
   const escritorios = [];
   // con más gente, cada quien se pone de flojo un poco menos seguido
   const RITMO = puestos.length / 8;
-  puestos.forEach(([cx, cz, giro], k) => {
+  puestos.forEach(([cx, cz, giro, acceso], k) => {
     const d = new THREE.Group(); d.position.set(cx, 0, cz); d.rotation.y = giro; scene.add(d);
     tramo(d, -1.1, 1.1, -0.6, 0.6, [-1, 1]);
     tramo(d, 1.1, 2.1, -0.6, 1.6, [-1, 1]);
@@ -747,22 +745,22 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     cabeza.add(esfera(0.27, '#e0ac7e', 0, 0.27, 0));
     cabeza.add(esfera(0.28, '#2a1d14', 0, 0.33, 0.06));
     e.add(caja(0.74, 0.62, 0.08, '#2a3036', 0, 0.86, 0.36));
-    const logoSilla = new THREE.Mesh(new THREE.PlaneGeometry(0.46, 0.46), logoMat);
-    logoSilla.position.set(0, 0.86, 0.405); e.add(logoSilla);
     const etiqueta = spriteTexto(nombres[k], 0.42, { color: '#fff', bg: 'rgba(0,0,0,.55)', fam: 'Rubik, sans-serif', peso: 700, size: 40, pad: 16 });
     etiqueta.position.set(0, 2.15, 0); e.add(etiqueta);
 
     const sx = Math.sin(giro), sz = Math.cos(giro);
     const ex = cx + sx * 1.15, ez = cz + sz * 1.15;
     addObs(ex - 0.42, ex + 0.42, ez - 0.42, ez + 0.42);
-    escritorios.push({ pantalla, emp: { nombre: nombres[k], x: ex, z: ez, ax: cx + sx * 2.1, az: cz + sz * 2.1, grupo: e, cuerpo, cabeza, burbuja: null, flojo: null, idx: -1, prox: 2 + Math.random() * 6 } });
+    // a los de los muros se les llega por un lado (junto a la silla), no por detrás
+    const [ax, az] = acceso || [cx + sx * 2.1, cz + sz * 2.1];
+    escritorios.push({ pantalla, emp: { nombre: nombres[k], x: ex, z: ez, ax, az, grupo: e, cuerpo, cabeza, burbuja: null, flojo: null, idx: -1, prox: 2 + Math.random() * 6 } });
   });
 
   // ---------- Edificio: terraza al frente con dos puertas (izquierda: nave · derecha: Humanidades) ----------
   const PUERTA_NAVE = { x: 10.9, z: 8.15 }, PUERTA_HUM = { x: 18.9, z: 8.15 };
   const TERRAZA = { x0: -16.3, x1: 33.0, z0: 8.3, z1: 11.6 };
   const HUM = { x0: 16.3, x1: 32.6, z0: -8.15, z1: 8.15 };
-  const SALA = { x0: 25.0, x1: 32.4, z0: -8.0, z1: -2.6 };
+  const SALA = { x0: 16.3, x1: 24.0, z0: -8.0, z1: -2.6 };
   // zonas por donde se camina al explorar; se enciman en las puertas para poder pasar
   const CAMINABLE = [
     { x0: -15.7, x1: 15.7, z0: -7.6, z1: 7.7 },     // nave
@@ -845,7 +843,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     fachada(16.15, 32.6, PUERTA_HUM.x);
     letreroPlano('el poder de INTERNET', 4.2, 0.6, null, '#ffffff', 5.0, 2.2, 8.2);
     { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.75), logoMat); l.position.set(12.3, 1.9, 8.2); scene.add(l); }
-    letreroPlano('HUMANIDADES', 2.8, 0.5, null, '#ffffff', 22.5, 2.3, 8.2);
     // torre de antenas en el techo
     {
       const g = new THREE.Group(); g.position.set(12.6, 0, -9.3); scene.add(g);
@@ -879,34 +876,28 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const tpi = new THREE.CanvasTexture(cpi); tpi.wrapS = tpi.wrapT = THREE.RepeatWrapping; tpi.repeat.set(6.6, 6.6);
     const piso = new THREE.Mesh(new THREE.PlaneGeometry(HUM.x1 - HUM.x0, HUM.z1 - HUM.z0), new THREE.MeshPhongMaterial({ map: tpi, shininess: 110, specular: 0x666666 }));
     piso.rotation.x = -Math.PI / 2; piso.position.set((HUM.x0 + HUM.x1) / 2, 0.01, 0); piso.receiveShadow = true; scene.add(piso);
-    // atención a clientes: mostrador junto a la puerta y sala de espera
-    scene.add(caja(3.0, 1.05, 0.7, '#e8eaec', 21.5, 0.52, 5.0));
-    scene.add(caja(3.1, 0.05, 0.8, '#2b2f33', 21.5, 1.07, 5.0));
-    scene.add(caja(0.3, 0.08, 0.22, '#1b1c1f', 20.6, 1.13, 4.9));
-    addObs(19.95, 23.05, 4.6, 5.4);
-    const etAt = spriteTexto('ATENCIÓN A CLIENTES', 0.32, { color: '#f2b632', bg: 'rgba(0,0,0,.6)', size: 40 }); etAt.position.set(21.5, 2.9, 4.6); scene.add(etAt);
+    // atención a clientes: Diana tiene su escritorio en L (se arma más abajo) y hay sala de espera
+    const etAt = spriteTexto('ATENCIÓN A CLIENTES', 0.32, { color: '#f2b632', bg: 'rgba(0,0,0,.6)', size: 40 }); etAt.position.set(21.5, 2.9, 5.0); scene.add(etAt);
     for (const x of [24.4, 25.5, 26.6]) { scene.add(caja(0.6, 0.45, 0.55, '#3a5a8a', x, 0.23, 7.15)); scene.add(caja(0.6, 0.55, 0.1, '#3a5a8a', x, 0.7, 6.9)); }
     addObs(24.0, 27.0, 6.8, 7.55);
-    // escritorio del CEO, junto a la sala de juntas: L de vidrio con marco cromado.
-    // El ala de la L va del lado de Cerón (hacia atrás) y deja pasillo entre la pared, el sillón y el escritorio.
+    // escritorio del CEO (lado derecho, junto a la sala de juntas): L de vidrio, el ala del lado de Cerón
     const escCeo = new THREE.Group(); scene.add(escCeo);
-    tramo(escCeo, 19.7, 23.9, -4.9, -3.5, [-1, 1]);      // tramo principal, de frente a las visitas
-    tramo(escCeo, 18.5, 19.7, -7.0, -3.5, [-1, 1]);      // ala de la L, junto a Cerón
-    scene.add(caja(0.16, 0.42, 0.16, '#1a1d20', 21.8, 0.98, -4.55));
-    scene.add(caja(1.3, 0.75, 0.06, '#1a1d20', 21.8, 1.5, -4.55));
-    { const p = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.66), new THREE.MeshBasicMaterial({ color: '#2f7fd6' })); p.position.set(21.8, 1.5, -4.59); p.rotation.y = Math.PI; scene.add(p); } // pantalla hacia Cerón
-    { const p = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), logoMat); p.position.set(21.8, 1.5, -4.51); scene.add(p); } // logo hacia las visitas
-    scene.add(caja(0.42, 0.03, 0.3, '#2b2f33', 20.6, 0.8, -4.5)); // laptop
-    for (let i = 0; i < 2; i++) scene.add(caja(0.3, 0.02, 0.4, '#ffffff', 23.0 + i * 0.05, 0.79 + i * 0.02, -4.1)); // contratos
-    scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.14, 10), mat('#ffffff')).translateX(22.9).translateY(0.86).translateZ(-4.6));
-    scene.add(caja(0.5, 0.32, 0.4, '#e8eaec', 19.1, 0.94, -6.3)); // impresora en el ala
-    scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.11, 0.24, 10), mat('#2b2f33')).translateX(19.1).translateY(0.9).translateZ(-5.2));
-    scene.add(esfera(0.22, '#2f8f46', 19.1, 1.15, -5.2)); // plantita
-    scene.add(caja(0.85, 1.35, 0.7, '#111214', 21.8, 0.68, -6.75)); // sillón de Cerón
-    letreroPlano('CEO', 0.5, 0.16, '#1b1c1f', '#ffd23f', 21.8, 0.9, -3.46);
-    { const l = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.3), logoMat); l.position.set(21.8, 2.4, -8.03); scene.add(l); }
-    for (const x of [21.0, 22.6]) { scene.add(caja(0.55, 0.45, 0.5, '#1b1c1f', x, 0.23, -2.3)); scene.add(caja(0.55, 0.55, 0.08, '#1b1c1f', x, 0.7, -2.08)); } // sillas de visitas
-    addObs(19.7, 23.9, -4.9, -3.5); addObs(18.5, 19.7, -7.0, -3.5);
+    tramo(escCeo, 26.0, 30.2, -4.9, -3.5, [-1, 1]);      // tramo principal, de frente a las visitas
+    tramo(escCeo, 30.2, 31.4, -7.0, -3.5, [-1, 1]);      // ala de la L
+    scene.add(caja(0.16, 0.42, 0.16, '#1a1d20', 28.1, 0.98, -4.55));
+    scene.add(caja(1.3, 0.75, 0.06, '#1a1d20', 28.1, 1.5, -4.55));
+    { const p = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.66), new THREE.MeshBasicMaterial({ color: '#2f7fd6' })); p.position.set(28.1, 1.5, -4.59); p.rotation.y = Math.PI; scene.add(p); }
+    scene.add(caja(0.42, 0.03, 0.3, '#2b2f33', 26.9, 0.8, -4.5)); // laptop
+    for (let i = 0; i < 2; i++) scene.add(caja(0.3, 0.02, 0.4, '#ffffff', 29.3 + i * 0.05, 0.79 + i * 0.02, -4.1)); // contratos
+    scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.14, 10), mat('#ffffff')).translateX(29.2).translateY(0.86).translateZ(-4.6));
+    scene.add(caja(0.5, 0.32, 0.4, '#e8eaec', 30.8, 0.94, -6.3)); // impresora en el ala
+    scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.11, 0.24, 10), mat('#2b2f33')).translateX(30.8).translateY(0.9).translateZ(-5.2));
+    scene.add(esfera(0.22, '#2f8f46', 30.8, 1.15, -5.2)); // plantita
+    scene.add(caja(0.85, 1.35, 0.7, '#111214', 28.1, 0.68, -6.75)); // sillón de Cerón
+    letreroPlano('CEO', 0.5, 0.16, '#1b1c1f', '#ffd23f', 28.1, 0.9, -3.46);
+    { const l = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.3), logoMat); l.position.set(28.1, 2.4, -8.03); scene.add(l); }
+    for (const x of [27.3, 28.9]) { scene.add(caja(0.55, 0.45, 0.5, '#1b1c1f', x, 0.23, -2.3)); scene.add(caja(0.55, 0.55, 0.08, '#1b1c1f', x, 0.7, -2.08)); } // sillas de visitas
+    addObs(26.0, 30.2, -4.9, -3.5); addObs(30.2, 31.4, -7.0, -3.5);
     // cafetera en la esquina de Humanidades
     scene.add(caja(0.7, 1.0, 2.2, '#2b2f33', 32.15, 0.5, 6.5));
     scene.add(caja(0.76, 0.04, 2.26, '#e8eaec', 32.15, 1.02, 6.5));
@@ -918,32 +909,60 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.16, 10), mat('#f4f5f6')).translateX(32.1).translateY(1.12).translateZ(7.45));
     { const et = spriteTexto('☕ CAFÉ', 0.36, { color: '#f2b632', bg: 'rgba(0,0,0,.6)', fam: EMOJI, size: 44 }); et.position.set(32.1, 2.3, 6.5); scene.add(et); }
     addObs(31.8, 32.6, 5.4, 7.6);
-    // sala de juntas de vidrio (puerta del lado de la entrada)
+
+    // sala de juntas (lado izquierdo): vidrio al frente y a la derecha, con puerta en la esquina
     const panel = (w, x, z, rot) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, 2.8), vidrio); m.position.set(x, 1.4, z); m.rotation.y = rot; scene.add(m); };
-    panel(SALA.z1 - SALA.z0, SALA.x0, (SALA.z0 + SALA.z1) / 2, Math.PI / 2);
-    panel(SALA.x1 - 27.0, (27.0 + SALA.x1) / 2, SALA.z1, 0);
-    scene.add(caja(0.08, 0.08, SALA.z1 - SALA.z0, '#1f2226', SALA.x0, 2.8, (SALA.z0 + SALA.z1) / 2));
+    panel(SALA.z1 - SALA.z0, SALA.x1, (SALA.z0 + SALA.z1) / 2, Math.PI / 2);
+    panel(22.4 - SALA.x0, (SALA.x0 + 22.4) / 2, SALA.z1, 0);
+    scene.add(caja(0.08, 0.08, SALA.z1 - SALA.z0, '#1f2226', SALA.x1, 2.8, (SALA.z0 + SALA.z1) / 2));
     scene.add(caja(SALA.x1 - SALA.x0, 0.08, 0.08, '#1f2226', (SALA.x0 + SALA.x1) / 2, 2.8, SALA.z1));
-    for (const x of [27.0, SALA.x0]) scene.add(caja(0.08, 2.8, 0.08, '#1f2226', x, 1.4, SALA.z1));
-    addObs(SALA.x0 - 0.05, SALA.x0 + 0.05, SALA.z0, SALA.z1); addObs(27.0, SALA.x1, SALA.z1 - 0.05, SALA.z1 + 0.05);
-    const etSala = spriteTexto('SALA DE JUNTAS', 0.32, { color: '#ffffff', bg: 'rgba(0,0,0,.6)', size: 40 }); etSala.position.set(26.0, 3.1, SALA.z1); scene.add(etSala);
-    scene.add(caja(4.0, 0.08, 1.4, '#3b2a1e', 29.0, 0.76, -5.3));
-    for (const x of [27.5, 30.5]) scene.add(caja(0.12, 0.72, 0.9, '#2e2117', x, 0.36, -5.3));
-    for (let i = 0; i < 4; i++) for (const zz of [-6.3, -4.3]) scene.add(caja(0.5, 0.9, 0.5, '#1b1c1f', 27.5 + i * 1.0, 0.45, zz));
-    addObs(26.9, 31.1, -6.6, -4.0);
-    scene.add(caja(0.06, 1.0, 1.7, '#0b0d10', 32.5, 1.7, -5.3));
-    { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), logoMat); l.position.set(32.45, 1.7, -5.3); l.rotation.y = -Math.PI / 2; scene.add(l); }
+    for (const x of [22.4, SALA.x1]) scene.add(caja(0.08, 2.8, 0.08, '#1f2226', x, 1.4, SALA.z1));
+    addObs(SALA.x1 - 0.05, SALA.x1 + 0.05, SALA.z0, SALA.z1); addObs(SALA.x0, 22.4, SALA.z1 - 0.05, SALA.z1 + 0.05);
+    const etSala = spriteTexto('SALA DE JUNTAS', 0.32, { color: '#ffffff', bg: 'rgba(0,0,0,.6)', size: 40 }); etSala.position.set(23.2, 3.1, SALA.z1); scene.add(etSala);
+    // tres mesas de vidrio en U, abiertas hacia el pizarrón
+    const mesaU = new THREE.Group(); scene.add(mesaU);
+    tramo(mesaU, 18.0, 18.8, -6.6, -3.8, [-1, 1]);   // brazo izquierdo
+    tramo(mesaU, 21.6, 22.4, -6.6, -3.8, [-1, 1]);   // brazo derecho
+    tramo(mesaU, 18.0, 22.4, -3.8, -3.0, [-1, 1]);   // base
+    addObs(18.0, 18.8, -6.6, -3.0); addObs(21.6, 22.4, -6.6, -3.0); addObs(18.8, 21.6, -3.8, -3.0);
+    for (const [x, z] of [[19.4, -3.4], [20.2, -3.4], [21.0, -3.4]]) scene.add(caja(0.08, 0.02, 0.3, '#ffffff', x, 0.79, z)); // hojas sobre la mesa
+    for (const z of [-6.1, -3.6]) { scene.add(caja(0.5, 0.45, 0.5, '#1b1c1f', 17.4, 0.23, z)); scene.add(caja(0.08, 0.55, 0.5, '#1b1c1f', 17.13, 0.7, z)); } // sillas
+    // pizarrón blanco con el diagrama de cómo llega el internet
+    {
+      const c = document.createElement('canvas'); c.width = 1024; c.height = 512; const g = c.getContext('2d');
+      g.fillStyle = '#fbfbf8'; g.fillRect(0, 0, 1024, 512);
+      g.textAlign = 'center'; g.lineCap = 'round'; g.lineJoin = 'round';
+      g.fillStyle = '#1e5bb8'; g.font = '800 48px Rubik, Arial, sans-serif'; g.fillText('¿CÓMO LLEGA EL INTERNET?', 512, 72);
+      const flecha = (x0, x1, y) => { g.strokeStyle = '#d62828'; g.lineWidth = 6; g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.moveTo(x1 - 16, y - 12); g.lineTo(x1, y); g.lineTo(x1 - 16, y + 12); g.stroke(); };
+      g.strokeStyle = '#1b1c1f'; g.lineWidth = 6; g.strokeRect(60, 210, 150, 90);
+      g.fillStyle = '#1b1c1f'; g.font = '800 40px Rubik, Arial, sans-serif'; g.fillText('NOC', 135, 268);
+      flecha(225, 330, 255); g.fillStyle = '#d62828'; g.font = '700 30px Rubik, Arial, sans-serif'; g.fillText('fibra', 278, 235);
+      g.strokeStyle = '#1b1c1f'; g.beginPath(); g.moveTo(370, 330); g.lineTo(410, 170); g.lineTo(450, 330); g.moveTo(385, 270); g.lineTo(435, 270); g.moveTo(395, 220); g.lineTo(425, 220); g.stroke();
+      g.fillStyle = '#1b1c1f'; g.fillText('TORRE', 410, 375);
+      flecha(470, 580, 255);
+      g.beginPath(); g.arc(640, 255, 42, -1.1, 1.1); g.stroke(); g.beginPath(); g.moveTo(610, 255); g.lineTo(650, 255); g.stroke();
+      g.fillText('ANTENA', 640, 375);
+      flecha(700, 800, 255);
+      g.beginPath(); g.moveTo(830, 300); g.lineTo(830, 240); g.lineTo(880, 200); g.lineTo(930, 240); g.lineTo(930, 300); g.closePath(); g.stroke();
+      g.fillText('CLIENTE', 880, 375);
+      g.fillStyle = '#d62828'; g.font = '800 54px Rubik, Arial, sans-serif'; g.fillText('100 Mbps', 790, 460);
+      g.fillStyle = '#1e5bb8'; g.font = '700 34px Rubik, Arial, sans-serif'; g.fillText('poderNET · el poder de internet', 300, 460);
+      const t = new THREE.CanvasTexture(c); t.minFilter = THREE.LinearFilter;
+      scene.add(caja(3.15, 1.65, 0.05, '#b9bec4', 20.2, 1.75, -8.02));
+      const pz = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 1.5), new THREE.MeshBasicMaterial({ map: t })); pz.position.set(20.2, 1.75, -7.99); scene.add(pz);
+      scene.add(caja(1.2, 0.05, 0.12, '#b9bec4', 20.2, 0.95, -7.93));
+    }
   }
   // servidor grande con ventilación, en la esquina de la sala de juntas
   const ventiladores = [], ledsServidor = [];
-  const SERVIDOR = { x: 31.75, z: -7.35 };
+  const SERVIDOR = { x: 17.1, z: -7.35 };
   {
     const sx = SERVIDOR.x, sz = SERVIDOR.z;
     scene.add(caja(1.3, 2.5, 1.1, '#16181b', sx, 1.25, sz));
-    for (let i = 0; i < 10; i++) scene.add(caja(0.02, 0.07, 0.9, '#2b2f33', sx - 0.66, 0.35 + i * 0.2, sz));
+    for (let i = 0; i < 10; i++) scene.add(caja(0.02, 0.07, 0.9, '#2b2f33', sx + 0.66, 0.35 + i * 0.2, sz));
     for (let i = 0; i < 6; i++) {
       const l = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, 0.05), new THREE.MeshBasicMaterial({ color: '#3ab0ff' }));
-      l.position.set(sx - 0.67, 0.5 + i * 0.32, sz + 0.38); scene.add(l); ledsServidor.push(l);
+      l.position.set(sx + 0.67, 0.5 + i * 0.32, sz + 0.38); scene.add(l); ledsServidor.push(l);
     }
     for (const dz of [-0.28, 0.28]) {
       const f = new THREE.Group(); f.position.set(sx, 2.56, sz + dz); scene.add(f);
@@ -953,7 +972,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       ventiladores.push(aspas);
     }
     scene.add(caja(0.7, 1.4, 0.7, '#b9bec4', sx, 3.25, sz)); // ducto de ventilación
-    addObs(sx - 0.7, 32.4, sz - 0.6, sz + 0.6);
+    addObs(16.3, sx + 0.7, sz - 0.6, sz + 0.6);
   }
   // puestos de Humanidades: Isai (contador) y facturación
   function sentadoDeco(cx, cz, giro, nombre, extra) {
@@ -981,6 +1000,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     addObs(ex - 0.42, ex + 0.42, ez - 0.42, ez + 0.42);
     return { nombre, x: ex, z: ez, ax: cx + sx * 2.1, az: cz + sz * 2.1, grupo: e };
   }
+  const dianaNpc = sentadoDeco(21.5, 5.0, Math.PI, 'Diana', d => { d.add(caja(0.3, 0.08, 0.22, '#1b1c1f', -0.75, 0.84, 0.1)); d.add(caja(0.08, 0.06, 0.24, '#2b2f33', -0.9, 0.9, 0.1)); });
   const isaiNpc = sentadoDeco(26.0, 1.4, Math.PI, 'Isai', d => { d.add(caja(0.2, 0.03, 0.26, '#2b2f33', -0.7, 0.8, 0.22)); d.add(caja(0.16, 0.012, 0.06, '#9fe0a8', -0.7, 0.82, 0.14)); });
   const facturaNpc = sentadoDeco(30.4, 1.4, Math.PI, 'Facturación', d => { d.add(caja(0.5, 0.3, 0.4, '#e8eaec', -0.75, 0.93, 0.1)); for (let i = 0; i < 3; i++) d.add(caja(0.3, 0.02, 0.4, '#ffffff', 1.55, 0.8 + i * 0.02, 0.9)); });
 
@@ -1138,6 +1158,36 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     ledsCamara.forEach(l => { l.visible = !l.visible; });
   }
 
+  // ---------- Tu escritorio (Jesús), en la fila del centro de la nave ----------
+  const MI_LUGAR = { x: -8.0, z: 0.6 };
+  {
+    const cx = MI_LUGAR.x, cz = MI_LUGAR.z;
+    const d = new THREE.Group(); d.position.set(cx, 0, cz); scene.add(d);
+    tramo(d, -1.1, 1.1, -0.6, 0.6, [-1, 1]); tramo(d, 1.1, 2.1, -0.6, 1.6, [-1, 1]);
+    obsLocal(cx, cz, 0, -1.1, 1.1, -0.6, 0.6); obsLocal(cx, cz, 0, 1.1, 2.1, -0.6, 1.6);
+    // dos monitores con el monitoreo en vivo (las mismas gráficas del video wall del NOC)
+    for (const [x, m] of [[-0.55, pantallasDef[1]], [0.55, pantallasDef[3]]]) {
+      d.add(caja(0.1, 0.3, 0.1, '#1a1d20', x, 0.93, -0.35));
+      d.add(caja(1.05, 0.62, 0.06, '#1a1d20', x, 1.38, -0.35));
+      const p = new THREE.Mesh(new THREE.PlaneGeometry(0.96, 0.54), m); p.position.set(x, 1.38, -0.315); d.add(p);
+    }
+    d.add(caja(0.8, 0.04, 0.26, '#d8d8d8', 0, 0.8, 0.25));   // teclado
+    d.add(caja(0.1, 0.04, 0.16, '#1b1c1f', 0.6, 0.8, 0.3));   // mouse
+    d.add(new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.055, 0.15, 10), mat('#1b1c1f')).translateX(-0.85).translateY(0.86).translateZ(0.15)); // taza
+    { const a = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.025, 8, 16, Math.PI), mat('#2b2f33')); a.rotation.x = -Math.PI / 2; a.position.set(1.6, 0.8, 0.6); d.add(a); } // audífonos
+    d.add(caja(0.3, 0.42, 0.04, '#0b0d10', 1.6, 0.98, -0.4));
+    { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.26, 0.26), logoMat); l.position.set(1.6, 1.0, -0.375); d.add(l); } // portarretrato con el logo
+    // silla vacía (tú andas caminando)
+    const silla = new THREE.Group(); silla.position.set(0, 0, 1.15); d.add(silla);
+    silla.add(new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.1, 18), mat('#23292e')).translateY(0.5));
+    silla.add(caja(0.08, 0.45, 0.08, '#23292e', 0, 0.25, 0));
+    silla.add(caja(0.74, 0.62, 0.08, '#2a3036', 0, 0.86, 0.36));
+    addObs(cx - 0.42, cx + 0.42, cz + 0.8, cz + 1.5);
+    // gafete con tu nombre en el escritorio
+    d.add(caja(0.7, 0.16, 0.06, '#1b1c1f', -0.6, 0.86, 0.52));
+    letreroPlano('JESÚS', 0.64, 0.14, '#1b1c1f', '#ff5a4e', cx - 0.6, 0.86, cz + 0.555);
+  }
+
   // ---------- Personajes ----------
   function crearJefe(color, corbata, o = {}) {
     const g = new THREE.Group();
@@ -1236,7 +1286,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   })();
   const PUERTA_ALMACEN = { x: -10.5, z: -5.6 }, CABLES_NOC = { x: 13.3, z: -6.35 };
   // camino de la rata: sale por la puerta del almacén, rodea por el pasillo de atrás y llega a los cables del NOC
-  const RUTA_RATA = [[-10.5, -4.1], [-6.35, -4.2], [-6.35, -6.25], [10.0, -6.25], [CABLES_NOC.x, CABLES_NOC.z]];
   const azar = ([a, b]) => a + Math.random() * (b - a);
 
   // La niña fantasma
@@ -1259,24 +1308,49 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   // gente de pie fuera de la nave
   function dePie(modelo, nombre, x, z, giro) {
     modelo.g.position.set(x, 0, z); modelo.g.rotation.y = giro;
+    if (!nombre) return modelo;
     const et = spriteTexto(nombre, 0.38, { color: '#fff', bg: 'rgba(0,0,0,.55)', fam: 'Rubik, sans-serif', peso: 700, size: 40, pad: 16 });
     et.position.y = 2.3; modelo.g.add(et); return modelo;
   }
   dePie(crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { chamarra: true, acento: '#3a3f46', sinAro: true }), 'Almacenista', -11.2, -6.9, 0);
-  const dianaM = dePie(crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { chamarra: true, acento: '#3a3f46', sinAro: true, peloLargo: '#2a1d14' }), 'Diana', 21.5, 4.25, 0);
-  dePie(crearJefe('#4f7fc9', '#4f7fc9', { casual: true, router: true }), 'Cliente', 21.5, 5.95, Math.PI);
+  dePie(crearJefe('#4f7fc9', '#4f7fc9', { casual: true, router: true }), 'Cliente', 21.5, 6.5, Math.PI);
+  // la señora de la limpieza: trapea la terraza de punta a punta, con su letrero de piso mojado
+  const limpieza = (() => {
+    const m = crearJefe('#7fb3d5', '#7fb3d5', { casual: true, peloLargo: '#3a2a1e', falda: '#2f4a68' });
+    const trapeador = new THREE.Group(); trapeador.position.set(0.25, 0, 0.35); m.g.add(trapeador);
+    { const palo = caja(0.04, 1.35, 0.04, '#c8a26a', 0, 0.72, 0.12); palo.rotation.x = -0.3; trapeador.add(palo); }
+    trapeador.add(caja(0.42, 0.06, 0.2, '#e8eaec', 0, 0.04, 0.3));
+    const letrero = new THREE.Group(); scene.add(letrero);
+    for (const s of [-1, 1]) { const h = caja(0.42, 0.62, 0.03, '#f2c230', 0, 0.3, s * 0.1); h.rotation.x = s * 0.3; letrero.add(h); }
+    const et = spriteTexto('⚠ PISO MOJADO', 0.26, { color: '#1b1c1f', bg: 'rgba(242,194,48,.95)', fam: EMOJI, size: 36 }); et.position.y = 0.95; letrero.add(et);
+    letrero.userData.dinamico = true;
+    return { m, trapeador, letrero, x: -12, z: 9.65, dir: Math.PI / 2, sentido: 1, paso: 0, movio: false, boost: 0, aturdido: 0, pausa: 0 };
+  })();
+  function actualizarLimpieza(dt) {
+    const L = limpieza;
+    const platicando = estado === 'explorar' && dlg.abierto && dlg.n && dlg.n.ref === L;
+    L.movio = false;
+    if (platicando) { L.dir = Math.atan2(p1.x - L.x, p1.z - L.z); }
+    else {
+      L.x += L.sentido * 1.1 * dt; L.movio = true; L.paso += dt * 7; L.dir = L.sentido > 0 ? Math.PI / 2 : -Math.PI / 2;
+      if (L.x > 31.5) L.sentido = -1; else if (L.x < -15.2) L.sentido = 1;
+    }
+    L.trapeador.rotation.y = platicando ? 0 : Math.sin(t * 3) * 0.5;
+    L.letrero.position.set(L.x - L.sentido * 2.2, 0, L.z + 0.6);
+  }
+
   // socios platicando con Cerón frente a su escritorio
   const socios = [
-    dePie(crearJefe('#4a4f57', '#2f6fb0'), 'Socio', 21.0, -2.75, Math.PI),
-    dePie(crearJefe('#2b3a55', '#f3e9ff', { peloLargo: '#5a3a22', falda: '#2b3a55' }), 'Socia', 22.6, -2.75, Math.PI)
+    dePie(crearJefe('#4a4f57', '#2f6fb0'), null, 17.45, -5.3, Math.PI / 2),
+    dePie(crearJefe('#2b3a55', '#f3e9ff', { peloLargo: '#5a3a22', falda: '#2b3a55' }), null, 17.45, -4.4, Math.PI / 2)
   ];
-  addObs(20.5, 23.1, -3.15, -1.95);
+  addObs(16.95, 17.95, -5.75, -3.95);
   function burbujaCharla(m, y) { const b = spriteTexto('💬', 0.45, { fam: EMOJI, size: 48, pad: 4 }); b.position.y = y; b.visible = false; m.g.add(b); return b; }
   const charla = [burbujaCharla(ceron.m, 3.0), ...socios.map(m => burbujaCharla(m, 2.85))];
   // Isai y Diana también llegan a la premiación (entran por la puerta de la nave)
   const humanidadesFestejo = [
     { nombre: 'Isai', ax: PUERTA_NAVE.x, az: 6.9, grupo: isaiNpc.grupo },
-    { nombre: 'Diana', ax: PUERTA_NAVE.x, az: 6.9, grupo: dianaM.g }
+    { nombre: 'Diana', ax: PUERTA_NAVE.x, az: 6.9, grupo: dianaNpc.grupo }
   ];
 
   // ---------- Estado ----------
@@ -1704,7 +1778,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     if (!r.activo) {
       r.prox -= dt;
       if (r.prox <= 0 && tiempo > 8) {
-        Object.assign(r, { activo: true, fase: 'hacia_noc', x: PUERTA_ALMACEN.x, z: PUERTA_ALMACEN.z, mordida: 0, vida: 0, susto: 0, wp: 0 });
+        Object.assign(r, { activo: true, fase: 'hacia_noc', x: PUERTA_ALMACEN.x, z: PUERTA_ALMACEN.z, mordida: 0, vida: 0, susto: 0, ruta: null });
         Object.assign(r.nav, { atorado: 0, desvio: 0, ux: r.x, uz: r.z });
         r.g.visible = true; chillido();
         flotar(r.x, 2.6, r.z + 1, '¡SALIÓ LA RATA DEL ALMACÉN!', '#d0d0d0', true);
@@ -1723,24 +1797,24 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       if (cerca && dmin < 1.8) r.fase = 'huyendo';
       else if (r.mordida <= 0) {
         if (internet) { internet = false; beep(220, .3, 'square', .06); flotar(12.6, 3.6, -5.2, '¡LA RATA SE COMIÓ LOS CABLES!', '#ff3b3b', true); }
-        r.fase = 'huyendo';
+        r.fase = 'huyendo'; r.ruta = null;
       }
+      if (r.fase === 'huyendo') r.ruta = null;
       return;
     }
     if (cerca && r.susto <= 0) r.susto = 1.2;
-    if (cerca && r.susto > 0.4) { navegar(r, r.x + (r.x - cerca.x) * 3, r.z + (r.z - cerca.z) * 3, dt, 1, r.vel); return; }
+    if (cerca && r.susto > 0.4) { r.ruta = null; navegar(r, r.x + (r.x - cerca.x) * 3, r.z + (r.z - cerca.z) * 3, dt, 1, r.vel); return; }
     if (r.fase === 'huyendo') {
-      // regresa por el mismo camino hasta meterse al almacén
-      const [hx, hz] = r.wp >= 0 ? RUTA_RATA[r.wp] : [PUERTA_ALMACEN.x, PUERTA_ALMACEN.z];
-      navegar(r, hx, hz, dt, 1, r.vel);
-      if (Math.hypot(r.x - hx, r.z - hz) < 0.45) { if (r.wp < 0) quitarRata(); else r.wp--; }
+      // regresa al almacén por una ruta calculada
+      if (!r.ruta) { r.ruta = rutaMalla(r.x, r.z, PUERTA_ALMACEN.x, PUERTA_ALMACEN.z, 0.4, true) || [[PUERTA_ALMACEN.x, PUERTA_ALMACEN.z]]; r.ri = 0; }
+      if (!seguirRuta(r, dt, r.vel) || Math.hypot(r.x - PUERTA_ALMACEN.x, r.z - PUERTA_ALMACEN.z) < 0.6) quitarRata();
       return;
     }
-    const [rx, rz] = RUTA_RATA[r.wp];
-    navegar(r, rx, rz, dt, 1, r.vel * 0.85);
-    if (r.wp < RUTA_RATA.length - 1) { if (Math.hypot(r.x - rx, r.z - rz) < 0.45) r.wp++; }
-    else if (Math.hypot(r.x - CABLES_NOC.x, r.z - CABLES_NOC.z) < 0.8) {
-      r.fase = 'mordiendo'; r.mordida = 2;
+    if (!r.ruta) { r.ruta = rutaMalla(r.x, r.z, CABLES_NOC.x, CABLES_NOC.z, 0.4, true) || [[CABLES_NOC.x, CABLES_NOC.z]]; r.ri = 0; }
+    const sigue = seguirRuta(r, dt, r.vel * 0.85);
+    if (!sigue && Math.hypot(r.x - CABLES_NOC.x, r.z - CABLES_NOC.z) >= 0.8) r.ruta = null;
+    if (Math.hypot(r.x - CABLES_NOC.x, r.z - CABLES_NOC.z) < 0.8) {
+      r.fase = 'mordiendo'; r.mordida = 2; r.ruta = null;
       flotar(CABLES_NOC.x, 3.2, CABLES_NOC.z + 0.8, '¡LA RATA ESTÁ MORDIENDO LOS CABLES!', '#ff9a3c', true);
     }
     for (const e of escritorios) if (!e.emp.flojo && Math.hypot(e.emp.x - r.x, e.emp.z - r.z) < 1.3) ponerFlojo(e.emp, ESPANTO);
@@ -2071,37 +2145,41 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const LINEAS_EMP = {
     'Debi': ['¡Hola! Estoy cerrando los tickets de ayer.', 'Si ves a Cerón, avísame... digo, ¡aquí andamos chambeando!'],
     'Toño': ['¿Ya fuiste al almacén? Ahí están las antenas nuevas.', 'Dicen que en el almacén vive una rata que se come los cables. Yo no le creo... bueno, tantito.'],
-    'Diana': ['Soy de atención a clientes. Hoy ya contesté como cuarenta llamadas.', 'Cuando se cae la red me llueven las llamadas. ¡Corre al NOC a levantarla!', 'Y si llega el cliente enojado, tú levanta la red y yo lo calmo.'],
+    'Diana': ['Hoy ya contesté como cuarenta llamadas, y apenas es mediodía.', 'Cuando se cae la red me llueven las llamadas. ¡Corre al NOC a levantarla!', 'Y si llega el cliente enojado, tú levanta la red y yo lo calmo.'],
     'Luis': ['Hoy me tocó subir a una torre. Todavía me tiemblan las piernas.', 'Tip: el café te hace correr más rápido. Lo digo por experiencia.'],
     'Felipe': ['Estoy configurando un router para un cliente.', 'poderNET: el poder de internet. Lo dice el logo, así que es cierto.'],
     'Brenda': ['Llevo toda la mañana contestando llamadas de clientes.', 'Si llega un cliente enojado, levanta la red en el NOC y se le pasa el coraje.'],
     'Suemmy': ['¿Ya viste las calabazas? Decoramos para Halloween.', 'Dicen que en la oficina se aparece una niña... Si la ves, grítale dos veces. 👻'],
-    'El Nuevo': ['Hola, soy nuevo. ¿Dónde está el baño?', 'Todavía no me aprendo los nombres de todos. ¿Tú cómo te llamas?'],
-    'Isai': ['Soy el contador. Estoy cuadrando la facturación del mes, no me muevas los números.', 'Cada antena que se pierde en el almacén me descuadra el inventario. Cuídenlas, ¿eh?', 'Y los clientes que pagan tarde... esos también me quitan el sueño.'],
+    'El Nuevo': ['Oye, ¿dónde está el baño? Todavía me pierdo aquí.', 'Todavía no me aprendo los nombres de todos. ¿Tú cómo te llamas?'],
+    'Isai': ['Ando cuadrando la facturación del mes, no me muevas los números.', 'Cada antena que se pierde en el almacén me descuadra el inventario. Cuídenlas, ¿eh?', 'Y los clientes que pagan tarde... esos también me quitan el sueño.'],
     'Eli': ['Estoy haciendo el reporte para Deysimar. Lo quiere para ayer.', 'Cuando empiece el turno, que no nos agarren de flojos, ¿eh?'],
     'Gallegos': ['¿Qué onda? Aquí echándole ganas.', 'Si te quieres llevar el empleado del mes, despierta a la banda y levanta la red.']
   };
   const ROLES_EMP = { 'Isai': 'CONTADOR', 'Diana': 'ATENCIÓN A CLIENTES' };
-  const POS_EXPLORA = { ceron: [21.8, -6.0], deysi: [4.6, 4.4], rata: [-14.3, -7.0] };
+  const POS_EXPLORA = { ceron: [20.2, -7.1], deysi: [4.6, 4.4], rata: [-14.3, -7.0] };
   const ZONA_ALMACEN = { x0: -15.7, x1: -7.0, z0: -8, z1: -4.85 };
   const interactivos = [
     ...escritorios.map(e => ({ emp: e.emp, nombre: e.emp.nombre, titulo: ROLES_EMP[e.emp.nombre] ? `${e.emp.nombre.toUpperCase()} · ${ROLES_EMP[e.emp.nombre]}` : null, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
     { nombre: 'Cerón', titulo: 'CERÓN · CEO', ref: ceron, r: 3.3, color: '#ffd23f',
-      lineas: ['Soy Cerón, el CEO de poderNET. Este es mi escritorio, junto a la sala de juntas.', 'Ahorita estoy con unos socios, platicando de la expansión de poderNET.', 'Aquí se viene a trabajar. Cuando empiece el turno me voy a la nave a vigilar.', 'Al que agarre echando hueva, lo regaño. Y a mí no me gritas.'] },
+      lineas: ['¿Qué pasó? Estoy explicándoles la red a los socios, dame chance.', 'Mira el pizarrón: la fibra sale del NOC, de ahí a las torres y de las torres a la casa del cliente.', 'Nomás que no se caiga la red mientras están aquí, ¿eh?'] },
+    { nombre: 'tu escritorio', titulo: 'TU ESCRITORIO', pista: 'Ver tu escritorio', x: MI_LUGAR.x, z: MI_LUGAR.z + 1.15, r: 1.8, cosa: true,
+      lineas: ['Tu lugar: dos monitores con el tráfico y los sensores de la red en vivo.', 'El café ya se enfrió... la cafetera de Humanidades queda a unos pasos.', 'Cuando quieras arrancar el turno, dale a Empezar a trabajar.'] },
+    { nombre: 'la señora de la limpieza', titulo: 'LIMPIEZA', ref: limpieza, r: 1.8,
+      lineas: ['¡Cuidado, joven, está mojado!', 'Ahorita termino la terraza y le paso el trapeador a la oficina.', 'Y díganle a los del almacén que no anden dejando cajas en el pasillo.'] },
     { nombre: 'el almacenista', titulo: 'ALMACENISTA', x: -11.2, z: -6.9, r: 2.0,
-      lineas: ['Aquí se piden las requisiciones: antenas, cable, routers, lo que necesiten.', 'Firma la hoja y te entrego tu equipo. Sin requisición no sale nada del almacén.', 'Y cuidado con la rata, que ya se comió dos bobinas de cable.'] },
+      lineas: ['¿Qué vas a llevar? Antenas, cable, routers... dime y te lo saco.', 'Nomás fírmame la requisición, que sin hoja no sale nada.', 'Y cuidado con la rata, que ya se comió dos bobinas de cable.'] },
     { nombre: 'la cafetera', titulo: 'CAFETERA', pista: 'Servirte un café', x: 32.15, z: 6.5, r: 1.7, cosa: true, accion: servirCafe,
       lineas: ['Te serviste un café bien cargado. ☕', 'Con la cafeína caminas más rápido un rato.'] },
-    { nombre: 'los socios', titulo: 'SOCIOS', x: 21.8, z: -2.75, r: 2.0,
+    { nombre: 'los socios', titulo: 'SOCIOS', x: 17.45, z: -4.85, r: 2.0,
       lineas: ['Venimos a ver cómo va la expansión de poderNET en San Luis.', 'Cerón nos está platicando de las torres nuevas y del NOC.', 'Nos dijeron que la red nunca se cae... a ver si es cierto.'] },
     { nombre: 'Isai', titulo: 'ISAI · CONTADOR', x: isaiNpc.x, z: isaiNpc.z, r: 1.9, lineas: LINEAS_EMP['Isai'] },
     { nombre: 'Facturación', titulo: 'FACTURACIÓN', x: facturaNpc.x, z: facturaNpc.z, r: 1.9,
-      lineas: ['Aquí sale cada factura de poderNET.', 'Si un cliente pide su factura, que me manden su RFC completo, por favor.', 'Isai y yo cuadramos los pagos al cierre de mes.'] },
-    { nombre: 'Diana', titulo: 'DIANA · ATENCIÓN A CLIENTES', x: 21.5, z: 4.25, r: 2.3, lineas: LINEAS_EMP['Diana'] },
-    { nombre: 'el cliente', titulo: 'CLIENTE', x: 21.5, z: 5.95, r: 1.6,
+      lineas: ['Ando sacando las facturas del mes. ¿Necesitas una?', 'Si un cliente pide factura, que me manden su RFC completo, porfa.', 'Isai y yo cuadramos los pagos al cierre de mes.'] },
+    { nombre: 'Diana', titulo: 'DIANA · ATENCIÓN A CLIENTES', x: dianaNpc.x, z: dianaNpc.z, r: 2.3, lineas: LINEAS_EMP['Diana'] },
+    { nombre: 'el cliente', titulo: 'CLIENTE', x: 21.5, z: 6.5, r: 1.6,
       lineas: ['Vengo a pagar mi mensualidad... y a preguntar por qué se me fue el internet el martes.', 'La señorita Diana ya me está atendiendo, gracias.'] },
     { nombre: 'Deysimar', titulo: 'DEYSIMAR · GERENTE', ref: deysi, r: 1.9, color: '#e7c6ff',
-      lineas: ['Hola, soy Deysimar, la gerente.', 'Quiero los reportes a tiempo y la red arriba todo el día.', 'El que junte más puntos se lleva el trofeo de empleado del mes.'] },
+      lineas: ['¿Ya tienes listo lo de hoy? Lo necesito antes de la junta.', 'Échale un ojo a los tickets, que hay varios abiertos.', 'Y el que cierre más pendientes este mes se lleva el trofeo.'] },
     { nombre: 'la rata', titulo: 'RATA COME-CABLES', ref: rata, r: 1.5, color: '#d0d0d0', cosa: true,
       lineas: ['(La rata come-cables está dormida entre las cajas...)', 'Zzz... ñam... cables... zzz', '(Mejor no despertarla. En el nivel 3 sale a morder los cables del NOC.)'] },
     { nombre: 'las repisas del almacén', titulo: 'ALMACÉN', x: -9.2, z: -6.9, r: 1.6, cosa: true,
@@ -2114,8 +2192,10 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       lineas: ['Refri de acero y garrafones de agua. Hidratarse también es parte de la chamba.'] },
     { nombre: 'la vista', titulo: 'TERRAZA', x: 2.0, z: 11.0, r: 3.0, cosa: true,
       lineas: ['Desde la terraza se ve el estacionamiento y, del otro lado, el Starbucks.', 'La puerta de la izquierda es la nave, con el NOC y el almacén. La de la derecha es Humanidades.'] },
-    { nombre: 'la sala de juntas', titulo: 'SALA DE JUNTAS', x: 26.0, z: -3.1, r: 1.7, cosa: true,
-      lineas: ['Aquí se hacen las juntas con Cerón y Deysimar.', 'Mesa larga, pantalla con el logo y, en la esquina, el servidor grande.'] },
+    { nombre: 'el escritorio de Cerón', titulo: 'ESCRITORIO DEL CEO', x: 28.1, z: -3.0, r: 1.7, cosa: true,
+      lineas: ['El escritorio de Cerón: L de vidrio, contratos y su monitor.', 'Ahorita no está: anda en la sala de juntas con los socios.'] },
+    { nombre: 'la sala de juntas', titulo: 'SALA DE JUNTAS', x: 23.2, z: -2.2, r: 1.7, cosa: true,
+      lineas: ['Tres mesas de vidrio en U y el pizarrón al frente.', 'Aquí Cerón explica la red a los socios. En la esquina está el servidor grande.'] },
     { nombre: 'el servidor', titulo: 'SERVIDOR PRINCIPAL', x: SERVIDOR.x, z: SERVIDOR.z, r: 1.7, cosa: true,
       lineas: ['El servidor principal de poderNET. Por eso tiene tanta ventilación: si se calienta, se cae todo.', 'Los ventiladores no paran ni un segundo. Mejor no le muevas.'] }
   ];
@@ -2289,11 +2369,22 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   function actualizarPaseos(dt) {
     proxPaseo -= dt;
     if (proxPaseo <= 0) { if (caminando().length < 3) iniciarPaseo(); proxPaseo = 2.5 + Math.random() * 3.5; }
+    proxBusqueda -= dt;
+    if (proxBusqueda <= 0) { iniciarBusqueda(); proxBusqueda = 25 + Math.random() * 20; }
     for (const p of caminando()) {
       p.movio = false; p.t += dt;
       if (p.t > 45) { sentar(p); continue; } // por si alguien se atora
       if (dlg.abierto && dlg.n && dlg.n.emp === p.emp) { p.dir = Math.atan2(p1.x - p.x, p1.z - p.z); continue; } // se detiene a platicar contigo
       const d = p.paseo;
+      if (p.fase === 'hablando') { // ya platicaron: regresa a su lugar
+        p.fase = 'regreso'; p.ruta = rutaMalla(p.x, p.z, p.emp.ax, p.emp.az) || [[p.emp.ax, p.emp.az]]; p.i = 0; continue;
+      }
+      if (d.buscar && p.fase === 'ida') {
+        if (Math.hypot(p1.x - p.x, p1.z - p.z) < 1.5) { if (!dlg.abierto) hablarte(p); else p.dir = Math.atan2(p1.x - p.x, p1.z - p.z); continue; }
+        if (p.t > 25) { p.fase = 'regreso'; p.ruta = rutaMalla(p.x, p.z, p.emp.ax, p.emp.az) || [[p.emp.ax, p.emp.az]]; p.i = 0; quitarGlobo(p); continue; }
+        p.repath -= dt;
+        if (p.repath <= 0 || p.i >= p.ruta.length) { p.ruta = rutaMalla(p.x, p.z, p1.x, p1.z) || [[p1.x, p1.z]]; p.i = 0; p.repath = 1; }
+      }
       if (p.fase === 'espera') {
         p.espera -= dt; p.aplaude = false;
         if (d.mira) p.dir = Math.atan2(d.mira[0] - p.x, d.mira[1] - p.z);
@@ -2305,11 +2396,42 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       if (Math.hypot(tx - p.x, tz - p.z) < (ultimo ? 0.6 : 0.3)) {
         p.i++;
         if (p.i >= p.ruta.length) {
-          if (p.fase === 'ida') { p.fase = 'espera'; p.espera = 3 + Math.random() * 4; }
+          if (p.fase === 'ida') { if (d.buscar) p.i = p.ruta.length; else { p.fase = 'espera'; p.espera = 3 + Math.random() * 4; } }
           else sentar(p);
         }
       }
     }
+  }
+  const FRASES_ACERCARSE = [
+    ['Oye, ¿tienes un minuto? Se me trabó la UISP otra vez.', '¿Me echas la mano cuando puedas? Ahorita te busco.'],
+    ['¿Ya viste que se cayó la torre de Soledad en la mañana?', 'Ya quedó, pero hubo que reiniciar el enlace dos veces.'],
+    ['¿Vas a ir por café a Humanidades? Tráeme uno, porfa.', 'Americano, sin azúcar. Te debo una.'],
+    ['Oye, Cerón anda preguntando por el reporte de la red.', 'Yo nomás te aviso, ¿eh?'],
+    ['¿Me ayudas con un router que no levanta? Ya le moví de todo.', 'Ahorita que te desocupes, va.'],
+    ['¿Ya comiste? Vamos a ir por tacos al rato.', 'Ahí avisas si te apuntas.']
+  ];
+  let proxBusqueda = 15;
+  // uno de los compañeros más cercanos deja lo que hace y va a buscarte
+  function iniciarBusqueda() {
+    if (dlg.abierto || caminando().some(p => p.paseo.buscar)) return;
+    const libres = parados.slice(0, escritorios.length).filter(p => !p.paseo)
+      .sort((a, b) => Math.hypot(a.emp.ax - p1.x, a.emp.az - p1.z) - Math.hypot(b.emp.ax - p1.x, b.emp.az - p1.z));
+    if (!libres.length) return;
+    const p = libres[Math.floor(Math.random() * Math.min(3, libres.length))];
+    const ruta = rutaMalla(p.emp.ax, p.emp.az, p1.x, p1.z);
+    if (!ruta) return;
+    const d = { ico: '👋', txt: 'te busca', buscar: true, frases: FRASES_ACERCARSE[Math.floor(Math.random() * FRASES_ACERCARSE.length)] };
+    Object.assign(p, { x: p.emp.ax, z: p.emp.az, paseo: d, fase: 'ida', ruta, paso: 0, i: 0, espera: 0, t: 0, repath: 1 });
+    Object.assign(p.nav, { atorado: 0, desvio: 0, ux: p.x, uz: p.z });
+    p.emp.paseo = p; p.emp.grupo.visible = false; p.m.g.visible = true;
+    burbujaPaseo(p, d);
+  }
+  function hablarte(p) {
+    p.fase = 'hablando'; quitarGlobo(p);
+    const n = { emp: p.emp, nombre: p.emp.nombre, titulo: p.emp.nombre.toUpperCase(), lineas: p.paseo.frases };
+    Object.assign(dlg, { abierto: true, n, i: 0 }); puntero = null;
+    p1.dir = Math.atan2(p.x - p1.x, p.z - p1.z);
+    mostrarLinea();
   }
   function terminarPaseos() { for (const p of parados) if (p.paseo) sentar(p); proxPaseo = 2; }
 
@@ -2364,6 +2486,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     actualizarPantallas(dt);
     for (const v of ventiladores) v.rotation.y += dt * 18;
     ledsServidor.forEach((l, i) => { l.visible = Math.sin(t * 6 + i * 1.7) > -0.3; });
+    actualizarLimpieza(dt);
     tazaMano.visible = estado === 'explorar' && p1.boost > 0;
     // Cerón platica con sus socios por turnos: al que le toca mueve las manos y sale su globito
     const turno = Math.floor(t / 2.2) % 3;
@@ -2374,7 +2497,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       m.bI.rotation.x = habla ? -0.35 + Math.sin(t * 4 + i) * 0.2 : 0;
     });
     ceron.habla = estado === 'explorar' && turno === 0;
-    for (const j of [p1, p2, ...enemigos.filter(e => e.activo), ...(cer.activo ? parados : []), ...(estado === 'explorar' ? [ceron, deysi, ...parados.filter(p => p.paseo)] : [])]) {
+    for (const j of [p1, p2, ...enemigos.filter(e => e.activo), ...(cer.activo ? parados : []), ...(estado === 'explorar' ? [ceron, deysi, ...parados.filter(p => p.paseo)] : []), limpieza]) {
       const m = j.m;
       m.g.position.set(j.x, 0, j.z);
       let dif = j.dir - m.g.rotation.y; dif = Math.atan2(Math.sin(dif), Math.cos(dif));
@@ -2501,7 +2624,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   // Pasa de miles de piezas a pocas, que es lo que más pesa al dibujar.
   function optimizarEscena() {
     for (const e of escritorios) e.emp.grupo.userData.dinamico = true;
-    for (const n of [isaiNpc, facturaNpc]) n.grupo.userData.dinamico = true;
+    for (const n of [isaiNpc, facturaNpc, dianaNpc]) n.grupo.userData.dinamico = true;
     for (const o of [fantasma.g, rata.g, trofeo, letreroNoc, ...ventiladores]) o.userData.dinamico = true;
     scene.updateMatrixWorld(true);
     const porMaterial = new Map();
