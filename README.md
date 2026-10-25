@@ -6,6 +6,12 @@ Juego 3D de 2 jugadores en la oficina de poderNET en San Luis Potosí. Dos compa
 
 Abre `index.html` en el navegador o súbelo a cualquier hosting estático (Vercel, sin configuración). Necesita internet para cargar Three.js. Cada nivel dura 1 minuto 50 segundos.
 
+## Explorar la oficina
+
+Al abrir el juego entras a la oficina en modo libre: caminas con WASD o flechas (en celular, con el dedo en el piso) y la cámara te sigue. Acércate a alguien y presiona **E** (en celular, el botón **Platicar**) para platicar con la banda, con Cerón y con Deysimar. También puedes meterte al **almacén**, donde duerme la rata come-cables, y revisar el NOC, la planta de luz y los garrafones.
+
+Cuando estés listo, presiona **Empezar a trabajar** para elegir entre 2 jugadores o contra la CPU. Al terminar una partida puedes volver a explorar.
+
 ## Niveles
 
 Son 3 niveles de 1:50; los puntos se van sumando. Cada nivel agrega un enemigo nuevo:
