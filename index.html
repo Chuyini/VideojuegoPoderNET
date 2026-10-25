@@ -1093,7 +1093,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const dianaNpc = sentadoDeco(18.15, 3.1, -Math.PI / 2, 'Diana',  // junto a Deysimar, de espaldas a la pared
     d => { d.add(caja(0.3, 0.08, 0.22, '#1b1c1f', -0.75, 0.84, 0.1)); d.add(caja(0.08, 0.06, 0.24, '#2b2f33', -0.9, 0.9, 0.1)); });
   // Isai y Caro en el muro derecho, de espaldas a la pared (igual que Deysimar)
-  const isaiNpc = sentadoDeco(30.75, -1.0, Math.PI / 2, 'Isai', d => { d.add(caja(0.2, 0.03, 0.26, '#2b2f33', -0.7, 0.8, 0.22)); d.add(caja(0.16, 0.012, 0.06, '#9fe0a8', -0.7, 0.82, 0.14)); });
+  const isaiNpc = sentadoDeco(30.75, 3.2, Math.PI / 2, 'Isai', d => { d.add(caja(0.2, 0.03, 0.26, '#2b2f33', -0.7, 0.8, 0.22)); d.add(caja(0.16, 0.012, 0.06, '#9fe0a8', -0.7, 0.82, 0.14)); });
   // checador de entrada: lector de huella en la pared, al entrar por la puerta derecha
   const CHECADOR = { x: 16.42, z: 6.8 };
   {
@@ -1117,7 +1117,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     d.add(new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.2, 10), mat('#ffffff')).translateX(-0.85).translateY(0.88).translateZ(0.05));
     d.add(esfera(0.17, '#d86a9a', -0.85, 1.07, 0.05)); // flores
   }
-  const facturaNpc = sentadoDeco(30.75, 3.2, Math.PI / 2, 'Caro', d => { d.add(caja(0.5, 0.3, 0.4, '#e8eaec', -0.75, 0.93, 0.1)); for (let i = 0; i < 3; i++) d.add(caja(0.3, 0.02, 0.4, '#ffffff', 1.55, 0.8 + i * 0.02, 0.9)); });
+  const facturaNpc = sentadoDeco(30.75, -1.0, Math.PI / 2, 'Caro', d => { d.add(caja(0.5, 0.3, 0.4, '#e8eaec', -0.75, 0.93, 0.1)); for (let i = 0; i < 3; i++) d.add(caja(0.3, 0.02, 0.4, '#ffffff', 1.55, 0.8 + i * 0.02, 0.9)); });
 
   // NOC (fondo derecha): piso técnico, 4 racks, video wall con cámaras en vivo y gráficas
   const NOC = { x0: 10.6, x1: 15.7, z0: -8, z1: -4.6 };
