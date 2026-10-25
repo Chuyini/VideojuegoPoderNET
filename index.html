@@ -876,24 +876,26 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const etAt = spriteTexto('ATENCIÓN A CLIENTES', 0.32, { color: '#f2b632', bg: 'rgba(0,0,0,.6)', size: 40 }); etAt.position.set(21.5, 2.9, 4.6); scene.add(etAt);
     for (const x of [24.4, 25.5, 26.6]) { scene.add(caja(0.6, 0.45, 0.55, '#3a5a8a', x, 0.23, 7.15)); scene.add(caja(0.6, 0.55, 0.1, '#3a5a8a', x, 0.7, 6.9)); }
     addObs(24.0, 27.0, 6.8, 7.55);
-    // escritorio del CEO, junto a la sala de juntas: grande, en L y de vidrio con marco cromado
+    // escritorio del CEO, junto a la sala de juntas: L de vidrio con marco cromado.
+    // El ala de la L va del lado de Cerón (hacia atrás) y deja pasillo entre la pared, el sillón y el escritorio.
     const escCeo = new THREE.Group(); scene.add(escCeo);
-    tramo(escCeo, 19.7, 23.9, -6.7, -5.3, [-1, 1]);      // tramo principal
-    tramo(escCeo, 18.5, 19.7, -6.7, -4.0, [-1, 1]);      // ala de la L hacia el frente
-    scene.add(caja(0.16, 0.42, 0.16, '#1a1d20', 21.8, 0.98, -6.4));
-    scene.add(caja(1.3, 0.75, 0.06, '#1a1d20', 21.8, 1.5, -6.4));
-    { const p = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.64), logoMat); p.position.set(21.8, 1.5, -6.36); scene.add(p); }
-    scene.add(caja(0.42, 0.03, 0.3, '#2b2f33', 20.6, 0.8, -5.8)); // laptop
-    for (let i = 0; i < 2; i++) scene.add(caja(0.3, 0.02, 0.4, '#ffffff', 23.0 + i * 0.05, 0.79 + i * 0.02, -5.85)); // contratos
-    scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.14, 10), mat('#ffffff')).translateX(22.9).translateY(0.86).translateZ(-6.4));
-    scene.add(caja(0.5, 0.32, 0.4, '#e8eaec', 19.1, 0.94, -6.1)); // impresora en el ala
-    scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.11, 0.24, 10), mat('#2b2f33')).translateX(19.1).translateY(0.9).translateZ(-4.5));
-    scene.add(esfera(0.22, '#2f8f46', 19.1, 1.15, -4.5)); // plantita
-    scene.add(caja(0.85, 1.35, 0.7, '#111214', 21.8, 0.68, -7.7)); // sillón
-    letreroPlano('CEO', 0.5, 0.16, '#1b1c1f', '#ffd23f', 21.8, 0.9, -5.26);
+    tramo(escCeo, 19.7, 23.9, -4.9, -3.5, [-1, 1]);      // tramo principal, de frente a las visitas
+    tramo(escCeo, 18.5, 19.7, -7.0, -3.5, [-1, 1]);      // ala de la L, junto a Cerón
+    scene.add(caja(0.16, 0.42, 0.16, '#1a1d20', 21.8, 0.98, -4.55));
+    scene.add(caja(1.3, 0.75, 0.06, '#1a1d20', 21.8, 1.5, -4.55));
+    { const p = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.66), new THREE.MeshBasicMaterial({ color: '#2f7fd6' })); p.position.set(21.8, 1.5, -4.59); p.rotation.y = Math.PI; scene.add(p); } // pantalla hacia Cerón
+    { const p = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), logoMat); p.position.set(21.8, 1.5, -4.51); scene.add(p); } // logo hacia las visitas
+    scene.add(caja(0.42, 0.03, 0.3, '#2b2f33', 20.6, 0.8, -4.5)); // laptop
+    for (let i = 0; i < 2; i++) scene.add(caja(0.3, 0.02, 0.4, '#ffffff', 23.0 + i * 0.05, 0.79 + i * 0.02, -4.1)); // contratos
+    scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.14, 10), mat('#ffffff')).translateX(22.9).translateY(0.86).translateZ(-4.6));
+    scene.add(caja(0.5, 0.32, 0.4, '#e8eaec', 19.1, 0.94, -6.3)); // impresora en el ala
+    scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.11, 0.24, 10), mat('#2b2f33')).translateX(19.1).translateY(0.9).translateZ(-5.2));
+    scene.add(esfera(0.22, '#2f8f46', 19.1, 1.15, -5.2)); // plantita
+    scene.add(caja(0.85, 1.35, 0.7, '#111214', 21.8, 0.68, -6.75)); // sillón de Cerón
+    letreroPlano('CEO', 0.5, 0.16, '#1b1c1f', '#ffd23f', 21.8, 0.9, -3.46);
     { const l = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.3), logoMat); l.position.set(21.8, 2.4, -8.03); scene.add(l); }
-    for (const x of [21.0, 22.6]) { scene.add(caja(0.55, 0.45, 0.5, '#1b1c1f', x, 0.23, -4.3)); scene.add(caja(0.55, 0.55, 0.08, '#1b1c1f', x, 0.7, -4.08)); } // sillas de visitas
-    addObs(19.7, 23.9, -6.7, -5.3); addObs(18.5, 19.7, -6.7, -4.0);
+    for (const x of [21.0, 22.6]) { scene.add(caja(0.55, 0.45, 0.5, '#1b1c1f', x, 0.23, -2.3)); scene.add(caja(0.55, 0.55, 0.08, '#1b1c1f', x, 0.7, -2.08)); } // sillas de visitas
+    addObs(19.7, 23.9, -4.9, -3.5); addObs(18.5, 19.7, -7.0, -3.5);
     // cafetera en la esquina de Humanidades
     scene.add(caja(0.7, 1.0, 2.2, '#2b2f33', 32.15, 0.5, 6.5));
     scene.add(caja(0.76, 0.04, 2.26, '#e8eaec', 32.15, 1.02, 6.5));
@@ -1253,10 +1255,10 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   dePie(crearJefe('#4f7fc9', '#4f7fc9', { casual: true, router: true }), 'Cliente', 21.5, 5.95, Math.PI);
   // socios platicando con Cerón frente a su escritorio
   const socios = [
-    dePie(crearJefe('#4a4f57', '#2f6fb0'), 'Socio', 21.0, -4.75, Math.PI),
-    dePie(crearJefe('#2b3a55', '#f3e9ff', { peloLargo: '#5a3a22', falda: '#2b3a55' }), 'Socia', 22.6, -4.75, Math.PI)
+    dePie(crearJefe('#4a4f57', '#2f6fb0'), 'Socio', 21.0, -2.75, Math.PI),
+    dePie(crearJefe('#2b3a55', '#f3e9ff', { peloLargo: '#5a3a22', falda: '#2b3a55' }), 'Socia', 22.6, -2.75, Math.PI)
   ];
-  addObs(20.5, 23.1, -5.15, -3.95);
+  addObs(20.5, 23.1, -3.15, -1.95);
   function burbujaCharla(m, y) { const b = spriteTexto('💬', 0.45, { fam: EMOJI, size: 48, pad: 4 }); b.position.y = y; b.visible = false; m.g.add(b); return b; }
   const charla = [burbujaCharla(ceron.m, 3.0), ...socios.map(m => burbujaCharla(m, 2.85))];
   // Isai y Diana también llegan a la premiación (entran por la puerta de la nave)
@@ -2041,7 +2043,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     'Gallegos': ['¿Qué onda? Aquí echándole ganas.', 'Si te quieres llevar el empleado del mes, despierta a la banda y levanta la red.']
   };
   const ROLES_EMP = { 'Isai': 'CONTADOR', 'Diana': 'ATENCIÓN A CLIENTES' };
-  const POS_EXPLORA = { ceron: [21.8, -7.05], deysi: [4.6, 4.4], rata: [-11.6, -6.95] };
+  const POS_EXPLORA = { ceron: [21.8, -6.0], deysi: [4.6, 4.4], rata: [-11.6, -6.95] };
   const ZONA_ALMACEN = { x0: -15.7, x1: -7.0, z0: -8, z1: -4.85 };
   const interactivos = [
     ...escritorios.map(e => ({ nombre: e.emp.nombre, titulo: ROLES_EMP[e.emp.nombre] ? `${e.emp.nombre.toUpperCase()} · ${ROLES_EMP[e.emp.nombre]}` : null, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
@@ -2049,7 +2051,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       lineas: ['Soy Cerón, el CEO de poderNET. Este es mi escritorio, junto a la sala de juntas.', 'Ahorita estoy con unos socios, platicando de la expansión de poderNET.', 'Aquí se viene a trabajar. Cuando empiece el turno me voy a la nave a vigilar.', 'Al que agarre echando hueva, lo regaño. Y a mí no me gritas.'] },
     { nombre: 'la cafetera', titulo: 'CAFETERA', pista: 'Servirte un café', x: 32.15, z: 6.5, r: 1.7, cosa: true, accion: servirCafe,
       lineas: ['Te serviste un café bien cargado. ☕', 'Con la cafeína caminas más rápido un rato.'] },
-    { nombre: 'los socios', titulo: 'SOCIOS', x: 21.8, z: -4.75, r: 2.0,
+    { nombre: 'los socios', titulo: 'SOCIOS', x: 21.8, z: -2.75, r: 2.0,
       lineas: ['Venimos a ver cómo va la expansión de poderNET en San Luis.', 'Cerón nos está platicando de las torres nuevas y del NOC.', 'Nos dijeron que la red nunca se cae... a ver si es cierto.'] },
     { nombre: 'Isai', titulo: 'ISAI · CONTADOR', x: isaiNpc.x, z: isaiNpc.z, r: 1.9, lineas: LINEAS_EMP['Isai'] },
     { nombre: 'Facturación', titulo: 'FACTURACIÓN', x: facturaNpc.x, z: facturaNpc.z, r: 1.9,
