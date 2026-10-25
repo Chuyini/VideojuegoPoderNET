@@ -391,6 +391,60 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
   };
 
+  // ---------- Piano ambiental (al explorar y en el menú) ----------
+  // Acordes suaves con arpegios lentos y eco de sala, hecho aquí mismo (sin derechos de autor).
+  const pianoAmbiente = (() => {
+    let timer = null, siguiente = 0, paso = 0, master = null, eco = null;
+    const CORCHEA = 60 / 66 / 2;
+    const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+    // Cmaj7 – Am7 – Fmaj7 – G6, un compás cada uno
+    const acordes = [[48, 55, 64, 71], [45, 52, 60, 67], [41, 48, 57, 64], [43, 50, 59, 64]];
+    const arpegio = [0, 1, 2, 3, 2, 1, 3, 2];
+    function sala() {
+      const c = ac.createConvolver(), seg = 3, b = ac.createBuffer(2, Math.ceil(ac.sampleRate * seg), ac.sampleRate);
+      for (let ch = 0; ch < 2; ch++) { const d = b.getChannelData(ch); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2.5); }
+      c.buffer = b; return c;
+    }
+    // timbre de piano: fundamental con armónicos que se apagan, brillo que baja con el tiempo
+    function tecla(f, t0, dur, vol) {
+      const lp = ac.createBiquadFilter(); lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(3200, t0); lp.frequency.exponentialRampToValueAtTime(700, t0 + dur * 0.7);
+      const g = ac.createGain();
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      for (const [mult, amp, tipo] of [[1, 1, 'triangle'], [2, 0.3, 'sine'], [3, 0.1, 'sine']]) {
+        const o = ac.createOscillator(), ga = ac.createGain(); o.type = tipo; o.frequency.value = f * mult; ga.gain.value = amp;
+        o.connect(ga).connect(lp); o.start(t0); o.stop(t0 + dur + 0.05);
+      }
+      lp.connect(g); g.connect(master);
+      const envio = ac.createGain(); envio.gain.value = 0.6; g.connect(envio).connect(eco);
+    }
+    function programar() {
+      while (siguiente < ac.currentTime + 0.3) {
+        const i = paso % 8, acorde = acordes[Math.floor(paso / 8) % acordes.length];
+        if (i === 0) tecla(hz(acorde[0] - 12), siguiente, 5, 0.1);                       // bajo
+        tecla(hz(acorde[arpegio[i]] + 12), siguiente, 2.6, i === 0 ? 0.065 : 0.045);       // arpegio
+        if (i === 4 && Math.random() < 0.45) tecla(hz(acorde[3] + 24), siguiente, 3.2, 0.035); // nota alta de vez en cuando
+        siguiente += CORCHEA * (1 + (Math.random() - 0.5) * 0.06); paso++;               // un poco humano
+      }
+    }
+    return {
+      iniciar() {
+        if (!ac || timer) return;
+        if (ac.state === 'suspended') ac.resume();
+        master = ac.createGain(); master.gain.setValueAtTime(0.0001, ac.currentTime);
+        master.gain.exponentialRampToValueAtTime(0.35, ac.currentTime + 2); master.connect(ac.destination);
+        eco = sala(); const ge = ac.createGain(); ge.gain.value = 0.7; eco.connect(ge).connect(master);
+        siguiente = ac.currentTime + 0.1; paso = 0;
+        timer = setInterval(programar, 80); programar();
+      },
+      parar() {
+        if (!timer) return;
+        clearInterval(timer); timer = null;
+        const m = master; m.gain.setTargetAtTime(0.0001, ac.currentTime, 0.4); setTimeout(() => m.disconnect(), 2500);
+      }
+    };
+  })();
+
   // ---------- Three ----------
   const cont = $('escena');
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -1002,9 +1056,18 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
   const dianaNpc = sentadoDeco(21.5, 5.0, Math.PI, 'Diana', d => { d.add(caja(0.3, 0.08, 0.22, '#1b1c1f', -0.75, 0.84, 0.1)); d.add(caja(0.08, 0.06, 0.24, '#2b2f33', -0.9, 0.9, 0.1)); });
   const isaiNpc = sentadoDeco(26.0, 1.4, Math.PI, 'Isai', d => { d.add(caja(0.2, 0.03, 0.26, '#2b2f33', -0.7, 0.8, 0.22)); d.add(caja(0.16, 0.012, 0.06, '#9fe0a8', -0.7, 0.82, 0.14)); });
+  // checador de entrada: lector de huella en la pared, al entrar por la puerta derecha
+  const CHECADOR = { x: 16.42, z: 6.8 };
+  {
+    scene.add(caja(0.08, 0.36, 0.26, '#2b2f33', CHECADOR.x, 1.35, CHECADOR.z));
+    const pant = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.1), new THREE.MeshBasicMaterial({ color: '#3ab0ff' }));
+    pant.position.set(CHECADOR.x + 0.045, 1.43, CHECADOR.z); pant.rotation.y = Math.PI / 2; scene.add(pant);
+    const huella = new THREE.Mesh(new THREE.CircleGeometry(0.035, 16), new THREE.MeshBasicMaterial({ color: '#ff3b3b' }));
+    huella.position.set(CHECADOR.x + 0.045, 1.27, CHECADOR.z); huella.rotation.y = Math.PI / 2; scene.add(huella);
+  }
   // escritorio de Deysimar, junto a la sala de juntas (al explorar ella está ahí)
   {
-    const cx = 20.0, cz = -0.4, giro = Math.PI;
+    const cx = 18.15, cz = -0.6, giro = -Math.PI / 2; // ella de espaldas a la pared izquierda, viendo hacia la oficina
     const d = new THREE.Group(); d.position.set(cx, 0, cz); d.rotation.y = giro; scene.add(d);
     tramo(d, -1.1, 1.1, -0.6, 0.6, [-1, 1]); tramo(d, 1.1, 2.1, -0.6, 1.6, [-1, 1]);
     obsLocal(cx, cz, giro, -1.1, 1.1, -0.6, 0.6); obsLocal(cx, cz, giro, 1.1, 2.1, -0.6, 1.6);
@@ -1448,6 +1511,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     if (!modoCpu && (c === 'Enter' || c === 'KeyL' || c === 'NumpadEnter' || c === 'Numpad0')) gritar(p2, p1);
   });
   addEventListener('keyup', e => teclas.delete(e.code));
+  function activarAudio() {
+    if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) { return; } }
+    if (ac.state === 'suspended') ac.resume();
+    if (estado === 'explorar' || estado === 'menu') pianoAmbiente.iniciar();
+  }
+  addEventListener('pointerdown', activarAudio);
+  addEventListener('keydown', activarAudio);
   addEventListener('blur', () => teclas.clear());
 
   const ray = new THREE.Raycaster(), planoPiso = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), ndc = new THREE.Vector2(), hit = new THREE.Vector3();
@@ -1466,7 +1536,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   function iniciar(cpu) {
     if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
-    salirExplorar();
+    salirExplorar(); pianoAmbiente.parar();
     modoCpu = cpu; nivel = 1; reiniciar(); arrancarNivel();
   }
   function arrancarNivel() {
@@ -2179,7 +2249,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     'Gallegos': ['¿Qué onda? Aquí echándole ganas.', 'Si te quieres llevar el empleado del mes, despierta a la banda y levanta la red.']
   };
   const ROLES_EMP = { 'Isai': 'CONTADOR', 'Diana': 'ATENCIÓN A CLIENTES' };
-  const POS_EXPLORA = { ceron: [20.2, -7.1], deysi: [20.0, -1.55], rata: [-14.3, -7.0] };
+  const POS_EXPLORA = { ceron: [20.2, -7.1], deysi: [17.0, -0.6], rata: [-14.3, -7.0] };
   const ZONA_ALMACEN = { x0: -15.7, x1: -7.0, z0: -8, z1: -4.85 };
   const interactivos = [
     ...escritorios.map(e => ({ emp: e.emp, nombre: e.emp.nombre, titulo: ROLES_EMP[e.emp.nombre] ? `${e.emp.nombre.toUpperCase()} · ${ROLES_EMP[e.emp.nombre]}` : null, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
@@ -2191,6 +2261,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       lineas: ['¡Cuidado, joven, está mojado!', 'Ahorita termino la terraza y le paso el trapeador a la oficina.', 'Y díganle a los del almacén que no anden dejando cajas en el pasillo.'] },
     { nombre: 'el almacenista', titulo: 'ALMACENISTA', x: -11.2, z: -6.9, r: 2.0,
       lineas: ['¿Qué vas a llevar? Antenas, cable, routers... dime y te lo saco.', 'Nomás fírmame la requisición, que sin hoja no sale nada.', 'Y cuidado con la rata, que ya se comió dos bobinas de cable.'] },
+    { nombre: 'el checador', titulo: 'CHECADOR', pista: 'Checar tu entrada', x: CHECADOR.x + 0.4, z: CHECADOR.z, r: 1.5, cosa: true, accion: checarEntrada, lineas: [''] },
     { nombre: 'la cafetera', titulo: 'CAFETERA', pista: 'Servirte un café', x: 32.15, z: 6.5, r: 1.7, cosa: true, accion: servirCafe,
       lineas: ['Te serviste un café bien cargado. ☕', 'Con la cafeína caminas más rápido un rato.'] },
     { nombre: 'los socios', titulo: 'SOCIOS', x: 17.45, z: -4.85, r: 2.0,
@@ -2228,6 +2299,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     puntero = null; ultimaPista = null;
     beep(520, .05, 'triangle', .04);
   }
+  function checarEntrada() {
+    const h = new Date(), hora = String(h.getHours()).padStart(2, '0') + ':' + String(h.getMinutes()).padStart(2, '0');
+    const nodo = interactivos.find(n => n.accion === checarEntrada);
+    nodo.lineas = [`Entrada registrada a las ${hora}. ✔`, h.getHours() * 60 + h.getMinutes() > 9 * 60 + 10 ? 'Uy, ya es tarde... que no se entere Deysimar.' : '¡Buen día! A chambear.'];
+    flotar(p1.x, 2.9, p1.z, '✔ ' + hora, '#7cff6b');
+    beep(1800, .06, 'sine', .05); setTimeout(() => beep(2400, .08, 'sine', .05), 80);
+  }
   function servirCafe() {
     p1.boost = 12;
     flotar(p1.x, 2.9, p1.z, '¡CAFEÍNA!', '#c98b4a');
@@ -2249,12 +2327,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     $('explora').hidden = false;
     modelo2.g.visible = false;
     for (const [e, k] of [[ceron, 'ceron'], [deysi, 'deysi']]) {
-      Object.assign(e, { x: POS_EXPLORA[k][0], z: POS_EXPLORA[k][1], dir: 0, movio: false, pausa: 0, aplaude: false });
+      Object.assign(e, { x: POS_EXPLORA[k][0], z: POS_EXPLORA[k][1], dir: k === 'deysi' ? Math.PI / 2 : 0, movio: false, pausa: 0, aplaude: false });
       e.m.g.visible = true;
     }
     [rata.x, rata.z] = POS_EXPLORA.rata;
     rata.g.position.set(rata.x, 0, rata.z); rata.g.rotation.y = Math.PI / 2; rata.g.visible = true;
     camExp.copy(camera.position); miraExp.copy(MIRA);
+    pianoAmbiente.iniciar();
   }
 
   function salirExplorar() {
@@ -2319,7 +2398,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     { ico: '💧', txt: 'por agua', x: -13.9, z: 6.25, mira: [-13.9, 7.3], peso: 2 },
     { ico: '🖥️', txt: 'revisando el NOC', x: 12.6, z: -5.7, mira: [12.6, -7.4], peso: 2 },
     { ico: '💬', txt: 'chismeando', chisme: true, peso: 2 },
-    { ico: '🌤️', txt: 'tomando aire', terraza: true, peso: 1 }
+    { ico: '🌤️', txt: 'tomando aire', terraza: true, peso: 1 },
+    { ico: '⏰', txt: 'checando entrada', x: CHECADOR.x + 0.8, z: CHECADOR.z, mira: [CHECADOR.x, CHECADOR.z], checa: true, peso: 2 }
   ];
   // ruta por la oficina en una cuadrícula de 40 cm (rodea escritorios y entra por las puertas)
   const cachesLibre = new Map();
@@ -2426,7 +2506,10 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       if (Math.hypot(tx - p.x, tz - p.z) < (ultimo ? 0.6 : 0.3)) {
         p.i++;
         if (p.i >= p.ruta.length) {
-          if (p.fase === 'ida') { if (d.buscar) p.i = p.ruta.length; else { p.fase = 'espera'; p.espera = 3 + Math.random() * 4; } }
+          if (p.fase === 'ida') {
+            if (d.buscar) p.i = p.ruta.length;
+            else { p.fase = 'espera'; p.espera = d.checa ? 1.5 : 3 + Math.random() * 4; if (d.checa) { flotar(p.x, 2.7, p.z, '✔ checó', '#7cff6b'); beep(1800, .05, 'sine', .03); } }
+          }
           else sentar(p);
         }
       }
@@ -2505,7 +2588,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     for (const e of [ceron, deysi]) {
       if (dlg.abierto && dlg.n.ref === e) continue;
       const d = Math.hypot(p1.x - e.x, p1.z - e.z);
-      e.dir = d < 4.5 ? Math.atan2(p1.x - e.x, p1.z - e.z) : 0;
+      e.dir = d < 4.5 ? Math.atan2(p1.x - e.x, p1.z - e.z) : (e === deysi ? Math.PI / 2 : 0);
     }
     // la rata duerme y respira
     rata.g.scale.set(1, 1 + Math.sin(t * 3) * 0.07, 1);
