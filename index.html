@@ -728,6 +728,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     d.add(new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.05, 0.16, 12), new THREE.MeshPhongMaterial({ color: '#ffffff', transparent: true, opacity: 0.5 })).translateX(1.7).translateY(0.86).translateZ(0.8)); // vaso
     if (k % 3 === 0) d.add(caja(0.14, 0.38, 0.14, '#7a1a12', -0.85, 0.97, 0.05)); // refresco
     if (k === 4 || k === 1) d.add(caja(0.62, 0.03, 0.42, '#7b3fa0', 1.6, 0.8, 1.1)); // laptop morada
+    if (nombres[k] === 'Isai') { d.add(caja(0.2, 0.03, 0.26, '#2b2f33', -0.7, 0.8, 0.22)); d.add(caja(0.16, 0.012, 0.06, '#9fe0a8', -0.7, 0.82, 0.14)); } // calculadora del contador
 
     // empleado sentado en su silla, viendo su monitor
     const e = new THREE.Group(); e.position.set(0, 0, 1.15); d.add(e);
@@ -1781,14 +1782,15 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     'Brenda': ['Llevo toda la mañana contestando llamadas de clientes.', 'Si llega un cliente enojado, levanta la red en el NOC y se le pasa el coraje.'],
     'Suemmy': ['¿Ya viste las calabazas? Decoramos para Halloween.', 'Dicen que en la oficina se aparece una niña... Si la ves, grítale dos veces. 👻'],
     'El Nuevo': ['Hola, soy nuevo. ¿Dónde está el baño?', 'Todavía no me aprendo los nombres de todos. ¿Tú cómo te llamas?'],
-    'Isai': ['Estoy revisando las antenas sectoriales del almacén.', 'Los platos del almacén son para enlaces punto a punto. Bonitos, ¿no?'],
+    'Isai': ['Soy el contador. Estoy cuadrando la facturación del mes, no me muevas los números.', 'Cada antena que se pierde en el almacén me descuadra el inventario. Cuídenlas, ¿eh?', 'Y los clientes que pagan tarde... esos también me quitan el sueño.'],
     'Eli': ['Estoy haciendo el reporte para Deysimar. Lo quiere para ayer.', 'Cuando empiece el turno, que no nos agarren de flojos, ¿eh?'],
     'Gallegos': ['¿Qué onda? Aquí echándole ganas.', 'Si te quieres llevar el empleado del mes, despierta a la banda y levanta la red.']
   };
+  const ROLES_EMP = { 'Isai': 'CONTADOR' };
   const POS_EXPLORA = { ceron: [8.6, -6.3], deysi: [4.6, 4.4], rata: [-11.6, -6.95] };
   const ZONA_ALMACEN = { x0: -15.7, x1: -7.0, z0: -8, z1: -4.85 };
   const interactivos = [
-    ...escritorios.map(e => ({ nombre: e.emp.nombre, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
+    ...escritorios.map(e => ({ nombre: e.emp.nombre, titulo: ROLES_EMP[e.emp.nombre] ? `${e.emp.nombre.toUpperCase()} · ${ROLES_EMP[e.emp.nombre]}` : null, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
     { nombre: 'Cerón', titulo: 'CERÓN · CEO', ref: ceron, r: 1.9, color: '#ffd23f',
       lineas: ['Soy Cerón, el CEO de poderNET.', 'Aquí se viene a trabajar. Cuando empiece el turno voy a andar vigilando.', 'Al que agarre echando hueva, lo regaño. Y a mí no me gritas.'] },
     { nombre: 'Deysimar', titulo: 'DEYSIMAR · GERENTE', ref: deysi, r: 1.9, color: '#e7c6ff',
