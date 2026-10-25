@@ -132,7 +132,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     <img id="logoImg" alt="Logo de poderNET: el poder de internet">
     <div class="titulo">
       <h1>Empleado del mes <span>poderNET</span></h1>
-      <p class="sub">Dos compañeros de poderNET compiten por ser el empleado del mes. Mantén a la banda trabajando, levanta la red del NOC y que no te cachen ni el CEO ni la gerente echando hueva.</p>
+      <p class="sub">Dos compañeros de poderNET compiten por ser el empleado del mes. Mantén a la banda trabajando, levanta la red cuando se cae y que no te cachen ni el CEO ni la gerente echando hueva.</p>
     </div>
   </header>
 
@@ -143,10 +143,10 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     <div class="hud" id="hud" hidden>
       <div class="caja p1"><span class="nom" id="h1n">JESÚS</span><span class="pts" id="h1p">0000</span><div class="grito"><i id="h1g"></i></div><span class="extra" id="h1x"></span></div>
       <div class="caja centro"><span id="nivelTxt" class="nivel">NIVEL 1 / 3</span><span id="reloj">1:50</span><div class="barra"><i id="prod"></i></div><small id="prodTxt">PRODUCTIVIDAD 100%</small>
-        <span id="alerta" class="aviso" hidden>RED CAÍDA · VE AL NOC</span>
+        <span id="alerta" class="aviso" hidden>SE CAYÓ LA RED · CORRE AL SITE</span>
         <span id="alertaJefe" class="aviso" hidden></span>
         <span id="alertaFantasma" class="aviso" hidden>APARECIÓ LA NIÑA FANTASMA · GRÍTALE DOS VECES</span>
-        <span id="alertaRata" class="aviso" hidden>¡RATA SUELTA! · ATRÁPALA ANTES DE QUE LLEGUE AL NOC</span>
+        <span id="alertaRata" class="aviso" hidden>¡RATA SUELTA! · ATRÁPALA ANTES DE QUE LLEGUE A LOS CABLES</span>
       </div>
       <div class="caja p2"><span class="nom" id="h2n">EL RETADOR</span><span class="pts" id="h2p">0000</span><div class="grito"><i id="h2g"></i></div><span class="extra" id="h2x"></span></div>
     </div>
@@ -195,7 +195,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       <h3>Cómo sumar puntos</h3>
       <ul>
         <li>Si ves a alguien echando hueva, tócalo: <b>+10</b></li>
-        <li>Si se cae la red, corre al NOC a levantarla: <b>+25</b></li>
+        <li>Si se cae la red, corre al site a levantarla: <b>+25</b></li>
         <li>Un grito despierta a todos los que estén cerca (<b>+10</b> c/u) y de paso atonta al otro</li>
         <li>Si despiertas a varios seguidos haces combo: desde el tercero valen <b>+15</b> y desde el sexto <b>+20</b></li>
         <li>En el piso salen café y poderes: <b>Fibra</b> (corres al doble), <b>Antena</b> (tu grito llega más lejos), <b>Gafete</b> (no te pueden agarrar) y <b>WiFi</b> (despiertas a quien pases cerca)</li>
@@ -207,7 +207,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
         <li><b>Cerón y Deysimar:</b> si te agarran te regañan (<b>−30</b>) y te quedas congelado. Y no se te ocurra gritarles (−10). Deysimar se va contra el que va ganando</li>
         <li><b>La niña fantasma:</b> apaga las luces y espanta a todos. Si te toca, <b>−10</b>. Con dos gritos se va (<b>+20</b>)</li>
         <li><b>El cliente enojado</b> (nivel 2): tumba la red y se viene a quejar contigo (<b>−20</b>). Levántale la red y se va contento (<b>+15</b>)</li>
-        <li><b>La rata</b> (nivel 3): sale del almacén directo a morder los cables del NOC. Atrápala (<b>+25</b>)</li>
+        <li><b>La rata</b> (nivel 3): sale del almacén directo a morder los cables del site. Atrápala (<b>+25</b>)</li>
       </ul>
     </div>
   </section>
@@ -1025,7 +1025,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       g.fillStyle = '#1e5bb8'; g.font = '800 48px Rubik, Arial, sans-serif'; g.fillText('¿COMO LLEGA EL INTERNET?', 512, 72);
       const flecha = (x0, x1, y) => { g.strokeStyle = '#d62828'; g.lineWidth = 6; g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.moveTo(x1 - 16, y - 12); g.lineTo(x1, y); g.lineTo(x1 - 16, y + 12); g.stroke(); };
       g.strokeStyle = '#1b1c1f'; g.lineWidth = 6; g.strokeRect(60, 210, 150, 90);
-      g.fillStyle = '#1b1c1f'; g.font = '800 40px Rubik, Arial, sans-serif'; g.fillText('NOC', 135, 268);
+      g.fillStyle = '#1b1c1f'; g.font = '800 40px Rubik, Arial, sans-serif'; g.fillText('SITE', 135, 268);
       flecha(225, 330, 255); g.fillStyle = '#d62828'; g.font = '700 30px Rubik, Arial, sans-serif'; g.fillText('fibra', 278, 235);
       g.strokeStyle = '#1b1c1f'; g.beginPath(); g.moveTo(370, 330); g.lineTo(410, 170); g.lineTo(450, 330); g.moveTo(385, 270); g.lineTo(435, 270); g.moveTo(395, 220); g.lineTo(425, 220); g.stroke();
       g.fillStyle = '#1b1c1f'; g.fillText('TORRE', 410, 375);
@@ -1141,7 +1141,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     else rack.add(caja(1.0, 0.5, 0.04, '#24292f', 0, 2.15, 0.45));
   }
   addObs(10.9, 15.7, -8, -6.95);
-  const textoNoc = { ok: texTexto('NOC OK', { color: '#2bff88', bg: 'rgba(0,0,0,.6)', size: 44 }), caido: texTexto('SIN RED', { color: '#ff3b3b', bg: 'rgba(0,0,0,.6)', size: 44 }) };
+  const textoNoc = { ok: texTexto('RED OK', { color: '#2bff88', bg: 'rgba(0,0,0,.6)', size: 44 }), caido: texTexto('SIN RED', { color: '#ff3b3b', bg: 'rgba(0,0,0,.6)', size: 44 }) };
   const letreroNoc = sprite(textoNoc.ok.t, textoNoc.ok.asp, 0.5); letreroNoc.position.set(13.3, 2.85, -6.85); scene.add(letreroNoc);
   const zonaRack = { x: 13.3, z: -6.2 };
   const anilloRack = new THREE.Mesh(new THREE.RingGeometry(1.35, 1.5, 48), new THREE.MeshBasicMaterial({ color: '#ff3b3b', transparent: true }));
@@ -1232,7 +1232,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       if (!internet) {
         g.fillStyle = Math.floor(t * 4) % 2 ? '#b3121b' : '#5a0a0e'; g.fillRect(0, 0, 320, 180);
         g.fillStyle = '#fff'; g.font = '800 30px Rubik, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-        g.fillText('ALERTA', 160, 72); g.font = '700 18px Rubik, Arial, sans-serif'; g.fillText('RED CAIDA · VE AL NOC', 160, 112);
+        g.fillText('ALERTA', 160, 72); g.font = '700 18px Rubik, Arial, sans-serif'; g.fillText('SE CAYO LA RED', 160, 112);
       } else {
         encabezado(g, 'ALERTAS', '#7ee2a8');
         g.fillStyle = '#2bff88'; g.font = '800 26px Rubik, Arial, sans-serif'; g.textAlign = 'center'; g.fillText('SIN ALERTAS', 160, 90);
@@ -1487,8 +1487,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   let estado = 'menu', modoCpu = false, tiempo = DURACION, productividad = 100, nivel = 1;
   const NIVELES = 3;
   const NIVEL_INFO = {
-    2: { titulo: 'Nivel 2: el cliente enojado', texto: 'Llega un cliente furioso que se quedó sin internet: tumba la red al entrar y te persigue para quejarse (−20). Levanta la red en el NOC y se va contento (+15). Al cliente no se le grita.' },
-    3: { titulo: 'Nivel 3: la rata come-cables', texto: 'Del almacén sale una rata que va directo al NOC a morder los cables y tumba la red. Atrápala antes de que llegue (+25). Siguen el cliente, Cerón, Deysimar y la niña fantasma.' }
+    2: { titulo: 'Nivel 2: el cliente enojado', texto: 'Llega un cliente furioso que se quedó sin internet: tumba la red al entrar y te persigue para quejarse (−20). Levanta la red y se va contento (+15). Al cliente no se le grita.' },
+    3: { titulo: 'Nivel 3: la rata come-cables', texto: 'Del almacén sale una rata que va directo al site a morder los cables y tumba la red. Atrápala antes de que llegue (+25). Siguen el cliente, Cerón, Deysimar y la niña fantasma.' }
   };
   let internet = true, proxCaida = 18, cafes = [], proxCafe = 8, textos = [], ondas = [], t = 0, temblor = 0;
   const teclas = new Set();
@@ -2284,10 +2284,10 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const LINEAS_EMP = {
     'Debi': ['¡Hola! Estoy cerrando los tickets de ayer.', 'Si ves a Cerón, avísame... digo, ¡aquí andamos chambeando!'],
     'Toño': ['¿Ya fuiste al almacén? Ahí están las antenas nuevas.', 'Dicen que en el almacén vive una rata que se come los cables. Yo no le creo... bueno, tantito.'],
-    'Diana': ['Hoy ya contesté como cuarenta llamadas, y apenas es mediodía.', 'Cuando se cae la red me llueven las llamadas. ¡Corre al NOC a levantarla!', 'Y si llega el cliente enojado, tú levanta la red y yo lo calmo.'],
+    'Diana': ['Hoy ya contesté como cuarenta llamadas, y apenas es mediodía.', 'Cuando se cae la red me llueven las llamadas. ¡Corre al site a levantarla!', 'Y si llega el cliente enojado, tú levanta la red y yo lo calmo.'],
     'Luis': ['Hoy me tocó subir a una torre. Todavía me tiemblan las piernas.', 'Tip: el café te hace correr más rápido. Lo digo por experiencia.'],
     'Felipe': ['Estoy configurando un router para un cliente.', 'poderNET: el poder de internet. Lo dice el logo, así que es cierto.'],
-    'Brenda': ['Llevo toda la mañana contestando llamadas de clientes.', 'Si llega un cliente enojado, levanta la red en el NOC y se le pasa el coraje.'],
+    'Brenda': ['Llevo toda la mañana contestando llamadas de clientes.', 'Si llega un cliente enojado, levanta la red y se le pasa el coraje.'],
     'Suemmy': ['¿Ya viste el pizarrón de Cerón? Hasta dibujó las torres.', 'Dicen que en la oficina se aparece una niña... Si la ves, grítale dos veces. 👻'],
     'El Nuevo': ['Oye, ¿dónde está el baño? Todavía me pierdo aquí.', 'Todavía no me aprendo los nombres de todos. ¿Tú cómo te llamas?'],
     'Isai': ['Ando cuadrando la facturación del mes, no me muevas los números.', 'Cada antena que se pierde en el almacén me descuadra el inventario. Cuídenlas, ¿eh?', 'Y los clientes que pagan tarde... esos también me quitan el sueño.'],
@@ -2300,7 +2300,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const interactivos = [
     ...escritorios.map(e => ({ emp: e.emp, nombre: e.emp.nombre, titulo: ROLES_EMP[e.emp.nombre] ? `${e.emp.nombre.toUpperCase()} · ${ROLES_EMP[e.emp.nombre]}` : null, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
     { nombre: 'Cerón', titulo: 'CERÓN · CEO', ref: ceron, r: 3.3, color: '#ffd23f',
-      lineas: ['¿Qué pasó? Estoy explicándoles la red a los socios, dame chance.', 'Mira el pizarrón: la fibra sale del NOC, de ahí a las torres y de las torres a la casa del cliente.', 'Nomás que no se caiga la red mientras están aquí, ¿eh?'] },
+      lineas: ['¿Qué pasó? Estoy explicándoles la red a los socios, dame chance.', 'Mira el pizarrón: la fibra sale del site, de ahí a las torres y de las torres a la casa del cliente.', 'Nomás que no se caiga la red mientras están aquí, ¿eh?'] },
     { nombre: 'tu escritorio', titulo: 'TU ESCRITORIO', pista: 'Sentarte en tu escritorio', x: MI_LUGAR.x, z: MI_LUGAR.z + 1.15, r: 1.6, cosa: true, accionSola: sentarse,
       lineas: ['Tu lugar: dos monitores con el tráfico y los sensores de la red en vivo.', 'El café ya se enfrió... la cafetera de la oficina de al lado queda a unos pasos.', 'Cuando quieras arrancar el turno, dale a Empezar a trabajar.'] },
     { nombre: 'la señora de la limpieza', titulo: 'LIMPIEZA', ref: limpieza, r: 1.8,
@@ -2311,7 +2311,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     { nombre: 'la cafetera', titulo: 'CAFETERA', pista: 'Servirte un café', x: 32.15, z: 6.5, r: 1.7, cosa: true, accion: servirCafe,
       lineas: ['Te serviste un café bien cargado. ☕', 'Con la cafeína caminas más rápido un rato.'] },
     { nombre: 'los socios', titulo: 'SOCIOS', x: 17.45, z: -4.85, r: 2.0,
-      lineas: ['Venimos a ver cómo va la expansión de poderNET en San Luis.', 'Cerón nos está platicando de las torres nuevas y del NOC.', 'Nos dijeron que la red nunca se cae... a ver si es cierto.'] },
+      lineas: ['Venimos a ver cómo va la expansión de poderNET en San Luis.', 'Cerón nos está platicando de las torres nuevas y de la red.', 'Nos dijeron que la red nunca se cae... a ver si es cierto.'] },
     { nombre: 'Isai', titulo: 'ISAI · CONTADOR', x: isaiNpc.x, z: isaiNpc.z, r: 1.9, lineas: LINEAS_EMP['Isai'] },
     { nombre: 'Caro', titulo: 'CARO · FACTURACIÓN', x: facturaNpc.x, z: facturaNpc.z, r: 1.9,
       lineas: ['Ando sacando las facturas del mes. ¿Necesitas una?', 'Si un cliente pide factura, que me manden su RFC completo, porfa.', 'Isai y yo cuadramos los pagos al cierre de mes.'] },
@@ -2321,17 +2321,17 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     { nombre: 'Deysimar', titulo: 'DEYSIMAR · GERENTE', ref: deysi, r: 2.7, color: '#e7c6ff',
       lineas: ['¿Ya tienes listo lo de hoy? Lo necesito antes de la junta.', 'Échale un ojo a los tickets, que hay varios abiertos.', 'Y el que cierre más pendientes este mes se lleva el trofeo.'] },
     { nombre: 'la rata', titulo: 'RATA COME-CABLES', ref: rata, r: 1.5, color: '#d0d0d0', cosa: true,
-      lineas: ['(La rata come-cables está dormida entre las cajas...)', 'Zzz... ñam... cables... zzz', '(Mejor no despertarla. En el nivel 3 sale a morder los cables del NOC.)'] },
+      lineas: ['(La rata come-cables está dormida entre las cajas...)', 'Zzz... ñam... cables... zzz', '(Mejor no despertarla. En el nivel 3 sale a morder los cables del site.)'] },
     { nombre: 'las repisas del almacén', titulo: 'ALMACÉN', x: -9.2, z: -6.9, r: 1.6, cosa: true,
       lineas: ['Repisas con routers, cajas de equipo y bobinas de cable.', 'Hay dos antenas de plato en tripié y un mástil con 3 antenas sectoriales y una omni.', 'De aquí sale todo lo que se instala con los clientes.'] },
-    { nombre: 'el NOC', titulo: 'NOC · CENTRO DE OPERACIONES', x: zonaRack.x, z: zonaRack.z, r: 2.0, cosa: true,
+    { nombre: 'el site', titulo: 'EL SITE', x: zonaRack.x, z: zonaRack.z, r: 2.0, cosa: true,
       lineas: ['4 racks, video wall con cámaras de seguridad en vivo, gráficas de tráfico, sensores y alertas.', 'Cuando se cae la red, párate junto a los racks para levantarla: +25 puntos.'] },
     { nombre: 'la planta de luz', titulo: 'PLANTA DE LUZ', x: 9.5, z: 1.5, r: 1.7, cosa: true,
-      lineas: ['Si se va la luz, la planta mantiene prendido el NOC. Los clientes ni se enteran.'] },
+      lineas: ['Si se va la luz, la planta mantiene prendido el site. Los clientes ni se enteran.'] },
     { nombre: 'los garrafones', titulo: 'REFRI Y GARRAFONES', x: -13.9, z: 7.3, r: 1.7, cosa: true,
       lineas: ['Refri de acero y garrafones de agua. Hidratarse también es parte de la chamba.'] },
     { nombre: 'la vista', titulo: 'TERRAZA', x: 2.0, z: 11.0, r: 3.0, cosa: true,
-      lineas: ['Desde la terraza se ve el estacionamiento y, del otro lado, el Starbucks.', 'La puerta de la izquierda es la nave, con el NOC y el almacén. La de la derecha es la oficina de al lado, con Diana, Isai, Cerón y la sala de juntas.'] },
+      lineas: ['Desde la terraza se ve el estacionamiento y, del otro lado, el Starbucks.', 'La puerta de la izquierda es la nave, con el site y el almacén. La de la derecha es la oficina de al lado, con Diana, Isai, Cerón y la sala de juntas.'] },
     { nombre: 'el escritorio de Cerón', titulo: 'ESCRITORIO DEL CEO', x: 28.1, z: -3.0, r: 1.7, cosa: true,
       lineas: ['El escritorio de Cerón: L de vidrio, contratos y su monitor.', 'Ahorita no está: anda en la sala de juntas con los socios.'] },
     { nombre: 'la sala de juntas', titulo: 'SALA DE JUNTAS', x: 23.2, z: -2.2, r: 1.7, cosa: true,
@@ -2442,7 +2442,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const DESTINOS = [
     { ico: '📋', txt: 'requisición', x: -10.9, z: -5.45, mira: [-11.2, -6.9], peso: 3 },
     { ico: '💧', txt: 'por agua', x: -13.9, z: 6.25, mira: [-13.9, 7.3], peso: 2 },
-    { ico: '🖥️', txt: 'revisando el NOC', x: 12.6, z: -5.7, mira: [12.6, -7.4], peso: 2 },
+    { ico: '🖥️', txt: 'revisando la red', x: 12.6, z: -5.7, mira: [12.6, -7.4], peso: 2 },
     { ico: '💬', txt: 'chismeando', chisme: true, peso: 2 },
     { ico: '🌤️', txt: 'tomando aire', terraza: true, peso: 1 },
     { ico: '⏰', txt: 'checando entrada', x: CHECADOR.x + 0.8, z: CHECADOR.z, mira: [CHECADOR.x, CHECADOR.z], checa: true, peso: 2 }
@@ -2626,7 +2626,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
 
     // letrero al entrar al almacén o al NOC
-    const zona = dentro(ZONA_ALMACEN, p1.x, p1.z) ? 'ALMACÉN' : dentro(NOC, p1.x, p1.z) ? 'NOC' : dentro(SALA, p1.x, p1.z) ? 'SALA DE JUNTAS'
+    const zona = dentro(ZONA_ALMACEN, p1.x, p1.z) ? 'ALMACÉN' : dentro(NOC, p1.x, p1.z) ? 'SITE' : dentro(SALA, p1.x, p1.z) ? 'SALA DE JUNTAS'
       : dentro(TERRAZA, p1.x, p1.z) ? 'TERRAZA' : '';
     if (zona !== zonaActual) { zonaActual = zona; if (zona) { flotar(p1.x, 3.2, p1.z, zona, '#f2b632', true); beep(600, .06, 'triangle', .04); } }
 
