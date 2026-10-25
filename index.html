@@ -2283,18 +2283,63 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 
   // ---------- Explorar la oficina antes de empezar a trabajar ----------
   // El jugador 1 camina libre, la cámara lo sigue y puede platicar con la banda, los jefes y revisar el almacén y el NOC.
+  // cada quien tiene varias pláticas; cada vez que le hablas sale una distinta
   const LINEAS_EMP = {
-    'Debi': ['¡Hola! Estoy cerrando los tickets de ayer.', 'Si ves a Cerón, avísame... digo, aquí andamos chambeando!'],
-    'Toño': ['¿Ya fuiste al almacén? Ahí están las antenas nuevas.', 'Dicen que en el almacén vive una rata que se come los cables. Yo no le creo... bueno, tantito.'],
-    'Diana': ['Hoy ya contesté como cuarenta llamadas, y apenas es mediodía.', 'Cuando se cae la red me llueven las llamadas. ¡Corre al site a levantarla!', 'Y si llega el cliente enojado, tú levanta la red y yo lo calmo.'],
-    'Luis': ['Hoy me tocó subir a una torre. Todavía me tiemblan las piernas.', 'Tip: el café te hace correr más rápido. Lo digo por experiencia.'],
-    'Felipe': ['Estoy configurando un router para un cliente.', 'Que onda chuy como andas'],
-    'Brenda': ['Llevo toda la mañana contestando llamadas de clientes.', 'Si llega un cliente enojado, levanta la red y se le pasa el coraje.'],
-    'Suemmy': ['¿Ya viste el pizarrón de Cerón? Hasta dibujó las torres.', 'Dicen que en la oficina se aparece una niña... Si la ves, grítale dos veces. 👻'],
-    'El Nuevo': ['Oye, ¿dónde está el baño? Todavía me pierdo aquí.', 'Todavía no me aprendo los nombres de todos. ¿Tú cómo te llamas?'],
-    'Isai': ['Ando cuadrando la facturación del mes, no me muevas los números.', 'Cada antena que se pierde en el almacén me descuadra el inventario. Cuídenlas, ¿eh?', 'Y los clientes que pagan tarde... esos también me quitan el sueño.'],
-    'Eli': ['Estoy haciendo el reporte para Deysimar. Lo quiere para ayer.', 'Cuando empiece el turno, que no nos agarren de flojos'],
-    'Gallegos': ['¿Qué onda? Aquí echándole ganas.', 'Si te quieres llevar el empleado del mes, despierta a la banda y levanta la red.']
+    'Debi': [
+      ['¡Hola! Estoy cerrando los tickets de ayer.', 'Si ves a Cerón, avísame... digo, aquí andamos chambeando!'],
+      ['ya viste cuantos tickets hay? no acabo hoy', 'si alguien pregunta yo estoy en llamada jaja'],
+      ['oye me pasas el numero del cliente de soledad?', 'el que siempre llama a las 9 en punto, ese mero']
+    ],
+    'Toño': [
+      ['¿Ya fuiste al almacén? Ahí están las antenas nuevas.', 'Dicen que en el almacén vive una rata que se come los cables. Yo no le creo... bueno, tantito.'],
+      ['que onda, ya comiste?', 'yo traigo hambre desde las 10 jaja'],
+      ['me acaban de pedir 3 instalaciones pa hoy', 'y la camioneta sin gasolina, asi o mas']
+    ],
+    'Diana': [
+      ['Hoy ya contesté como cuarenta llamadas, y apenas es mediodía.', 'Cuando se cae la red me llueven las llamadas. ¡Corre al site a levantarla!', 'Y si llega el cliente enojado, tú levanta la red y yo lo calmo.'],
+      ['espera tantito que estoy con el señor', 'ahorita te atiendo'],
+      ['oye ya regreso la luz en el centro?', 'porque me estan hablando todos de alla']
+    ],
+    'Luis': [
+      ['Hoy me tocó subir a una torre. Todavía me tiemblan las piernas.', 'Tip: el café te hace correr más rápido. Lo digo por experiencia.'],
+      ['ayer se nos cayo el enlace de pozos', 'estuvimos hasta las 11 de la noche, ni me preguntes'],
+      ['oye tu sabes si ya cayo la quincena?', 'nomas pregunto eh jaja']
+    ],
+    'Felipe': [
+      ['Estoy configurando un router para un cliente.', 'Que onda chuy como andas'],
+      ['este router no levanta ni a golpes', 'ya le movi de todo, ahorita le marco a soporte'],
+      ['vas a ir al fut el viernes?', 'nos falta uno pa completar']
+    ],
+    'Brenda': [
+      ['Llevo toda la mañana contestando llamadas de clientes.', 'Si llega un cliente enojado, levanta la red y se le pasa el coraje.'],
+      ['hoy me hablo una señora 4 veces', 'que porque se le traba el netflix, le dije que reiniciara el modem y ya jaja'],
+      ['me cubres tantito? voy al baño', 'ahorita regreso no tardo']
+    ],
+    'Suemmy': [
+      ['¿Ya viste el pizarrón de Cerón? Hasta dibujó las torres.', 'Dicen que en la oficina se aparece una niña... Si la ves, grítale dos veces. 👻'],
+      ['oye a que hora es la junta?', 'nadie me avisa nada aqui jaja'],
+      ['ya fuiste por cafe? yo quiero uno', 'el de la cafetera de al lado esta mas bueno']
+    ],
+    'El Nuevo': [
+      ['Oye, ¿dónde está el baño? Todavía me pierdo aquí.', 'Todavía no me aprendo los nombres de todos. ¿Tú cómo te llamas?'],
+      ['oye y aqui a que hora se sale?', 'es que nadie me dijo jaja'],
+      ['me dijeron que pidiera una requisicion pero no se ni que es eso', 'me echas la mano?']
+    ],
+    'Isai': [
+      ['Ando cuadrando la facturación del mes, no me muevas los números.', 'Cada antena que se pierde en el almacén me descuadra el inventario. Cuídenlas, ¿eh?', 'Y los clientes que pagan tarde... esos también me quitan el sueño.'],
+      ['no me hables ahorita que pierdo la cuenta', '... ok ya, que paso?'],
+      ['ya entregaste tus notas de gasolina?', 'si no me las das no te las reembolso eh']
+    ],
+    'Eli': [
+      ['Estoy haciendo el reporte para Deysimar. Lo quiere para ayer.', 'Cuando empiece el turno, que no nos agarren de flojos'],
+      ['ya me dio sueño y apenas son las 11', 'necesito otro cafe urgente'],
+      ['si te pregunta Deysimar por el reporte dile que ya casi', 'bueno... casi casi jaja']
+    ],
+    'Gallegos': [
+      ['¿Qué onda? Aquí echándole ganas.', 'Si te quieres llevar el empleado del mes, despierta a la banda y levanta la red.'],
+      ['quien se comio mi yogurt del refri?', 'ya es la tercera vez eh'],
+      ['ya viste el partido de ayer?', 'que robo carnal']
+    ]
   };
   const ROLES_EMP = { 'Isai': 'CONTADOR', 'Diana': 'ATENCIÓN A CLIENTES' };
   const POS_EXPLORA = { ceron: [20.2, -7.1], deysi: [17.0, -0.3], rata: [-14.3, -7.0] };
@@ -2302,26 +2347,26 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const interactivos = [
     ...escritorios.map(e => ({ emp: e.emp, nombre: e.emp.nombre, titulo: ROLES_EMP[e.emp.nombre] ? `${e.emp.nombre.toUpperCase()} · ${ROLES_EMP[e.emp.nombre]}` : null, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
     { nombre: 'Cerón', titulo: 'CERÓN · CEO', ref: ceron, r: 3.3, color: '#ffd23f',
-      lineas: ['¿Qué pasó? Estoy explicándoles la red a los socios, dame chance.', 'Mira el pizarrón: la fibra sale del site, de ahí a las torres y de las torres a la casa del cliente.', 'Nomás que no se caiga la red mientras están aquí, ¿eh?'] },
+      lineas: [['¿Qué pasó? Estoy explicándoles la red a los socios, dame chance.', 'Mira el pizarrón: la fibra sale del site, de ahí a las torres y de las torres a la casa del cliente.', 'Nomás que no se caiga la red mientras están aquí, ¿eh?'], ['ahorita no, estoy en junta', 'al rato paso a la nave a ver como van'], ['como vamos con las instalaciones de esta semana?', 'quiero el numero pa la tarde eh']] },
     { nombre: 'tu escritorio', titulo: 'TU ESCRITORIO', pista: 'Sentarte en tu escritorio', x: MI_LUGAR.x, z: MI_LUGAR.z + 1.15, r: 1.6, cosa: true, accionSola: sentarse,
       lineas: ['Tu lugar: dos monitores con el tráfico y los sensores de la red en vivo.', 'El café ya se enfrió... la cafetera de la oficina de al lado queda a unos pasos.', 'Cuando quieras arrancar el turno, dale a Empezar a trabajar.'] },
     { nombre: 'la señora de la limpieza', titulo: 'LIMPIEZA', ref: limpieza, r: 1.8,
-      lineas: ['¡Cuidado, joven, está mojado!', 'Ahorita termino la terraza y le paso el trapeador a la oficina.', 'Y díganle a los del almacén que no anden dejando cajas en el pasillo.'] },
+      lineas: [['cuidado joven esta mojado!', 'ahorita termino la terraza y le paso el trapeador a la oficina'], ['ay mijo ya me pisaste lo que trapee jaja', 'no te preocupes ahorita lo vuelvo a pasar'], ['diganle a los del almacen que no dejen cajas en el pasillo', 'luego no puedo trapear bien']] },
     { nombre: 'el almacenista', titulo: 'ALMACENISTA', x: -11.2, z: -6.9, r: 2.0,
-      lineas: ['¿Qué vas a llevar? Antenas, cable, routers... dime y te lo saco.', 'Nomás fírmame la requisición, que sin hoja no sale nada.', 'Y cuidado con la rata, que ya se comió dos bobinas de cable.'] },
+      lineas: [['que vas a llevar? antenas, cable, routers... dime y te lo saco', 'nomas firmame la requisicion que sin hoja no sale nada'], ['otra vez tu? jaja que se te olvido', 'ahi esta el cable que pediste'], ['cuidado con la rata eh', 'ya se comio dos bobinas de cable la condenada']] },
     { nombre: 'el checador', titulo: 'CHECADOR', pista: 'Checar tu entrada', x: CHECADOR.x + 0.4, z: CHECADOR.z, r: 1.5, cosa: true, accion: checarEntrada, lineas: [''] },
     { nombre: 'la cafetera', titulo: 'CAFETERA', pista: 'Servirte un café', x: 32.15, z: 6.5, r: 1.7, cosa: true, accion: servirCafe,
       lineas: ['Te serviste un café bien cargado. ☕', 'Con la cafeína caminas más rápido un rato.'] },
     { nombre: 'los socios', titulo: 'SOCIOS', x: 17.45, z: -4.85, r: 2.0,
-      lineas: ['Venimos a ver cómo va la expansión de poderNET en San Luis.', 'Cerón nos está platicando de las torres nuevas y de la red.', 'Nos dijeron que la red nunca se cae... a ver si es cierto.'] },
+      lineas: [['Venimos a ver cómo va la expansión de poderNET en San Luis.', 'Cerón nos está platicando de las torres nuevas y de la red.', 'Nos dijeron que la red nunca se cae... a ver si es cierto.'], ['bonita oficina eh', 'y la vista de la terraza esta bien padre']] },
     { nombre: 'Isai', titulo: 'ISAI · CONTADOR', x: isaiNpc.x, z: isaiNpc.z, r: 2.4, lineas: LINEAS_EMP['Isai'] },
     { nombre: 'Caro', titulo: 'CARO · FACTURACIÓN', x: facturaNpc.x, z: facturaNpc.z, r: 2.4,
-      lineas: ['Ando sacando las facturas del mes. ¿Necesitas una?', 'Si un cliente pide factura, que me manden su RFC completo, porfa.', 'Isai y yo cuadramos los pagos al cierre de mes.'] },
+      lineas: [['ando sacando las facturas del mes, necesitas una?', 'si un cliente pide factura que me manden su rfc completo porfa'], ['isai y yo cuadramos los pagos al cierre de mes', 'y siempre falta uno jaja'], ['oye ya viste mi correo?', 'te mande lo de los pagos pendientes']] },
     { nombre: 'Diana', titulo: 'DIANA · ATENCIÓN A CLIENTES', x: dianaNpc.x, z: dianaNpc.z, r: 3.0, lineas: LINEAS_EMP['Diana'] },
     { nombre: 'el cliente', titulo: 'CLIENTE', x: 19.6, z: 3.9, r: 1.2,
-      lineas: ['Vengo a pagar mi mensualidad... y a preguntar por qué se me fue el internet el martes.', 'La señorita Diana ya me está atendiendo, gracias.'] },
+      lineas: [['Vengo a pagar mi mensualidad... y a preguntar por qué se me fue el internet el martes.', 'La señorita Diana ya me está atendiendo, gracias.'], ['ya me dijeron que mañana viene el tecnico', 'ojala si venga eh']] },
     { nombre: 'Deysimar', titulo: 'DEYSIMAR · GERENTE', ref: deysi, r: 2.7, color: '#e7c6ff',
-      lineas: ['¿Ya tienes listo lo de hoy? Lo necesito antes de la junta.', 'Échale un ojo a los tickets, que hay varios abiertos.', 'Y el que cierre más pendientes este mes se lleva el trofeo.'] },
+      lineas: [['¿Ya tienes listo lo de hoy? Lo necesito antes de la junta.', 'Échale un ojo a los tickets, que hay varios abiertos.', 'Y el que cierre más pendientes este mes se lleva el trofeo.'], ['ya checaste entrada?', 'el checador esta ahi en la entrada eh, que no se te olvide'], ['oye me mandas el reporte de la semana porfa', 'antes de las 5 si se puede']] },
     { nombre: 'la rata', titulo: 'RATA COME-CABLES', ref: rata, r: 1.5, color: '#d0d0d0', cosa: true,
       lineas: ['(La rata come-cables está dormida entre las cajas...)', 'Zzz... ñam... cables... zzz', '(Mejor no despertarla. En el nivel 3 sale a morder los cables del site.)'] },
     { nombre: 'las repisas del almacén', titulo: 'ALMACÉN', x: -9.2, z: -6.9, r: 1.6, cosa: true,
@@ -2342,6 +2387,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       lineas: ['El servidor principal de poderNET. Por eso tiene tanta ventilación: si se calienta, se cae todo.', 'Los ventiladores no paran ni un segundo. Mejor no le muevas.'] }
   ];
   const posDe = n => n.ref || (n.emp && n.emp.paseo) || n;
+  function elegirPlatica(n) {
+    if (!Array.isArray(n.lineas[0])) return n.lineas;
+    let k = Math.floor(Math.random() * n.lineas.length);
+    if (n.lineas.length > 1 && k === n.ultimaPlatica) k = (k + 1) % n.lineas.length;
+    n.ultimaPlatica = k;
+    return n.lineas[k];
+  }
   function sentarse() {
     Object.assign(p1, { x: MI_LUGAR.x, z: MI_LUGAR.z + 1.15, dir: Math.PI, sentado: true, movio: false });
     puntero = null; ultimaPista = null;
@@ -2410,7 +2462,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   function interactuar() {
     if (dlg.abierto) {
       dlg.i++;
-      if (dlg.i >= dlg.n.lineas.length) cerrarDialogo(); else mostrarLinea();
+      if (dlg.i >= dlg.lineas.length) cerrarDialogo(); else mostrarLinea();
       return;
     }
     if (!cercano) return;
@@ -2418,6 +2470,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
     Object.assign(dlg, { abierto: true, n: cercano, i: 0 });
     if (cercano.accion) cercano.accion();
+    dlg.lineas = elegirPlatica(cercano);
     puntero = null;
     const q = posDe(cercano);
     p1.dir = Math.atan2(q.x - p1.x, q.z - p1.z);
@@ -2425,11 +2478,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     mostrarLinea();
   }
   function mostrarLinea() {
-    const n = dlg.n, ultima = dlg.i >= n.lineas.length - 1;
+    const n = dlg.n, ultima = dlg.i >= dlg.lineas.length - 1;
     $('dlgQuien').textContent = n.titulo || n.nombre.toUpperCase();
     $('dlgQuien').style.color = n.color || '';
     $('dialogo').style.borderColor = n.color || '';
-    $('dlgTexto').textContent = n.lineas[dlg.i];
+    $('dlgTexto').textContent = dlg.lineas[dlg.i];
     $('dlgSig').textContent = esTouch ? (ultima ? 'Toca para cerrar' : 'Toca para seguir') : (ultima ? 'E · cerrar' : 'E · siguiente');
     $('dialogo').hidden = false; $('pista').hidden = true; $('hablarTouch').hidden = true;
     beep(n.cosa ? 520 : 760, .05, 'triangle', .04);
@@ -2564,12 +2617,14 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
   }
   const FRASES_ACERCARSE = [
-    ['Oye, ¿tienes un minuto? Se me trabó la UISP otra vez.', '¿Me echas la mano cuando puedas? Ahorita te busco.'],
-    ['¿Ya viste que se cayó la torre de Soledad en la mañana?', 'Ya quedó, pero hubo que reiniciar el enlace dos veces.'],
-    ['¿Vas a ir por café a la oficina de al lado? Tráeme uno, porfa.', 'Americano, sin azúcar. Te debo una.'],
-    ['Oye, Cerón anda preguntando por el reporte de la red.', 'Yo nomás te aviso, ¿eh?'],
-    ['¿Me ayudas con un router que no levanta? Ya le moví de todo.', 'Ahorita que te desocupes, va.'],
-    ['¿Ya comiste? Vamos a ir por tacos al rato.', 'Ahí avisas si te apuntas.']
+    ['oye chuy, tienes un minuto?', 'nada, era pa preguntarte si vas a ir a la comida del viernes'],
+    ['ey, me prestas tu cargador?', 'el mio se quedo en la casa jaja'],
+    ['oye tienes un minuto? se me trabo la uisp otra vez', 'me echas la mano cuando puedas? ahorita te busco'],
+    ['ya viste que se cayo la torre de soledad en la mañana?', 'ya quedo, pero hubo que reiniciar el enlace dos veces'],
+    ['vas a ir por cafe a la oficina de al lado? traeme uno porfa', 'americano sin azucar, te debo una'],
+    ['oye Ceron anda preguntando por el reporte de la red', 'yo nomas te aviso eh'],
+    ['me ayudas con un router que no levanta? ya le movi de todo', 'ahorita que te desocupes va'],
+    ['ya comiste? vamos a ir por tacos al rato', 'ahi avisas si te apuntas']
   ];
   let proxBusqueda = 15;
   // uno de los compañeros más cercanos deja lo que hace y va a buscarte
@@ -2590,7 +2645,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   function hablarte(p) {
     p.fase = 'hablando'; quitarGlobo(p);
     const n = { emp: p.emp, nombre: p.emp.nombre, titulo: p.emp.nombre.toUpperCase(), lineas: p.paseo.frases };
-    Object.assign(dlg, { abierto: true, n, i: 0 }); puntero = null;
+    Object.assign(dlg, { abierto: true, n, i: 0, lineas: n.lineas }); puntero = null;
     p1.dir = Math.atan2(p.x - p1.x, p.z - p1.z);
     mostrarLinea();
   }
