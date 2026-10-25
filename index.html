@@ -1002,6 +1002,20 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
   const dianaNpc = sentadoDeco(21.5, 5.0, Math.PI, 'Diana', d => { d.add(caja(0.3, 0.08, 0.22, '#1b1c1f', -0.75, 0.84, 0.1)); d.add(caja(0.08, 0.06, 0.24, '#2b2f33', -0.9, 0.9, 0.1)); });
   const isaiNpc = sentadoDeco(26.0, 1.4, Math.PI, 'Isai', d => { d.add(caja(0.2, 0.03, 0.26, '#2b2f33', -0.7, 0.8, 0.22)); d.add(caja(0.16, 0.012, 0.06, '#9fe0a8', -0.7, 0.82, 0.14)); });
+  // escritorio de Deysimar, junto a la sala de juntas (al explorar ella está ahí)
+  {
+    const cx = 20.0, cz = -0.4, giro = Math.PI;
+    const d = new THREE.Group(); d.position.set(cx, 0, cz); d.rotation.y = giro; scene.add(d);
+    tramo(d, -1.1, 1.1, -0.6, 0.6, [-1, 1]); tramo(d, 1.1, 2.1, -0.6, 1.6, [-1, 1]);
+    obsLocal(cx, cz, giro, -1.1, 1.1, -0.6, 0.6); obsLocal(cx, cz, giro, 1.1, 2.1, -0.6, 1.6);
+    d.add(caja(0.12, 0.3, 0.12, '#1a1d20', 0, 0.93, -0.35));
+    d.add(caja(1.15, 0.7, 0.07, '#1a1d20', 0, 1.38, -0.35));
+    d.add(new THREE.Mesh(new THREE.PlaneGeometry(1.02, 0.58), new THREE.MeshBasicMaterial({ color: '#2f7fd6' })).translateY(1.38).translateZ(-0.31));
+    d.add(caja(0.8, 0.04, 0.26, '#d8d8d8', 0, 0.8, 0.25));
+    ['#c0392b', '#2f6fb0', '#f2b632'].forEach((c, i) => d.add(caja(0.32, 0.03, 0.42, c, 1.6, 0.8 + i * 0.03, 0.5))); // carpetas
+    d.add(new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.2, 10), mat('#ffffff')).translateX(-0.85).translateY(0.88).translateZ(0.05));
+    d.add(esfera(0.17, '#d86a9a', -0.85, 1.07, 0.05)); // flores
+  }
   const facturaNpc = sentadoDeco(30.4, 1.4, Math.PI, 'Facturación', d => { d.add(caja(0.5, 0.3, 0.4, '#e8eaec', -0.75, 0.93, 0.1)); for (let i = 0; i < 3; i++) d.add(caja(0.3, 0.02, 0.4, '#ffffff', 1.55, 0.8 + i * 0.02, 0.9)); });
 
   // NOC (fondo derecha): piso técnico, 4 racks, video wall con cámaras en vivo y gráficas
@@ -1186,6 +1200,15 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     // gafete con tu nombre en el escritorio
     d.add(caja(0.7, 0.16, 0.06, '#1b1c1f', -0.6, 0.86, 0.52));
     letreroPlano('JESÚS', 0.64, 0.14, '#1b1c1f', '#ff5a4e', cx - 0.6, 0.86, cz + 0.555);
+    { // caballo de ajedrez
+      const neg = new THREE.MeshPhongMaterial({ color: '#15171a', shininess: 80, specular: 0x555555 });
+      const cab = new THREE.Group(); cab.position.set(-0.55, 0.78, -0.12); cab.rotation.y = 0.6; cab.scale.setScalar(1.6); d.add(cab);
+      cab.add(new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.085, 0.035, 16), neg).translateY(0.018));
+      cab.add(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.065, 0.05, 16), neg).translateY(0.06));
+      const cuello = caja(0.07, 0.15, 0.09, neg, 0, 0.15, 0); cuello.rotation.x = 0.25; cab.add(cuello);
+      const cabeza = caja(0.065, 0.06, 0.13, neg, 0, 0.215, 0.04); cabeza.rotation.x = -0.35; cab.add(cabeza);
+      for (const x of [-0.02, 0.02]) cab.add(caja(0.018, 0.04, 0.025, neg, x, 0.26, -0.02)); // orejas
+    }
   }
 
   // ---------- Personajes ----------
@@ -2156,13 +2179,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     'Gallegos': ['¿Qué onda? Aquí echándole ganas.', 'Si te quieres llevar el empleado del mes, despierta a la banda y levanta la red.']
   };
   const ROLES_EMP = { 'Isai': 'CONTADOR', 'Diana': 'ATENCIÓN A CLIENTES' };
-  const POS_EXPLORA = { ceron: [20.2, -7.1], deysi: [4.6, 4.4], rata: [-14.3, -7.0] };
+  const POS_EXPLORA = { ceron: [20.2, -7.1], deysi: [20.0, -1.55], rata: [-14.3, -7.0] };
   const ZONA_ALMACEN = { x0: -15.7, x1: -7.0, z0: -8, z1: -4.85 };
   const interactivos = [
     ...escritorios.map(e => ({ emp: e.emp, nombre: e.emp.nombre, titulo: ROLES_EMP[e.emp.nombre] ? `${e.emp.nombre.toUpperCase()} · ${ROLES_EMP[e.emp.nombre]}` : null, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
     { nombre: 'Cerón', titulo: 'CERÓN · CEO', ref: ceron, r: 3.3, color: '#ffd23f',
       lineas: ['¿Qué pasó? Estoy explicándoles la red a los socios, dame chance.', 'Mira el pizarrón: la fibra sale del NOC, de ahí a las torres y de las torres a la casa del cliente.', 'Nomás que no se caiga la red mientras están aquí, ¿eh?'] },
-    { nombre: 'tu escritorio', titulo: 'TU ESCRITORIO', pista: 'Ver tu escritorio', x: MI_LUGAR.x, z: MI_LUGAR.z + 1.15, r: 1.8, cosa: true,
+    { nombre: 'tu escritorio', titulo: 'TU ESCRITORIO', pista: 'Sentarte en tu escritorio', x: MI_LUGAR.x, z: MI_LUGAR.z + 1.15, r: 1.6, cosa: true, accionSola: sentarse,
       lineas: ['Tu lugar: dos monitores con el tráfico y los sensores de la red en vivo.', 'El café ya se enfrió... la cafetera de la oficina de al lado queda a unos pasos.', 'Cuando quieras arrancar el turno, dale a Empezar a trabajar.'] },
     { nombre: 'la señora de la limpieza', titulo: 'LIMPIEZA', ref: limpieza, r: 1.8,
       lineas: ['¡Cuidado, joven, está mojado!', 'Ahorita termino la terraza y le paso el trapeador a la oficina.', 'Y díganle a los del almacén que no anden dejando cajas en el pasillo.'] },
@@ -2178,7 +2201,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     { nombre: 'Diana', titulo: 'DIANA · ATENCIÓN A CLIENTES', x: dianaNpc.x, z: dianaNpc.z, r: 2.3, lineas: LINEAS_EMP['Diana'] },
     { nombre: 'el cliente', titulo: 'CLIENTE', x: 21.5, z: 6.5, r: 1.6,
       lineas: ['Vengo a pagar mi mensualidad... y a preguntar por qué se me fue el internet el martes.', 'La señorita Diana ya me está atendiendo, gracias.'] },
-    { nombre: 'Deysimar', titulo: 'DEYSIMAR · GERENTE', ref: deysi, r: 1.9, color: '#e7c6ff',
+    { nombre: 'Deysimar', titulo: 'DEYSIMAR · GERENTE', ref: deysi, r: 2.7, color: '#e7c6ff',
       lineas: ['¿Ya tienes listo lo de hoy? Lo necesito antes de la junta.', 'Échale un ojo a los tickets, que hay varios abiertos.', 'Y el que cierre más pendientes este mes se lleva el trofeo.'] },
     { nombre: 'la rata', titulo: 'RATA COME-CABLES', ref: rata, r: 1.5, color: '#d0d0d0', cosa: true,
       lineas: ['(La rata come-cables está dormida entre las cajas...)', 'Zzz... ñam... cables... zzz', '(Mejor no despertarla. En el nivel 3 sale a morder los cables del NOC.)'] },
@@ -2200,6 +2223,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       lineas: ['El servidor principal de poderNET. Por eso tiene tanta ventilación: si se calienta, se cae todo.', 'Los ventiladores no paran ni un segundo. Mejor no le muevas.'] }
   ];
   const posDe = n => n.ref || (n.emp && n.emp.paseo) || n;
+  function sentarse() {
+    Object.assign(p1, { x: MI_LUGAR.x, z: MI_LUGAR.z + 1.15, dir: Math.PI, sentado: true, movio: false });
+    puntero = null; ultimaPista = null;
+    beep(520, .05, 'triangle', .04);
+  }
   function servirCafe() {
     p1.boost = 12;
     flotar(p1.x, 2.9, p1.z, '¡CAFEÍNA!', '#c98b4a');
@@ -2230,6 +2258,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
 
   function salirExplorar() {
+    p1.sentado = false;
     terminarPaseos();
     cerrarDialogo();
     $('explora').hidden = true; $('pista').hidden = true; $('hablarTouch').hidden = true;
@@ -2258,6 +2287,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       return;
     }
     if (!cercano) return;
+    if (cercano.accionSola) { cercano.accionSola(); return; }
     if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
     Object.assign(dlg, { abierto: true, n: cercano, i: 0 });
     if (cercano.accion) cercano.accion();
@@ -2446,7 +2476,10 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
         const ddx = puntero.x - p1.x, ddz = puntero.z - p1.z;
         if (Math.hypot(ddx, ddz) > 0.15) { dx = ddx; dz = ddz; }
       }
-      mover(p1, dx, dz, dt);
+      if (p1.sentado) {
+        // al moverte te levantas y quedas detrás de la silla
+        if (dx || dz) { p1.sentado = false; p1.x = MI_LUGAR.x; p1.z = MI_LUGAR.z + 2.05; }
+      } else mover(p1, dx, dz, dt);
     }
 
     // con quién puedes platicar: el más cercano dentro de su radio
@@ -2456,11 +2489,11 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       const q = posDe(n), d = Math.hypot(q.x - p1.x, q.z - p1.z);
       if (d < n.r && d < dmin) { dmin = d; cercano = n; }
     }
-    const pista = cercano && !dlg.abierto ? (cercano.pista || `${cercano.cosa ? 'Ver' : 'Platicar con'} ${cercano.nombre}`) : '';
+    const pista = p1.sentado && !dlg.abierto ? 'Muévete para levantarte' : cercano && !dlg.abierto ? (cercano.pista || `${cercano.cosa ? 'Ver' : 'Platicar con'} ${cercano.nombre}`) : '';
     if (pista !== ultimaPista) {
       ultimaPista = pista;
       if (esTouch) { $('hablarTouch').textContent = pista; $('hablarTouch').hidden = !pista; }
-      else { $('pista').innerHTML = pista ? `<kbd>E</kbd>${pista}` : ''; $('pista').hidden = !pista; }
+      else { $('pista').innerHTML = pista ? (p1.sentado ? pista : `<kbd>E</kbd>${pista}`) : ''; $('pista').hidden = !pista; }
     }
 
     // letrero al entrar al almacén o al NOC
@@ -2512,6 +2545,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       if (j.habla) { m.bD.rotation.x = -0.9 + Math.sin(t * 5) * 0.35; m.bI.rotation.x = -0.3 + Math.sin(t * 4) * 0.2; }
       if (j.aplaude) { const c = Math.sin(t * 16); m.bI.rotation.x = m.bD.rotation.x = -1.25; m.bI.rotation.z = 0.35 + c * 0.2; m.bD.rotation.z = -(0.35 + c * 0.2); }
       m.g.position.y = j.festeja ? Math.abs(Math.sin(t * 6)) * 0.22 : j.movio ? Math.abs(Math.sin(j.paso)) * 0.06 : 0;
+      // sentado en su silla: piernas al frente y manos en el teclado
+      if (j.sentado) { m.pI.rotation.x = m.pD.rotation.x = -1.45; m.bI.rotation.x = m.bD.rotation.x = -0.95; m.g.position.y = -0.14; }
       m.aura.visible = j.boost > 0;
       const pa = j.fibra !== undefined ? poderActivo(j) : null;
       m.poder.visible = !!pa;
