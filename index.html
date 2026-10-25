@@ -217,6 +217,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
 <script src="logo.js"></script>
 <script>
 (() => {
@@ -393,9 +394,9 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   // ---------- Three ----------
   const cont = $('escena');
   const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.shadowMap.autoUpdate = false;
   cont.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
@@ -413,12 +414,13 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const LUZ = { hemi: 0.95, sol: 0.75 };
   const hemi = new THREE.HemisphereLight(0xffffff, 0x4a4f55, LUZ.hemi); scene.add(hemi);
   const sol = new THREE.DirectionalLight(0xfff1dd, LUZ.sol);
-  sol.position.set(-8, 22, 10); sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048);
+  sol.position.set(-8, 22, 10); sol.castShadow = true; sol.shadow.mapSize.set(1024, 1024);
   Object.assign(sol.shadow.camera, { left: -18, right: 18, top: 12, bottom: -12, near: 1, far: 55 });
   scene.add(sol);
   const luzAlarma = new THREE.PointLight(0xff2020, 0, 10); scene.add(luzAlarma);
 
-  const mat = c => new THREE.MeshLambertMaterial({ color: c });
+  const matCache = new Map();
+  const mat = c => { let m = matCache.get(c); if (!m) { m = new THREE.MeshLambertMaterial({ color: c }); matCache.set(c, m); } return m; };
   function caja(w, h, d, c, x = 0, y = 0, z = 0) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), typeof c === 'string' ? mat(c) : c);
     m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; return m;
@@ -550,11 +552,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       scene.add(caja(0.6, h, 0.45, colCajas[(i * 3 + n) % colCajas.length], -15.1 + i * 0.8, 0.38 + n * 0.7 + h / 2, -7.65));
     }
     addObs(A.x0, -7.1, A.z0, -7.3);
-    // mostrador del almacenista, donde se entregan las requisiciones
-    scene.add(caja(1.4, 1.0, 0.4, '#7d848b', -11.2, 0.5, -6.25));
-    scene.add(caja(1.5, 0.04, 0.5, '#e8eaec', -11.2, 1.02, -6.25));
-    for (let i = 0; i < 3; i++) scene.add(caja(0.22, 0.02, 0.3, '#ffffff', -11.5 + i * 0.05, 1.05 + i * 0.015, -6.2)); // hojas de requisición
-    addObs(-11.9, -10.5, -6.45, -6.05);
 
     // antena de plato en tripié
     const blancoDoble = new THREE.MeshLambertMaterial({ color: '#f2f3f4', side: THREE.DoubleSide });
@@ -637,18 +634,18 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
 
   // esquina del frente derecha: refri de acero y rack azul de garrafones
-  scene.add(caja(0.75, 1.8, 0.75, '#b9bec4', 15.25, 0.9, 7.25));
-  scene.add(caja(0.03, 1.7, 0.02, '#7d848b', 15.25, 0.9, 6.86));
-  addObs(14.85, 15.7, 6.85, 7.7);
+  scene.add(caja(0.75, 1.8, 0.75, '#b9bec4', -15.25, 0.9, 7.25));
+  scene.add(caja(0.03, 1.7, 0.02, '#7d848b', -15.25, 0.9, 6.86));
+  addObs(-15.7, -14.85, 6.85, 7.7);
   {
-    const r = new THREE.Group(); r.position.set(13.9, 0, 7.3); scene.add(r);
+    const r = new THREE.Group(); r.position.set(-13.9, 0, 7.3); scene.add(r);
     for (const y of [0.05, 0.6, 1.15]) r.add(caja(0.9, 0.06, 0.6, '#1f4fd1', 0, y, 0));
     for (const x of [-0.42, 0.42]) r.add(caja(0.06, 1.5, 0.6, '#1f4fd1', x, 0.75, 0));
     for (const [y, x] of [[0.33, -0.18], [0.33, 0.2], [0.88, 0]]) {
       const g = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.48, 14), new THREE.MeshPhongMaterial({ color: '#7fb3ff', transparent: true, opacity: 0.75 }));
       g.rotation.z = Math.PI / 2; g.position.set(x, y + 0.03, 0); r.add(g);
     }
-    addObs(13.4, 14.4, 6.95, 7.65);
+    addObs(-14.4, -13.4, 6.95, 7.65);
   }
   // reloj y señal de salida en el muro derecho
   { const reloj = new THREE.Mesh(new THREE.CircleGeometry(0.32, 24), mat('#f4f5f6')); reloj.position.set(15.98, 3.0, 5.6); reloj.rotation.y = -Math.PI / 2; scene.add(reloj); }
@@ -1042,8 +1039,8 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     c.position.copy(p).addScaledVector(dir, 0.7); c.lookAt(m); return c;
   }
   const feeds = [
-    { cam: camaraVirtual(posCam.A), rt: new THREE.WebGLRenderTarget(384, 216), nombre: 'CAM 01 · OFICINA' },
-    { cam: camaraVirtual(posCam.B), rt: new THREE.WebGLRenderTarget(384, 216), nombre: 'CAM 02 · ENTRADA' }
+    { cam: camaraVirtual(posCam.A), rt: new THREE.WebGLRenderTarget(256, 144), nombre: 'CAM 01 · OFICINA' },
+    { cam: camaraVirtual(posCam.B), rt: new THREE.WebGLRenderTarget(256, 144), nombre: 'CAM 02 · ENTRADA' }
   ];
 
   // pantallas del video wall (gráficas tipo monitoreo)
@@ -1162,7 +1159,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       g.add(caja(0.09, 0.42, 0.03, corbata, 0, 1.08, 0.23));
     }
     g.add(esfera(0.28, '#d89c6a', 0, 1.66, 0));
-    const pelo = new THREE.Mesh(new THREE.SphereGeometry(0.29, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2), mat('#1a120c'));
+    const pelo = new THREE.Mesh(new THREE.SphereGeometry(0.29, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2), mat(o.peloLargo || '#1a120c'));
     pelo.position.set(0, 1.7, -0.02); g.add(pelo);
     g.add(caja(0.44, 0.08, 0.04, '#111111', 0, 1.68, 0.26));
     const aura = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.05, 8, 32), new THREE.MeshBasicMaterial({ color: '#c98b4a' }));
@@ -1170,7 +1167,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const poder = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.06, 8, 36), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true }));
     poder.rotation.x = -Math.PI / 2; poder.position.y = 0.1; poder.visible = false; g.add(poder);
     const estrellas = [0, 1, 2].map(() => { const s = spriteTexto('⭐', 0.35, { fam: EMOJI, size: 48, pad: 4 }); s.visible = false; g.add(s); return s; });
-    if (o.peloLargo) { pelo.material.color.set(o.peloLargo); g.add(caja(0.52, 0.62, 0.14, o.peloLargo, 0, 1.5, -0.2)); }
+    if (o.peloLargo) { g.add(caja(0.52, 0.62, 0.14, o.peloLargo, 0, 1.5, -0.2)); }
     if (o.calvo) pelo.visible = false;
     if (o.falda) g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.5, 0.5, 18), mat(o.falda)).translateY(0.52));
     if (o.router) { // trae su módem en la mano para reclamar
@@ -1180,7 +1177,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     if (o.escala) g.scale.setScalar(o.escala);
     let fija = null;
     if (o.etiqueta) { fija = spriteTexto(o.etiqueta, 0.46, { color: o.colorEtiqueta, bg: 'rgba(0,0,0,.7)', size: 44 }); fija.position.y = 2.35; g.add(fija); }
-    g.visible = !o.oculto;
+    g.visible = !o.oculto; g.userData.dinamico = true;
     scene.add(g);
     return { g, pI, pD, bI, bD, aura, poder, estrellas, etiqueta: null, fija };
   }
@@ -2113,7 +2110,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       lineas: ['4 racks, video wall con cámaras de seguridad en vivo, gráficas de tráfico, sensores y alertas.', 'Cuando se cae la red, párate junto a los racks para levantarla: +25 puntos.'] },
     { nombre: 'la planta de luz', titulo: 'PLANTA DE LUZ', x: 9.5, z: 1.5, r: 1.7, cosa: true,
       lineas: ['Si se va la luz, la planta mantiene prendido el NOC. Los clientes ni se enteran.'] },
-    { nombre: 'los garrafones', titulo: 'REFRI Y GARRAFONES', x: 13.9, z: 7.3, r: 1.7, cosa: true,
+    { nombre: 'los garrafones', titulo: 'REFRI Y GARRAFONES', x: -13.9, z: 7.3, r: 1.7, cosa: true,
       lineas: ['Refri de acero y garrafones de agua. Hidratarse también es parte de la chamba.'] },
     { nombre: 'la vista', titulo: 'TERRAZA', x: 2.0, z: 11.0, r: 3.0, cosa: true,
       lineas: ['Desde la terraza se ve el estacionamiento y, del otro lado, el Starbucks.', 'La puerta de la izquierda es la nave, con el NOC y el almacén. La de la derecha es Humanidades.'] },
@@ -2209,7 +2206,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   // A dónde se levanta la banda mientras exploras
   const DESTINOS = [
     { ico: '📋', txt: 'requisición', x: -10.9, z: -5.45, mira: [-11.2, -6.9], peso: 3 },
-    { ico: '💧', txt: 'por agua', x: 13.9, z: 6.25, mira: [13.9, 7.3], peso: 2 },
+    { ico: '💧', txt: 'por agua', x: -13.9, z: 6.25, mira: [-13.9, 7.3], peso: 2 },
     { ico: '🖥️', txt: 'revisando el NOC', x: 12.6, z: -5.7, mira: [12.6, -7.4], peso: 2 },
     { ico: '💬', txt: 'chismeando', chisme: true, peso: 2 },
     { ico: '🌤️', txt: 'tomando aire', terraza: true, peso: 1 }
@@ -2500,18 +2497,67 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
   }
 
+  // Junta los muebles y paredes que no se mueven en una pieza por material y congela sus matrices.
+  // Pasa de miles de piezas a pocas, que es lo que más pesa al dibujar.
+  function optimizarEscena() {
+    for (const e of escritorios) e.emp.grupo.userData.dinamico = true;
+    for (const n of [isaiNpc, facturaNpc]) n.grupo.userData.dinamico = true;
+    for (const o of [fantasma.g, rata.g, trofeo, letreroNoc, ...ventiladores]) o.userData.dinamico = true;
+    scene.updateMatrixWorld(true);
+    const porMaterial = new Map();
+    const recorrer = o => {
+      if (o.userData.dinamico) return;
+      for (const h of [...o.children]) recorrer(h);
+      if (o.isMesh && !o.isInstancedMesh && o.visible && o.geometry.index && !Array.isArray(o.material) && o.geometry.getAttribute('normal') && o.geometry.getAttribute('uv')) {
+        if (!porMaterial.has(o.material)) porMaterial.set(o.material, []);
+        porMaterial.get(o.material).push(o);
+      }
+    };
+    recorrer(scene);
+    const utiles = THREE.BufferGeometryUtils;
+    let juntadas = 0;
+    if (utiles) for (const [material, mallas] of porMaterial) {
+      if (mallas.length < 2) continue;
+      const geos = mallas.map(m => {
+        const g = new THREE.BufferGeometry();
+        for (const nombre of ['position', 'normal', 'uv']) g.setAttribute(nombre, m.geometry.getAttribute(nombre).clone());
+        g.setIndex(m.geometry.index.clone());
+        g.applyMatrix4(m.matrixWorld);
+        return g;
+      });
+      const unida = utiles.mergeBufferGeometries(geos, false);
+      if (!unida) continue;
+      const malla = new THREE.Mesh(unida, material);
+      malla.castShadow = mallas.some(m => m.castShadow); malla.receiveShadow = true;
+      malla.matrixAutoUpdate = false;
+      scene.add(malla);
+      for (const m of mallas) m.parent.remove(m);
+      juntadas += mallas.length;
+    }
+    // congela las matrices de lo que no se mueve
+    const congelar = o => {
+      if (o.userData.dinamico) return;
+      o.matrixAutoUpdate = false; o.updateMatrix();
+      for (const h of o.children) congelar(h);
+    };
+    for (const h of scene.children) congelar(h);
+    scene.updateMatrixWorld(true);
+    return juntadas;
+  }
+
   ceremoniaLista = true;
   reiniciar();
   entrarExplorar();
+  optimizarEscena();
   let ultimo = performance.now(), cuadro = 0;
   function loop(ahora) {
     const dt = Math.min(0.05, (ahora - ultimo) / 1000); ultimo = ahora;
     actualizar(dt); visuales(dt);
-    renderer.shadowMap.needsUpdate = true;
+    renderer.shadowMap.needsUpdate = cuadro % 2 === 0; // sombras cada 2 cuadros
     renderer.render(scene, camera);
     // cada 3 cuadros se actualiza una de las cámaras de seguridad (sin el video wall, para no verse a sí mismo)
-    if (++cuadro % 3 === 0) {
-      const fd = feeds[(cuadro / 3) % feeds.length];
+    if (++cuadro % 6 === 0) {
+      const fd = feeds[(cuadro / 6) % feeds.length];
       muroVideo.visible = false;
       renderer.setRenderTarget(fd.rt); renderer.render(scene, fd.cam); renderer.setRenderTarget(null);
       muroVideo.visible = true;
