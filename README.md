@@ -1,6 +1,6 @@
 # Empleado del Mes poderNET
 
-Juego 3D de 2 jugadores en la oficina de poderNET en San Luis Potosí. Dos compañeros compiten por ser el empleado del mes: mantén trabajando a Debi, Toño, Diana, Luis, Felipe, Brenda, Suemmy, Isai, Eli y Gallegos, levanta la red en el NOC y junta más puntos que el otro. Pero cuidado: cuando lleguen Cerón, el CEO, o Deysimar, la gerente, hay que correr. Y en Halloween también se aparece la niña fantasma.
+Juego 3D de 2 jugadores en la oficina de poderNET en San Luis Potosí. Dos compañeros compiten por ser el empleado del mes: mantén trabajando a Debi, Toño, Diana, Luis, Felipe, Brenda, Suemmy, Isai, Eli y Gallegos, levanta la red en el NOC y junta más puntos que el otro. Pero cuidado: cuando lleguen Cerón, el CEO, o Deysimar, la gerente, hay que correr. Y a veces se aparece la niña fantasma.
 
 ## Cómo jugar
 

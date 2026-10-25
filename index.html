@@ -586,12 +586,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     addObs(A.x1 - 0.06, A.x1 + 0.06, A.z0, A.z1);
     const letrero = spriteTexto('ALMACÉN', 0.45, { color: '#ffffff', bg: 'rgba(0,0,0,.65)', size: 44 });
     letrero.position.set((P.x0 + P.x1) / 2, 3.35, A.z1); scene.add(letrero);
-    // decoración de Halloween en el vidrio
-    scene.add(caja(P.x0 - A.x0, 0.26, 0.03, '#ff7a1a', (A.x0 + P.x0) / 2, 2.65, A.z1 + 0.04));
-    scene.add(caja(A.x1 - P.x1, 0.26, 0.03, '#ff7a1a', (P.x1 + A.x1) / 2, 2.65, A.z1 + 0.04));
-    const arana = new THREE.Group(); arana.position.set(-13.0, 2.2, A.z1 + 0.05); scene.add(arana);
-    arana.add(esfera(0.18, '#111111'));
-    for (let i = 0; i < 8; i++) { const p = caja(0.45, 0.03, 0.03, '#111111', (i < 4 ? -1 : 1) * 0.24, 0, 0); p.rotation.z = (i % 4 - 1.5) * 0.35 * (i < 4 ? 1 : -1); arana.add(p); }
     const neon = new THREE.Mesh(new THREE.CircleGeometry(0.34, 20), new THREE.MeshBasicMaterial({ color: '#ff5ad1' }));
     neon.position.set(-8.2, 1.9, A.z1 + 0.04); scene.add(neon);
 
@@ -656,23 +650,6 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   scene.add(caja(3.6, 3.6, 0.06, '#0b0d10', 6.0, 3.0, -7.97));
   { const l = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 3.4), logoMat); l.position.set(6.0, 3.0, -7.93); scene.add(l); }
 
-  // cortinas de calabazas de Halloween colgando de la armadura
-  {
-    const pos = [];
-    for (let x = -15.5; x <= 15.5; x += 0.38) {
-      if ((x > 3.8 && x < 8.2) || x > 10.5) continue; // libre para el logo y el video wall del NOC
-      const n = 4 + Math.round(Math.abs(Math.sin(x * 2.3)) * 3);
-      for (let i = 0; i < n; i++) pos.push([x, 5.7 - i * 0.3, -7.72, 0]);
-    }
-    for (const sx of [-1, 1]) for (let z = -7.4; z <= 7.4; z += 0.45) {
-      const n = 3 + Math.round(Math.abs(Math.sin(z * 1.7)) * 3);
-      for (let i = 0; i < n; i++) pos.push([sx * 15.82, 5.7 - i * 0.3, z, Math.PI / 2]);
-    }
-    const cal = new THREE.InstancedMesh(new THREE.CircleGeometry(0.11, 10), new THREE.MeshBasicMaterial({ color: '#ff9a2e', side: THREE.DoubleSide }), pos.length);
-    const o = new THREE.Object3D();
-    pos.forEach(([x, y, z, r], i) => { o.position.set(x, y, z); o.rotation.set(0, r, 0); o.updateMatrix(); cal.setMatrixAt(i, o.matrix); });
-    scene.add(cal);
-  }
 
   // planta de luz (generador)
   {
@@ -2242,7 +2219,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     'Luis': ['Hoy me tocó subir a una torre. Todavía me tiemblan las piernas.', 'Tip: el café te hace correr más rápido. Lo digo por experiencia.'],
     'Felipe': ['Estoy configurando un router para un cliente.', 'poderNET: el poder de internet. Lo dice el logo, así que es cierto.'],
     'Brenda': ['Llevo toda la mañana contestando llamadas de clientes.', 'Si llega un cliente enojado, levanta la red en el NOC y se le pasa el coraje.'],
-    'Suemmy': ['¿Ya viste las calabazas? Decoramos para Halloween.', 'Dicen que en la oficina se aparece una niña... Si la ves, grítale dos veces. 👻'],
+    'Suemmy': ['¿Ya viste el pizarrón de Cerón? Hasta dibujó las torres.', 'Dicen que en la oficina se aparece una niña... Si la ves, grítale dos veces. 👻'],
     'El Nuevo': ['Oye, ¿dónde está el baño? Todavía me pierdo aquí.', 'Todavía no me aprendo los nombres de todos. ¿Tú cómo te llamas?'],
     'Isai': ['Ando cuadrando la facturación del mes, no me muevas los números.', 'Cada antena que se pierde en el almacén me descuadra el inventario. Cuídenlas, ¿eh?', 'Y los clientes que pagan tarde... esos también me quitan el sueño.'],
     'Eli': ['Estoy haciendo el reporte para Deysimar. Lo quiere para ayer.', 'Cuando empiece el turno, que no nos agarren de flojos, ¿eh?'],
