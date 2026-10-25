@@ -855,7 +855,18 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   {
     scene.add(caja(HUM.x1 - HUM.x0, 4.5, 0.2, '#e8eaec', (HUM.x0 + HUM.x1) / 2, 2.25, HUM.z0));
     scene.add(caja(0.2, 4.5, HUM.z1 - HUM.z0, '#e8eaec', HUM.x1 + 0.1, 2.25, 0));
-    const piso = new THREE.Mesh(new THREE.PlaneGeometry(HUM.x1 - HUM.x0, HUM.z1 - HUM.z0), mat('#c9ccd0'));
+    // mismo piso de loseta negra brillante que la nave del NOC
+    const cpi = document.createElement('canvas'); cpi.width = cpi.height = 256;
+    const gpi = cpi.getContext('2d');
+    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
+      gpi.fillStyle = (i + j) % 2 ? '#1d2127' : '#23282f'; gpi.fillRect(i * 128, j * 128, 128, 128);
+      gpi.strokeStyle = 'rgba(255,255,255,.06)'; gpi.lineWidth = 2;
+      for (let v = 0; v < 4; v++) { gpi.beginPath(); gpi.moveTo(i * 128 + Math.random() * 128, j * 128); gpi.lineTo(i * 128 + Math.random() * 128, j * 128 + 128); gpi.stroke(); }
+    }
+    gpi.strokeStyle = '#3d444c'; gpi.lineWidth = 3;
+    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) gpi.strokeRect(i * 128, j * 128, 128, 128);
+    const tpi = new THREE.CanvasTexture(cpi); tpi.wrapS = tpi.wrapT = THREE.RepeatWrapping; tpi.repeat.set(6.6, 6.6);
+    const piso = new THREE.Mesh(new THREE.PlaneGeometry(HUM.x1 - HUM.x0, HUM.z1 - HUM.z0), new THREE.MeshPhongMaterial({ map: tpi, shininess: 110, specular: 0x666666 }));
     piso.rotation.x = -Math.PI / 2; piso.position.set((HUM.x0 + HUM.x1) / 2, 0.01, 0); piso.receiveShadow = true; scene.add(piso);
     // atención a clientes: mostrador junto a la puerta y sala de espera
     scene.add(caja(3.0, 1.05, 0.7, '#e8eaec', 21.5, 0.52, 5.0));
@@ -865,16 +876,21 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     const etAt = spriteTexto('ATENCIÓN A CLIENTES', 0.32, { color: '#f2b632', bg: 'rgba(0,0,0,.6)', size: 40 }); etAt.position.set(21.5, 2.9, 4.6); scene.add(etAt);
     for (const x of [24.4, 25.5, 26.6]) { scene.add(caja(0.6, 0.45, 0.55, '#3a5a8a', x, 0.23, 7.15)); scene.add(caja(0.6, 0.55, 0.1, '#3a5a8a', x, 0.7, 6.9)); }
     addObs(24.0, 27.0, 6.8, 7.55);
-    // escritorio del CEO, junto a la sala de juntas
-    scene.add(caja(2.8, 0.1, 1.2, '#3b2a1e', 21.8, 0.78, -6.4));
-    scene.add(caja(2.8, 0.7, 0.06, '#2e2117', 21.8, 0.4, -5.83));
-    for (const x of [20.45, 23.15]) scene.add(caja(0.08, 0.75, 1.15, '#2e2117', x, 0.38, -6.4));
-    scene.add(caja(1.2, 0.72, 0.06, '#1a1d20', 21.8, 1.25, -6.75));
-    { const p = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), logoMat); p.position.set(21.8, 1.25, -6.71); scene.add(p); }
-    scene.add(caja(0.8, 1.3, 0.7, '#111214', 21.8, 0.65, -7.65));
-    letreroPlano('CEO', 0.5, 0.16, '#1b1c1f', '#ffd23f', 21.8, 0.92, -5.79);
+    // escritorio del CEO, junto a la sala de juntas: grande y blanco
+    const blancoBrillante = new THREE.MeshPhongMaterial({ color: '#f4f5f6', shininess: 90, specular: 0x888888 });
+    scene.add(caja(4.0, 0.1, 1.6, blancoBrillante, 21.8, 0.8, -6.0));
+    scene.add(caja(4.0, 0.72, 0.06, '#e8eaec', 21.8, 0.4, -5.23));
+    for (const x of [19.85, 23.75]) scene.add(caja(0.1, 0.78, 1.55, '#e8eaec', x, 0.39, -6.0));
+    scene.add(caja(1.3, 0.75, 0.06, '#1a1d20', 21.8, 1.27, -6.5));
+    { const p = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.64), logoMat); p.position.set(21.8, 1.27, -6.46); scene.add(p); }
+    scene.add(caja(0.42, 0.03, 0.3, '#2b2f33', 20.6, 0.87, -5.8)); // laptop
+    for (let i = 0; i < 2; i++) scene.add(caja(0.3, 0.02, 0.4, '#ffffff', 23.0 + i * 0.05, 0.86 + i * 0.02, -5.85)); // contratos
+    scene.add(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.14, 10), mat('#ffffff')).translateX(22.9).translateY(0.92).translateZ(-6.4));
+    scene.add(caja(0.85, 1.35, 0.7, '#111214', 21.8, 0.68, -7.7)); // sillón
+    letreroPlano('CEO', 0.5, 0.16, '#1b1c1f', '#ffd23f', 21.8, 0.92, -5.19);
     { const l = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.3), logoMat); l.position.set(21.8, 2.4, -8.03); scene.add(l); }
-    addObs(20.4, 23.2, -7.0, -5.8);
+    for (const x of [21.0, 22.6]) { scene.add(caja(0.55, 0.45, 0.5, '#1b1c1f', x, 0.23, -4.3)); scene.add(caja(0.55, 0.55, 0.08, '#1b1c1f', x, 0.7, -4.08)); } // sillas de visitas
+    addObs(19.8, 23.8, -6.8, -5.2);
     // sala de juntas de vidrio (puerta del lado de la entrada)
     const panel = (w, x, z, rot) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, 2.8), vidrio); m.position.set(x, 1.4, z); m.rotation.y = rot; scene.add(m); };
     panel(SALA.z1 - SALA.z0, SALA.x0, (SALA.z0 + SALA.z1) / 2, Math.PI / 2);
@@ -1219,6 +1235,14 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
   const dianaM = dePie(crearJefe(NEGRO_CHAMARRA, NEGRO_CHAMARRA, { chamarra: true, acento: '#3a3f46', sinAro: true, peloLargo: '#2a1d14' }), 'Diana', 21.5, 4.25, 0);
   dePie(crearJefe('#4f7fc9', '#4f7fc9', { casual: true, router: true }), 'Cliente', 21.5, 5.95, Math.PI);
+  // socios platicando con Cerón frente a su escritorio
+  const socios = [
+    dePie(crearJefe('#4a4f57', '#2f6fb0'), 'Socio', 21.0, -4.75, Math.PI),
+    dePie(crearJefe('#2b3a55', '#f3e9ff', { peloLargo: '#5a3a22', falda: '#2b3a55' }), 'Socia', 22.6, -4.75, Math.PI)
+  ];
+  addObs(20.5, 23.1, -5.15, -3.95);
+  function burbujaCharla(m, y) { const b = spriteTexto('💬', 0.45, { fam: EMOJI, size: 48, pad: 4 }); b.position.y = y; b.visible = false; m.g.add(b); return b; }
+  const charla = [burbujaCharla(ceron.m, 3.0), ...socios.map(m => burbujaCharla(m, 2.85))];
   // Isai y Diana también llegan a la premiación (entran por la puerta de la nave)
   const humanidadesFestejo = [
     { nombre: 'Isai', ax: PUERTA_NAVE.x, az: 6.9, grupo: isaiNpc.grupo },
@@ -2001,12 +2025,14 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     'Gallegos': ['¿Qué onda? Aquí echándole ganas.', 'Si te quieres llevar el empleado del mes, despierta a la banda y levanta la red.']
   };
   const ROLES_EMP = { 'Isai': 'CONTADOR', 'Diana': 'ATENCIÓN A CLIENTES' };
-  const POS_EXPLORA = { ceron: [21.8, -7.1], deysi: [4.6, 4.4], rata: [-11.6, -6.95] };
+  const POS_EXPLORA = { ceron: [21.8, -7.05], deysi: [4.6, 4.4], rata: [-11.6, -6.95] };
   const ZONA_ALMACEN = { x0: -15.7, x1: -7.0, z0: -8, z1: -4.85 };
   const interactivos = [
     ...escritorios.map(e => ({ nombre: e.emp.nombre, titulo: ROLES_EMP[e.emp.nombre] ? `${e.emp.nombre.toUpperCase()} · ${ROLES_EMP[e.emp.nombre]}` : null, x: e.emp.x, z: e.emp.z, r: 1.8, lineas: LINEAS_EMP[e.emp.nombre] || ['¡Hola! Aquí trabajando.'] })),
-    { nombre: 'Cerón', titulo: 'CERÓN · CEO', ref: ceron, r: 2.6, color: '#ffd23f',
-      lineas: ['Soy Cerón, el CEO de poderNET. Este es mi escritorio, junto a la sala de juntas.', 'Aquí se viene a trabajar. Cuando empiece el turno me voy a la nave a vigilar.', 'Al que agarre echando hueva, lo regaño. Y a mí no me gritas.'] },
+    { nombre: 'Cerón', titulo: 'CERÓN · CEO', ref: ceron, r: 3.3, color: '#ffd23f',
+      lineas: ['Soy Cerón, el CEO de poderNET. Este es mi escritorio, junto a la sala de juntas.', 'Ahorita estoy con unos socios, platicando de la expansión de poderNET.', 'Aquí se viene a trabajar. Cuando empiece el turno me voy a la nave a vigilar.', 'Al que agarre echando hueva, lo regaño. Y a mí no me gritas.'] },
+    { nombre: 'los socios', titulo: 'SOCIOS', x: 21.8, z: -4.75, r: 2.0,
+      lineas: ['Venimos a ver cómo va la expansión de poderNET en San Luis.', 'Cerón nos está platicando de las torres nuevas y del NOC.', 'Nos dijeron que la red nunca se cae... a ver si es cierto.'] },
     { nombre: 'Isai', titulo: 'ISAI · CONTADOR', x: isaiNpc.x, z: isaiNpc.z, r: 1.9, lineas: LINEAS_EMP['Isai'] },
     { nombre: 'Facturación', titulo: 'FACTURACIÓN', x: facturaNpc.x, z: facturaNpc.z, r: 1.9,
       lineas: ['Aquí sale cada factura de poderNET.', 'Si un cliente pide su factura, que me manden su RFC completo, por favor.', 'Isai y yo cuadramos los pagos al cierre de mes.'] },
@@ -2158,6 +2184,15 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     actualizarPantallas(dt);
     for (const v of ventiladores) v.rotation.y += dt * 18;
     ledsServidor.forEach((l, i) => { l.visible = Math.sin(t * 6 + i * 1.7) > -0.3; });
+    // Cerón platica con sus socios por turnos: al que le toca mueve las manos y sale su globito
+    const turno = Math.floor(t / 2.2) % 3;
+    charla.forEach((b, i) => { b.visible = estado === 'explorar' && turno === i; });
+    socios.forEach((m, i) => {
+      const habla = turno === i + 1;
+      m.bD.rotation.x = habla ? -0.9 + Math.sin(t * 5 + i) * 0.35 : 0;
+      m.bI.rotation.x = habla ? -0.35 + Math.sin(t * 4 + i) * 0.2 : 0;
+    });
+    ceron.habla = estado === 'explorar' && turno === 0;
     for (const j of [p1, p2, ...enemigos.filter(e => e.activo), ...(cer.activo ? parados : []), ...(estado === 'explorar' ? [ceron, deysi] : [])]) {
       const m = j.m;
       m.g.position.set(j.x, 0, j.z);
@@ -2170,6 +2205,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       if (j.pausa > 0) { m.bD.rotation.x = -1.6 + Math.sin(t * 18) * 0.25; }
       // el ganador levanta el trofeo y brinca; los demás aplauden
       if (j.festeja) { m.bI.rotation.x = m.bD.rotation.x = -2.8 + Math.sin(t * 8) * 0.1; m.bI.rotation.z = 0.2; m.bD.rotation.z = -0.2; }
+      if (j.habla) { m.bD.rotation.x = -0.9 + Math.sin(t * 5) * 0.35; m.bI.rotation.x = -0.3 + Math.sin(t * 4) * 0.2; }
       if (j.aplaude) { const c = Math.sin(t * 16); m.bI.rotation.x = m.bD.rotation.x = -1.25; m.bI.rotation.z = 0.35 + c * 0.2; m.bD.rotation.z = -(0.35 + c * 0.2); }
       m.g.position.y = j.festeja ? Math.abs(Math.sin(t * 6)) * 0.22 : j.movio ? Math.abs(Math.sin(j.paso)) * 0.06 : 0;
       m.aura.visible = j.boost > 0;
