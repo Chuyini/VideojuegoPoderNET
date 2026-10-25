@@ -445,6 +445,63 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     };
   })();
 
+  // ---------- Música de acción (durante la partida) ----------
+  // Tono menor, bajo en semicorcheas, batería y riff de sintetizador; cada nivel un poco más rápido.
+  const musicaAccion = (() => {
+    let timer = null, siguiente = 0, paso = 0, master = null, bpm = 136;
+    const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+    const raices = [45, 41, 43, 40];                 // La menor – Fa – Sol – Mi menor
+    const riff = [69, 0, 72, 69, 76, 0, 74, 72, 69, 0, 67, 69, 72, 0, 71, 0];
+    function nota(f, t0, d, tipo, v, corte) {
+      const o = ac.createOscillator(), lp = ac.createBiquadFilter(), g = ac.createGain();
+      o.type = tipo; o.frequency.value = f; lp.type = 'lowpass'; lp.frequency.value = corte;
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+      o.connect(lp).connect(g).connect(master); o.start(t0); o.stop(t0 + d + 0.02);
+    }
+    function bombo(t0) {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.frequency.setValueAtTime(160, t0); o.frequency.exponentialRampToValueAtTime(42, t0 + 0.12);
+      g.gain.setValueAtTime(0.7, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
+      o.connect(g).connect(master); o.start(t0); o.stop(t0 + 0.2);
+    }
+    function ruidoCorto(t0, d, tipo, fr, v) {
+      const n = ruido(d), f = ac.createBiquadFilter(), g = ac.createGain();
+      f.type = tipo; f.frequency.value = fr;
+      g.gain.setValueAtTime(v, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+      n.connect(f).connect(g).connect(master); n.start(t0); n.stop(t0 + d);
+    }
+    function programar() {
+      const sem = 60 / bpm / 4;
+      while (siguiente < ac.currentTime + 0.15) {
+        const i = paso % 16, compas = Math.floor(paso / 16) % 4, raiz = raices[compas], mayor = compas === 1 || compas === 2;
+        nota(hz(raiz + (i % 4 === 2 ? 12 : 0)), siguiente, sem * 0.9, 'sawtooth', 0.12, 650);             // bajo
+        if (i % 4 === 0) bombo(siguiente);
+        if (i === 4 || i === 12) { ruidoCorto(siguiente, 0.14, 'bandpass', 1800, 0.28); nota(190, siguiente, 0.08, 'triangle', 0.1, 2000); } // tarola
+        ruidoCorto(siguiente, 0.03, 'highpass', 8000, i % 2 ? 0.035 : 0.06);                                  // hi-hat
+        if (paso % 64 >= 16 && riff[i]) nota(hz(riff[i] + (raiz - 45) + (mayor && riff[i] % 12 === 0 ? 1 : 0)), siguiente, sem * 1.6, 'square', 0.045, 2600); // riff
+        if (i === 0) for (const k of [0, mayor ? 4 : 3, 7]) nota(hz(raiz + 24 + k), siguiente, sem * 15, 'sawtooth', 0.02, 1500); // acorde
+        siguiente += sem; paso++;
+      }
+    }
+    return {
+      iniciar(nivelActual = 1) {
+        if (!ac) return;
+        this.parar(true);
+        if (ac.state === 'suspended') ac.resume();
+        bpm = 136 + (nivelActual - 1) * 8;
+        master = ac.createGain(); master.gain.setValueAtTime(0.0001, ac.currentTime);
+        master.gain.exponentialRampToValueAtTime(0.3, ac.currentTime + 0.8); master.connect(ac.destination);
+        siguiente = ac.currentTime + 0.1; paso = 0;
+        timer = setInterval(programar, 50); programar();
+      },
+      parar(rapido) {
+        if (!timer) return;
+        clearInterval(timer); timer = null;
+        const m = master; m.gain.setTargetAtTime(0.0001, ac.currentTime, rapido ? 0.05 : 0.3); setTimeout(() => m.disconnect(), 1500);
+      }
+    };
+  })();
+
   // ---------- Three ----------
   const cont = $('escena');
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -505,7 +562,12 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
   }
   const EMOJI = '"Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
+  // Sin acentos en mayúsculas: la letra gruesa (Bungee) todo lo pinta en mayúsculas, así que ahí se quitan todos
+  const SIN_ACENTO = { 'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u' };
+  const quitarAcentos = t => t.replace(/[ÁÉÍÓÚáéíóú]/g, c => SIN_ACENTO[c]);
+  const sinAcentoMayus = t => t.replace(/[ÁÉÍÓÚ]/g, c => SIN_ACENTO[c]);
   function texTexto(txt, o = {}) {
+    txt = !o.fam || /Bungee/.test(o.fam) ? quitarAcentos(txt) : sinAcentoMayus(txt);
     const size = o.size || 56, pad = o.pad ?? 18;
     const font = `${o.peso || 400} ${size}px ${o.fam || 'Bungee, Impact, sans-serif'}`;
     const c = document.createElement('canvas'), g = c.getContext('2d');
@@ -802,6 +864,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   ];
   const caminable = (x, z, r) => CAMINABLE.some(a => x - r >= a.x0 && x + r <= a.x1 && z - r >= a.z0 && z + r <= a.z1);
   function letreroPlano(txt, w, h, fondo, color, x, y, z, rotY) {
+    txt = sinAcentoMayus(txt);
     const c = document.createElement('canvas'); c.width = 512; c.height = Math.round(512 * h / w);
     const g = c.getContext('2d');
     if (fondo) { g.fillStyle = fondo; g.fillRect(0, 0, c.width, c.height); }
@@ -963,7 +1026,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       const c = document.createElement('canvas'); c.width = 1024; c.height = 512; const g = c.getContext('2d');
       g.fillStyle = '#fbfbf8'; g.fillRect(0, 0, 1024, 512);
       g.textAlign = 'center'; g.lineCap = 'round'; g.lineJoin = 'round';
-      g.fillStyle = '#1e5bb8'; g.font = '800 48px Rubik, Arial, sans-serif'; g.fillText('¿CÓMO LLEGA EL INTERNET?', 512, 72);
+      g.fillStyle = '#1e5bb8'; g.font = '800 48px Rubik, Arial, sans-serif'; g.fillText('¿COMO LLEGA EL INTERNET?', 512, 72);
       const flecha = (x0, x1, y) => { g.strokeStyle = '#d62828'; g.lineWidth = 6; g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.moveTo(x1 - 16, y - 12); g.lineTo(x1, y); g.lineTo(x1 - 16, y + 12); g.stroke(); };
       g.strokeStyle = '#1b1c1f'; g.lineWidth = 6; g.strokeRect(60, 210, 150, 90);
       g.fillStyle = '#1b1c1f'; g.font = '800 40px Rubik, Arial, sans-serif'; g.fillText('NOC', 135, 268);
@@ -1135,7 +1198,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   const pantallasDef = [
     'camA',
     pantallaCanvas(g => {
-      encabezado(g, 'TRÁFICO · CORE SAN LUIS');
+      encabezado(g, 'TRAFICO · CORE SAN LUIS');
       g.strokeStyle = '#21262d'; g.lineWidth = 1;
       for (let y = 50; y < 180; y += 30) { g.beginPath(); g.moveTo(0, y); g.lineTo(320, y); g.stroke(); }
       const col = internet ? '#2bff88' : '#ff3b3b';
@@ -1154,7 +1217,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
         const caido = !internet && i % 2 === 0;
         g.fillStyle = caido ? '#ff3b3b' : '#2bff88'; g.fillRect(12, 36 + i * 23, 12, 12);
         g.fillStyle = '#e6edf3'; g.font = '600 14px Rubik, Arial, sans-serif'; g.textAlign = 'left'; g.fillText(n, 32, 43 + i * 23);
-        g.fillStyle = caido ? '#ff3b3b' : '#7ee2a8'; g.textAlign = 'right'; g.fillText(caido ? 'CAÍDO' : 'OK', 308, 43 + i * 23);
+        g.fillStyle = caido ? '#ff3b3b' : '#7ee2a8'; g.textAlign = 'right'; g.fillText(caido ? 'CAIDO' : 'OK', 308, 43 + i * 23);
       });
     }),
     pantallaCanvas(g => {
@@ -1173,7 +1236,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
       if (!internet) {
         g.fillStyle = Math.floor(t * 4) % 2 ? '#b3121b' : '#5a0a0e'; g.fillRect(0, 0, 320, 180);
         g.fillStyle = '#fff'; g.font = '800 30px Rubik, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-        g.fillText('ALERTA', 160, 72); g.font = '700 18px Rubik, Arial, sans-serif'; g.fillText('RED CAÍDA · VE AL NOC', 160, 112);
+        g.fillText('ALERTA', 160, 72); g.font = '700 18px Rubik, Arial, sans-serif'; g.fillText('RED CAIDA · VE AL NOC', 160, 112);
       } else {
         encabezado(g, 'ALERTAS', '#7ee2a8');
         g.fillStyle = '#2bff88'; g.font = '800 26px Rubik, Arial, sans-serif'; g.textAlign = 'center'; g.fillText('SIN ALERTAS', 160, 90);
@@ -1523,6 +1586,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     modoCpu = cpu; nivel = 1; reiniciar(); arrancarNivel();
   }
   function arrancarNivel() {
+    musicaAccion.iniciar(nivel);
     estado = 'jugando';
     $('overlay').hidden = true; $('overlay').classList.remove('resumen', 'entre');
     $('btn2p').hidden = $('btnCpu').hidden = false; $('btnSiguiente').hidden = true;
@@ -1535,6 +1599,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     nivel++; prepararNivel(); arrancarNivel();
   }
   function finNivel() {
+    musicaAccion.parar();
     estado = 'entre'; puntero = null; $('gritoTouch').hidden = true;
     for (const e of enemigos) { e.activo = false; e.m.g.visible = false; }
     fantasma.activo = false; rata.activo = false; rata.g.visible = false;
@@ -2040,6 +2105,7 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
   }
 
   function terminar(despedidos) {
+    musicaAccion.parar();
     estado = 'fin'; tiempo = Math.max(0, tiempo); puntero = null; $('gritoTouch').hidden = true;
     const g = p1.pts === p2.pts ? null : (p1.pts > p2.pts ? p1 : p2);
     const cap = s => s.charAt(0) + s.slice(1).toLowerCase();
@@ -2788,6 +2854,25 @@ kbd { font-family: var(--body); font-weight: 800; color: var(--texto); backgroun
     }
     requestAnimationFrame(loop);
   }
+  function limpiarTexto(nodo) {
+    const el = nodo.parentElement;
+    if (!el || el.closest('script, style, input, textarea')) return;
+    const gruesa = /Bungee/.test(getComputedStyle(el).fontFamily);
+    const nuevo = gruesa ? quitarAcentos(nodo.nodeValue) : sinAcentoMayus(nodo.nodeValue);
+    if (nuevo !== nodo.nodeValue) nodo.nodeValue = nuevo;
+  }
+  function limpiarArbol(raiz) {
+    const w = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) limpiarTexto(n);
+  }
+  limpiarArbol(document.body);
+  new MutationObserver(cambios => {
+    for (const c of cambios) {
+      if (c.type === 'characterData') limpiarTexto(c.target);
+      else for (const n of c.addedNodes) n.nodeType === 3 ? limpiarTexto(n) : n.nodeType === 1 && limpiarArbol(n);
+    }
+  }).observe(document.body, { subtree: true, childList: true, characterData: true });
+
   // espera las fuentes para que los letreros 3D salgan con su tipografía
   const fuentes = document.fonts ? Promise.all([document.fonts.load('400 48px Bungee'), document.fonts.load('700 40px Rubik')]) : Promise.resolve();
   Promise.race([fuentes, new Promise(r => setTimeout(r, 1500))]).then(() => requestAnimationFrame(loop));
